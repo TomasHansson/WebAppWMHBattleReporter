@@ -8,6 +8,7 @@ using WebAppWMHBattleReporter.Models;
 
 namespace WebAppWMHBattleReporter.Controllers
 {
+    [Area("Home")]
     public class HomeController : Controller
     {
         public IActionResult Index()
