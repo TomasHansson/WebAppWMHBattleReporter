@@ -15,6 +15,7 @@ namespace WebAppWMHBattleReporter.Data
         }
 
         public DbSet<ApplicationUser> ApplicationUsers { get; set; }
-        
+        public DbSet<Faction> Factions { get; set; }
+
     }
 }

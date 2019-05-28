@@ -1,0 +1,39 @@
+﻿@model FactionViewModel
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>Create</h1>
+
+@if (!String.IsNullOrWhiteSpace(Model.StatusMessage))
+{
+    <h2>@Model.StatusMessage</h2>
+}
+
+<form method="post" asp-action="Create">
+    <div class="border">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group row">
+            <div class="col-2">
+                <label asp-for="@Model.Faction.Name" class="col-form-label"></label>
+            </div>
+            <div class="col-5">
+                <input asp-for="@Model.Faction.Name" class="form-control" />
+            </div>
+            <span asp-validation-for="@Model.Faction.Name" class="text-danger"></span>
+        </div>
+        <div class="form-group row">
+            <div class="col-5 offset-2">
+                <div class="row">
+                    <div class="col-6">
+                        <input type="submit" class="btn btn-info form-control" value="Create" />
+                    </div>
+                    <div class="col-6">
+                        <a asp-action="Index" class="btn btn-success form-control">Back to List</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

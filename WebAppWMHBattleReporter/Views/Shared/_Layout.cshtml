@@ -21,7 +21,7 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">WebAppWMHBattleReporter</a>
+                <a class="navbar-brand" asp-area="Home" asp-controller="Home" asp-action="Index">WebAppWMHBattleReporter</a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -35,17 +35,17 @@
                                 Administration
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropDownMenuLink">
-                                <a class="dropdown-item">Factions</a>
+                                <a asp-area="Admin" asp-controller="Faction" asp-action="Index" class="dropdown-item">Factions</a>
                                 <a class="dropdown-item">Themes</a>
                                 <a class="dropdown-item">Casters</a>
                             </div>
                         </li>
 
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark" asp-area="Home" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-area="Home" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                     </ul>
                 </div>
