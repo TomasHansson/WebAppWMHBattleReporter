@@ -40,7 +40,7 @@ namespace WebAppWMHBattleReporter.Areas.Admin.Controllers
 
             if(await _db.Factions.AnyAsync(f => f.Name == viewModel.Faction.Name))
             {
-                viewModel.StatusMessage = "A faction with that name already exists in the database.";
+                viewModel.StatusMessage = "Error: A faction with that name already exists in the database.";
                 return View(viewModel);
             }
 

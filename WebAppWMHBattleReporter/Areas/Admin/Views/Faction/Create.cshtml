@@ -4,15 +4,17 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Create</h1>
+<br />
+<h2 class="text-info">Create Faction</h2>
+<br />
 
 @if (!String.IsNullOrWhiteSpace(Model.StatusMessage))
 {
-    <h2>@Model.StatusMessage</h2>
+    <partial name="_StatusMessage" model="@Model.StatusMessage" />
 }
 
 <form method="post" asp-action="Create">
-    <div class="border">
+    <div class="border applicationFormGroup">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
         <div class="form-group row">
             <div class="col-2">
@@ -25,15 +27,13 @@
         </div>
         <div class="form-group row">
             <div class="col-5 offset-2">
-                <div class="row">
-                    <div class="col-6">
-                        <input type="submit" class="btn btn-info form-control" value="Create" />
-                    </div>
-                    <div class="col-6">
-                        <a asp-action="Index" class="btn btn-success form-control">Back to List</a>
-                    </div>
-                </div>
+                <partial name="_CreateAndBackToListButtons" />
             </div>
         </div>
     </div>
 </form>
+
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}
