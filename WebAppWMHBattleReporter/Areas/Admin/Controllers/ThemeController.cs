@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using WebAppWMHBattleReporter.Data;
 using WebAppWMHBattleReporter.Models;
@@ -42,6 +43,18 @@ namespace WebAppWMHBattleReporter.Areas.Admin.Controllers
             return View(viewModel);
         }
 
+        public async Task<IActionResult> GetThemes(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            if (!await _db.Factions.AnyAsync(f => f.Id == id))
+                return NotFound();
+
+            List<Theme> factionThemes = await _db.Themes.Where(t => t.FactionId == id).ToListAsync();
+            return Json(new SelectList(factionThemes, "Id", "Name"));
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(ThemeViewModel viewModel)
@@ -52,6 +65,8 @@ namespace WebAppWMHBattleReporter.Areas.Admin.Controllers
 
             if (await _db.Themes.Where(t => t.FactionId == viewModel.Theme.FactionId).AnyAsync(t => t.Name == viewModel.Theme.Name))
             {
+                viewModel.Factions = await _db.Factions.ToListAsync();
+                viewModel.Themes = await _db.Themes.ToListAsync();
                 viewModel.StatusMessage = "Error: A theme with that name for the given faction already exists in the database.";
                 return View(viewModel);
             }
