@@ -1,8 +1,61 @@
-﻿
+﻿@model ThemeViewModel
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
-
+<div class="border applicationFormGroup">
+    <div class="row">
+        <div class="col-6">
+            <h2 class="text-info">Theme List</h2>
+        </div>
+        <div class="col-6 text-right">
+            <partial name="_CreateButton" />
+        </div>
+    </div>
+    <br />
+    <div>
+        @if (Model.Factions.Count() == 0)
+        {
+            <p>There are no factions in the database.</p>
+        }
+        else
+        {
+            @foreach (Faction faction in Model.Factions)
+            {
+                List<Theme> factionThemes = Model.Themes.Where(t => t.Faction.Name == faction.Name).ToList();
+                <table class="table table-striped border">
+                    <tr class="table-secondary">
+                        <th>
+                            @faction.Name
+                        </th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    @if (factionThemes.Count() == 0)
+                    {
+                        <tr>
+                            <td>
+                                There are no themes for this faction in the database.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (Theme theme in factionThemes)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(m => theme.Name)
+                                </td>
+                                <td>
+                                    <partial name="_TableButtons" model="theme.Id" />
+                                </td>
+                            </tr>
+                        }
+                    }
+                </table>
+                }
+            }
+        </div>
+</div>
