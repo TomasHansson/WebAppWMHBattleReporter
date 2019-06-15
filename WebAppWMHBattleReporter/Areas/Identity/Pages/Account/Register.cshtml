@@ -1,5 +1,6 @@
 ﻿@page
 @model RegisterModel
+@using WebAppWMHBattleReporter.Utility
 @{
     ViewData["Title"] = "Register";
 }
@@ -25,7 +26,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="Input.Region"></label>
-                <input asp-for="Input.Region" class="form-control" />
+                <select asp-for="Input.Region" asp-items="StaticDetails.Regions.Select(x => new SelectListItem() { Value = x, Text = x }).ToList()" class="form-control"></select>
                 <span asp-validation-for="Input.Region" class="text-danger"></span>
             </div>
             <div class="form-group">
