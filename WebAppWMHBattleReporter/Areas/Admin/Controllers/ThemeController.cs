@@ -116,6 +116,8 @@ namespace WebAppWMHBattleReporter.Areas.Admin.Controllers
 
             if (await _db.Themes.Where(t => t.FactionId == viewModel.Theme.FactionId).AnyAsync(t => t.Name == viewModel.Theme.Name))
             {
+                viewModel.Factions = await _db.Factions.ToListAsync();
+                viewModel.Themes = await _db.Themes.ToListAsync();
                 viewModel.StatusMessage = "Error: A theme with that name for the given faction already exists in the database.";
                 return View(viewModel);
             }

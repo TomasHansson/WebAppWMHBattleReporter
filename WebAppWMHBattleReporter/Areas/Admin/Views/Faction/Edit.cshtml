@@ -13,7 +13,7 @@
     <partial name="_StatusMessage" model="@Model.StatusMessage" />
 }
 
-<form method="post" asp-action="EditConfirmed">
+<form method="post" asp-action="Edit">
     <div class="border applicationFormGroup">
         <input type="hidden" asp-for="@Model.Faction.Id" />
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
