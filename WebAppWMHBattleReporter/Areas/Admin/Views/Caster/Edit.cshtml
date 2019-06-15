@@ -1,4 +1,4 @@
-﻿@model ThemeViewModel
+﻿@model CasterViewModel
 @using WebAppWMHBattleReporter.Extensions
 @{
     ViewData["Title"] = "Edit";
@@ -17,24 +17,24 @@
 <div class="border applicationFormGroup row">
     <div class="col-8 border-right">
         <form asp-action="Edit">
-            <input type="hidden" asp-for="@Model.Theme.Id" />
+            <input type="hidden" asp-for="@Model.Caster.Id" />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group row">
                 <div class="col-3">
-                    <label asp-for="Theme.FactionId" class="col-form-label">Faction</label>
+                    <label asp-for="Caster.FactionId" class="col-form-label">Faction</label>
                 </div>
                 <div class="col-5">
-                    <select id="FactionList" asp-for="Theme.FactionId" asp-items="Model.Factions.ToSelectListItem(Model.Theme.FactionId)" class="form-control"></select>
+                    <select id="FactionList" asp-for="Caster.FactionId" asp-items="Model.Factions.ToSelectListItem(Model.Caster.FactionId)" class="form-control"></select>
                 </div>
             </div>
             <div class="form-group row">
                 <div class="col-3">
-                    <label asp-for="Theme.Name" class="col-form-label"></label>
+                    <label asp-for="Caster.Name" class="col-form-label"></label>
                 </div>
                 <div class="col-5">
-                    <input asp-for="Theme.Name" class="form-control" />
+                    <input asp-for="Caster.Name" class="form-control" />
                 </div>
-                <span asp-validation-for="Theme.Name" class="text-danger"></span>
+                <span asp-validation-for="Caster.Name" class="text-danger"></span>
             </div>
             <div class="form-group row">
                 <div class="col-5 offset-3">
@@ -44,10 +44,10 @@
         </form>
     </div>
     <div class="col-3 offset-1">
-        @if (Model.Themes.Count() > 0)
+        @if (Model.Casters.Count() > 0)
         {
-            <p>Existing Themes: </p>
-            <div id="ThemeList">
+            <p>Existing Casters: </p>
+            <div id="CasterList">
                 <ul class="list-group"></ul>
             </div>
         }
@@ -58,13 +58,13 @@
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 
     <script>
-        function updateThemeList() {
+        function updateCasterList() {
             var factionSelected = document.getElementById("FactionList").value;
 
-            $list = $('#ThemeList');
+            $list = $('#CasterList');
 
             $.ajax({
-                url: '/Admin/Theme/GetThemes/' + factionSelected,
+                url: '/Admin/Theme/GetCasters/' + factionSelected,
                 type: 'GET',
                 dataType: 'text',
                 success: function (data) {
@@ -80,11 +80,11 @@
         }
 
         $(document).ready(function () {
-            updateThemeList();
+            updateCasterList();
         });
 
         $("#FactionList").on("change", function () {
-            updateThemeList();
+            updateCasterList();
         });
     </script>
 }

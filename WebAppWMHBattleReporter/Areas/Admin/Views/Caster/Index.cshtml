@@ -1,4 +1,4 @@
-﻿@model ThemeViewModel
+﻿@model CasterViewModel
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -7,7 +7,7 @@
 <div class="border applicationFormGroup">
     <div class="row">
         <div class="col-6">
-            <h2 class="text-info">Theme List</h2>
+            <h2 class="text-info">Caster List</h2>
         </div>
         <div class="col-6 text-right">
             @if (Model.Factions.Count() == 0)
@@ -30,7 +30,7 @@
         {
             @foreach (Faction faction in Model.Factions)
             {
-                List<Theme> factionThemes = Model.Themes.Where(t => t.Faction.Name == faction.Name).ToList();
+                List<Caster> factionCasters = Model.Casters.Where(c => c.Faction.Name == faction.Name).ToList();
                 <table class="table table-striped border">
                     <tr class="table-secondary">
                         <th>
@@ -39,11 +39,11 @@
                         <th></th>
                         <th></th>
                     </tr>
-                    @if (factionThemes.Count() == 0)
+                    @if (factionCasters.Count() == 0)
                     {
                         <tr>
                             <td>
-                                There are no themes for this faction in the database.
+                                There are no casters for this faction in the database.
                             </td>
                             <td></td>
                             <td></td>
@@ -51,20 +51,20 @@
                     }
                     else
                     {
-                        @foreach (Theme theme in factionThemes)
+                        @foreach (Caster caster in factionCasters)
                         {
                             <tr>
                                 <td>
-                                    @Html.DisplayFor(m => theme.Name)
+                                    @Html.DisplayFor(m => caster.Name)
                                 </td>
                                 <td>
-                                    <partial name="_TableButtons" model="theme.Id" />
+                                    <partial name="_TableButtons" model="caster.Id" />
                                 </td>
                             </tr>
                         }
                     }
                 </table>
-                }
             }
-        </div>
+        }
+    </div>
 </div>
