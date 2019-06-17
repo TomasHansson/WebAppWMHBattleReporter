@@ -35,7 +35,7 @@
                         <label asp-for="@Model.BattleReport.PostersFaction" class="col-form-label">Faction</label>
                     </div>
                     <div class="col-12">
-                        <select asp-for="@Model.BattleReport.PostersFaction" asp-items="@Model.Factions.Select(f => f.Name).Select(x => new SelectListItem() { Value = x, Text = x }).ToList()" class="form-control"></select>
+                        <select asp-for="@Model.BattleReport.PostersFaction" asp-items="@Model.Factions.Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList()" class="form-control" id="PostersFactionList"></select>
                     </div>
                     <span asp-validation-for="@Model.BattleReport.PostersFaction" class="text-danger"></span>
                 </div>
@@ -44,7 +44,7 @@
                         <label asp-for="@Model.BattleReport.PostersTheme" class="col-form-label">Theme</label>
                     </div>
                     <div class="col-12">
-                        <select asp-for="@Model.BattleReport.PostersTheme" asp-items="@Model.FirstFactionThemes.Select(t => t.Name).Select(x => new SelectListItem() { Value = x, Text = x }).ToList()" class="form-control"></select>
+                        <select asp-for="@Model.BattleReport.PostersTheme" asp-items="@Model.FirstFactionThemes.Select(t => t.Name).Select(x => new SelectListItem() { Value = x, Text = x }).ToList()" class="form-control" id="PostersThemeList"></select>
                     </div>
                     <span asp-validation-for="@Model.BattleReport.PostersTheme" class="text-danger"></span>
                 </div>
@@ -53,7 +53,7 @@
                         <label asp-for="@Model.BattleReport.PostersCaster" class="col-form-label">Caster</label>
                     </div>
                     <div class="col-12">
-                        <select asp-for="@Model.BattleReport.PostersCaster" asp-items="@Model.FirstFactionCasters.Select(c => c.Name).Select(x => new SelectListItem() { Value = x, Text = x }).ToList()" class="form-control"></select>
+                        <select asp-for="@Model.BattleReport.PostersCaster" asp-items="@Model.FirstFactionCasters.Select(c => c.Name).Select(x => new SelectListItem() { Value = x, Text = x }).ToList()" class="form-control" id="PostersCasterList"></select>
                     </div>
                     <span asp-validation-for="@Model.BattleReport.PostersCaster" class="text-danger"></span>
                 </div>
@@ -101,7 +101,7 @@
                         <label asp-for="@Model.BattleReport.OpponentsFaction" class="col-form-label">Faction</label>
                     </div>
                     <div class="col-12">
-                        <select asp-for="@Model.BattleReport.OpponentsFaction" asp-items="@Model.Factions.Select(f => f.Name).Select(x => new SelectListItem() { Value = x, Text = x }).ToList()" class="form-control"></select>
+                        <select asp-for="@Model.BattleReport.OpponentsFaction" asp-items="@Model.Factions.Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList()" class="form-control" id="OpponentsFactionList"></select>
                     </div>
                     <span asp-validation-for="@Model.BattleReport.OpponentsFaction" class="text-danger"></span>
                 </div>
@@ -110,7 +110,7 @@
                         <label asp-for="@Model.BattleReport.OpponentsTheme" class="col-form-label">Theme</label>
                     </div>
                     <div class="col-12">
-                        <select asp-for="@Model.BattleReport.OpponentsTheme" asp-items="@Model.FirstFactionThemes.Select(t => t.Name).Select(x => new SelectListItem() { Value = x, Text = x }).ToList()" class="form-control"></select>
+                        <select asp-for="@Model.BattleReport.OpponentsTheme" asp-items="@Model.FirstFactionThemes.Select(t => t.Name).Select(x => new SelectListItem() { Value = x, Text = x }).ToList()" class="form-control" id="OpponentsThemeList"></select>
                     </div>
                     <span asp-validation-for="@Model.BattleReport.OpponentsTheme" class="text-danger"></span>
                 </div>
@@ -119,7 +119,7 @@
                         <label asp-for="@Model.BattleReport.OpponentsCaster" class="col-form-label">Caster</label>
                     </div>
                     <div class="col-12">
-                        <select asp-for="@Model.BattleReport.OpponentsCaster" asp-items="@Model.FirstFactionCasters.Select(c => c.Name).Select(x => new SelectListItem() { Value = x, Text = x }).ToList()" class="form-control"></select>
+                        <select asp-for="@Model.BattleReport.OpponentsCaster" asp-items="@Model.FirstFactionCasters.Select(c => c.Name).Select(x => new SelectListItem() { Value = x, Text = x }).ToList()" class="form-control" id="OpponentsCasterList"></select>
                     </div>
                     <span asp-validation-for="@Model.BattleReport.OpponentsCaster" class="text-danger"></span>
                 </div>
@@ -202,7 +202,7 @@
                         <label asp-for="@Model.BattleReport.DatePlayed" class="col-form-label">Date Played</label>
                     </div>
                     <div class="col-12">
-                        <input asp-for="@Model.BattleReport.DatePlayed" type="date" value="@DateTime.Today.ToString("yyyy-MM-dd")"/>
+                        <input asp-for="@Model.BattleReport.DatePlayed" type="date" value="@DateTime.Today.ToString("yyyy-MM-dd")" />
                     </div>
                     <span asp-validation-for="@Model.BattleReport.DatePlayed" class="text-danger"></span>
                 </div>
@@ -218,3 +218,83 @@
         </div>
     </form>
 </div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
+    <script>
+        function updatePostersThemeList() {
+            var factionSelected = document.getElementById("PostersFactionList").value;
+            var themeList = document.getElementById("PostersThemeList");
+            $.ajax({
+                url: '/EndUser/BattleReport/GetFactionThemeNames/' + factionSelected,
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    $('#PostersThemeList').empty();
+                    for (var i = 0; i < data.length; i++) {
+                        themeList.options[themeList.options.length] = new Option(data[i], data[i]);
+                    }
+                }
+            });
+        }
+
+        function updatePostersCasterList() {
+            var factionSelected = document.getElementById("PostersFactionList").value;
+            var factionList = document.getElementById("PostersCasterList");
+            $.ajax({
+                url: '/EndUser/BattleReport/GetFactionCasterNames/' + factionSelected,
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    $('#PostersCasterList').empty();
+                    for (var i = 0; i < data.length; i++) {
+                        factionList.options[factionList.options.length] = new Option(data[i], data[i]);
+                    }
+                }
+            });
+        }
+
+        $("#PostersFactionList").on("change", function () {
+            updatePostersThemeList();
+            updatePostersCasterList();
+        });
+
+        function updateOpponentsThemeList() {
+            var factionSelected = document.getElementById("OpponentsFactionList").value;
+            var themeList = document.getElementById("OpponentsThemeList");
+            $.ajax({
+                url: '/EndUser/BattleReport/GetFactionThemeNames/' + factionSelected,
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    $('#OpponentsThemeList').empty();
+                    for (var i = 0; i < data.length; i++) {
+                        themeList.options[themeList.options.length] = new Option(data[i], data[i]);
+                    }
+                }
+            });
+        }
+
+        function updateOpponentsCasterList() {
+            var factionSelected = document.getElementById("OpponentsFactionList").value;
+            var factionList = document.getElementById("OpponentsCasterList");
+            $.ajax({
+                url: '/EndUser/BattleReport/GetFactionCasterNames/' + factionSelected,
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    $('#OpponentsCasterList').empty();
+                    for (var i = 0; i < data.length; i++) {
+                        factionList.options[factionList.options.length] = new Option(data[i], data[i]);
+                    }
+                }
+            });
+        }
+
+        $("#OpponentsFactionList").on("change", function () {
+            updateOpponentsThemeList();
+            updateOpponentsCasterList();
+        });
+    </script>
+}
