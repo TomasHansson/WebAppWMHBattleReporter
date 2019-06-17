@@ -1,0 +1,220 @@
+﻿@model BattleReportViewModel
+@using WebAppWMHBattleReporter.Extensions
+@using WebAppWMHBattleReporter.Utility
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="border applicationFormGroup">
+    <h2 class="text-info">Create Battle Report</h2>
+    <br />
+
+    @if (!String.IsNullOrWhiteSpace(Model.StatusMessage))
+    {
+        <br />
+        <partial name="_StatusMessage" model="@Model.StatusMessage" />
+        <br />
+    }
+
+    <form method="post" asp-action="Create">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group row">
+            <div class="col-12 col-md-6">
+                <h5 class="text-info">Posters Information</h5>
+                <div class="form-group row">
+                    <div class="col-12">
+                        <label asp-for="@Model.BattleReport.PostersUsername" class="col-form-label">Username</label>
+                    </div>
+                    <div class="col-12">
+                        <input asp-for="@Model.BattleReport.PostersUsername" readonly class="form-control" />
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-12">
+                        <label asp-for="@Model.BattleReport.PostersFaction" class="col-form-label">Faction</label>
+                    </div>
+                    <div class="col-12">
+                        <select asp-for="@Model.BattleReport.PostersFaction" asp-items="@Model.Factions.Select(f => f.Name).Select(x => new SelectListItem() { Value = x, Text = x }).ToList()" class="form-control"></select>
+                    </div>
+                    <span asp-validation-for="@Model.BattleReport.PostersFaction" class="text-danger"></span>
+                </div>
+                <div class="form-group row">
+                    <div class="col-12">
+                        <label asp-for="@Model.BattleReport.PostersTheme" class="col-form-label">Theme</label>
+                    </div>
+                    <div class="col-12">
+                        <select asp-for="@Model.BattleReport.PostersTheme" asp-items="@Model.FirstFactionThemes.Select(t => t.Name).Select(x => new SelectListItem() { Value = x, Text = x }).ToList()" class="form-control"></select>
+                    </div>
+                    <span asp-validation-for="@Model.BattleReport.PostersTheme" class="text-danger"></span>
+                </div>
+                <div class="form-group row">
+                    <div class="col-12">
+                        <label asp-for="@Model.BattleReport.PostersCaster" class="col-form-label">Caster</label>
+                    </div>
+                    <div class="col-12">
+                        <select asp-for="@Model.BattleReport.PostersCaster" asp-items="@Model.FirstFactionCasters.Select(c => c.Name).Select(x => new SelectListItem() { Value = x, Text = x }).ToList()" class="form-control"></select>
+                    </div>
+                    <span asp-validation-for="@Model.BattleReport.PostersCaster" class="text-danger"></span>
+                </div>
+                <div class="form-group row">
+                    <div class="col-12">
+                        <label asp-for="@Model.BattleReport.PostersControlPoints" class="col-form-label">Control Points</label>
+                    </div>
+                    <div class="col-12">
+                        <input asp-for="@Model.BattleReport.PostersControlPoints" type="number" min="0" class="form-control" />
+                    </div>
+                    <span asp-validation-for="@Model.BattleReport.PostersControlPoints" class="text-danger"></span>
+                </div>
+                <div class="form-group row">
+                    <div class="col-12">
+                        <label asp-for="@Model.BattleReport.PostersArmyPoints" class="col-form-label">Army Points</label>
+                    </div>
+                    <div class="col-12">
+                        <input asp-for="@Model.BattleReport.PostersArmyPoints" type="number" min="0" class="form-control" />
+                    </div>
+                    <span asp-validation-for="@Model.BattleReport.PostersArmyPoints" class="text-danger"></span>
+                </div>
+                <div class="form-group row">
+                    <div class="col-12">
+                        <label asp-for="@Model.BattleReport.PostersArmyList" class="col-form-label">Army List</label>
+                    </div>
+                    <div class="col-12">
+                        <textarea asp-for="@Model.BattleReport.PostersArmyList" rows="15" class="form-control"></textarea>
+                    </div>
+                    <span asp-validation-for="@Model.BattleReport.PostersArmyList" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <h5 class="text-info">Opponents Information</h5>
+                <div class="form-group row">
+                    <div class="col-12">
+                        <label asp-for="@Model.BattleReport.OpponentsUsername" class="col-form-label">Username</label>
+                    </div>
+                    <div class="col-12">
+                        <input asp-for="@Model.BattleReport.OpponentsUsername" class="form-control" />
+                    </div>
+                    <span asp-validation-for="@Model.BattleReport.OpponentsUsername" class="text-danger"></span>
+                </div>
+                <div class="form-group row">
+                    <div class="col-12">
+                        <label asp-for="@Model.BattleReport.OpponentsFaction" class="col-form-label">Faction</label>
+                    </div>
+                    <div class="col-12">
+                        <select asp-for="@Model.BattleReport.OpponentsFaction" asp-items="@Model.Factions.Select(f => f.Name).Select(x => new SelectListItem() { Value = x, Text = x }).ToList()" class="form-control"></select>
+                    </div>
+                    <span asp-validation-for="@Model.BattleReport.OpponentsFaction" class="text-danger"></span>
+                </div>
+                <div class="form-group row">
+                    <div class="col-12">
+                        <label asp-for="@Model.BattleReport.OpponentsTheme" class="col-form-label">Theme</label>
+                    </div>
+                    <div class="col-12">
+                        <select asp-for="@Model.BattleReport.OpponentsTheme" asp-items="@Model.FirstFactionThemes.Select(t => t.Name).Select(x => new SelectListItem() { Value = x, Text = x }).ToList()" class="form-control"></select>
+                    </div>
+                    <span asp-validation-for="@Model.BattleReport.OpponentsTheme" class="text-danger"></span>
+                </div>
+                <div class="form-group row">
+                    <div class="col-12">
+                        <label asp-for="@Model.BattleReport.OpponentsCaster" class="col-form-label">Caster</label>
+                    </div>
+                    <div class="col-12">
+                        <select asp-for="@Model.BattleReport.OpponentsCaster" asp-items="@Model.FirstFactionCasters.Select(c => c.Name).Select(x => new SelectListItem() { Value = x, Text = x }).ToList()" class="form-control"></select>
+                    </div>
+                    <span asp-validation-for="@Model.BattleReport.OpponentsCaster" class="text-danger"></span>
+                </div>
+                <div class="form-group row">
+                    <div class="col-12">
+                        <label asp-for="@Model.BattleReport.OpponentsControlPoints" class="col-form-label">Control Points</label>
+                    </div>
+                    <div class="col-12">
+                        <input asp-for="@Model.BattleReport.OpponentsControlPoints" type="number" min="0" class="form-control" />
+                    </div>
+                    <span asp-validation-for="@Model.BattleReport.OpponentsControlPoints" class="text-danger"></span>
+                </div>
+                <div class="form-group row">
+                    <div class="col-12">
+                        <label asp-for="@Model.BattleReport.OpponentsArmyPoints" class="col-form-label">Army Points</label>
+                    </div>
+                    <div class="col-12">
+                        <input asp-for="@Model.BattleReport.OpponentsArmyPoints" type="number" min="0" class="form-control" />
+                    </div>
+                    <span asp-validation-for="@Model.BattleReport.OpponentsArmyPoints" class="text-danger"></span>
+                </div>
+                <div class="form-group row">
+                    <div class="col-12">
+                        <label asp-for="@Model.BattleReport.OpponentsArmyList" class="col-form-label">Army List</label>
+                    </div>
+                    <div class="col-12">
+                        <textarea asp-for="@Model.BattleReport.OpponentsArmyList" rows="15" class="form-control"></textarea>
+                    </div>
+                    <span asp-validation-for="@Model.BattleReport.OpponentsArmyList" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-12">
+                <h5 class="text-info">Game Information</h5>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="form-group row">
+                    <div class="col-12">
+                        <label asp-for="@Model.BattleReport.GameSize" class="col-form-label">Game Size</label>
+                    </div>
+                    <div class="col-12">
+                        <select asp-for="@Model.BattleReport.GameSize" asp-items="StaticDetails.GameSizeOptions.Select(x => new SelectListItem() { Value = x.ToString(), Text = x.ToString() }).ToList()" class="form-control"></select>
+                    </div>
+                    <span asp-validation-for="@Model.BattleReport.GameSize" class="text-danger"></span>
+                </div>
+                <div class="form-group row">
+                    <div class="col-12">
+                        <label asp-for="@Model.BattleReport.Scenario" class="col-form-label">Scenario</label>
+                    </div>
+                    <div class="col-12">
+                        <select asp-for="@Model.BattleReport.Scenario" asp-items="StaticDetails.ScenarioOptions.Select(x => new SelectListItem() { Value = x, Text = x }).ToList()" class="form-control"></select>
+                    </div>
+                    <span asp-validation-for="@Model.BattleReport.Scenario" class="text-danger"></span>
+                </div>
+                <div class="form-group row">
+                    <div class="col-12">
+                        <label asp-for="@Model.BattleReport.EndCondition" class="col-form-label">End Condition</label>
+                    </div>
+                    <div class="col-12">
+                        <select asp-for="@Model.BattleReport.EndCondition" asp-items="StaticDetails.EndConditionOptions.Select(x => new SelectListItem() { Value = x, Text = x }).ToList()" class="form-control"></select>
+                    </div>
+                    <span asp-validation-for="@Model.BattleReport.EndCondition" class="text-danger"></span>
+                </div>
+            </div>
+            <div class="col-12 col-md-6">
+                <div class="form-group row">
+                    <div class="col-12">
+                        <label class="col-form-label">Declare Winner</label>
+                    </div>
+                    <div class="col-12">
+                        <input asp-for="@Model.PosterWon" type="radio" name="winner" checked value="You won!" />
+                        <label>You won!</label>
+                        <input type="radio" name="winner" value="Opponent won." />
+                        <label>Opponent won.</label>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-12">
+                        <label asp-for="@Model.BattleReport.DatePlayed" class="col-form-label">Date Played</label>
+                    </div>
+                    <div class="col-12">
+                        <input asp-for="@Model.BattleReport.DatePlayed" type="date" value="@DateTime.Today.ToString("yyyy-MM-dd")"/>
+                    </div>
+                    <span asp-validation-for="@Model.BattleReport.DatePlayed" class="text-danger"></span>
+                </div>
+            </div>
+        </div>
+        <div class="form-group row">
+            <div class="col-4 col-md-3">
+                <input type="submit" class="btn btn-info form-control" value="Save Result" />
+            </div>
+            <div class="col-4 col-md-3">
+                <input type="reset" class="btn btn-danger form-control" value="Reset Form" />
+            </div>
+        </div>
+    </form>
+</div>
