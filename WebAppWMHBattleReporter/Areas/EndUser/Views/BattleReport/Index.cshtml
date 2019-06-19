@@ -223,15 +223,13 @@
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
 
     <script>
-        function updatePostersThemeList() {
-            var factionSelected = document.getElementById("PostersFactionList").value;
-            var themeList = document.getElementById("PostersThemeList");
+        function updateThemeList(factionSelected, themeList) {
             $.ajax({
                 url: '/EndUser/BattleReport/GetFactionThemeNames/' + factionSelected,
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {
-                    $('#PostersThemeList').empty();
+                    themeList.options.length = 0;
                     for (var i = 0; i < data.length; i++) {
                         themeList.options[themeList.options.length] = new Option(data[i], data[i]);
                     }
@@ -239,62 +237,34 @@
             });
         }
 
-        function updatePostersCasterList() {
-            var factionSelected = document.getElementById("PostersFactionList").value;
-            var factionList = document.getElementById("PostersCasterList");
+        function updateCasterList(factionSelected, casterList) {
             $.ajax({
                 url: '/EndUser/BattleReport/GetFactionCasterNames/' + factionSelected,
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {
-                    $('#PostersCasterList').empty();
+                    casterList.options.length = 0;
                     for (var i = 0; i < data.length; i++) {
-                        factionList.options[factionList.options.length] = new Option(data[i], data[i]);
+                        casterList.options[casterList.options.length] = new Option(data[i], data[i]);
                     }
                 }
             });
         }
 
         $("#PostersFactionList").on("change", function () {
-            updatePostersThemeList();
-            updatePostersCasterList();
+            var factionSelected = document.getElementById("PostersFactionList").value;
+            var themeList = document.getElementById("PostersThemeList");
+            var casterList = document.getElementById("PostersCasterList");
+            updateThemeList(factionSelected, themeList);
+            updateCasterList(factionSelected, casterList);
         });
 
-        function updateOpponentsThemeList() {
+        $("#OpponentsFactionList").on("change", function () {
             var factionSelected = document.getElementById("OpponentsFactionList").value;
             var themeList = document.getElementById("OpponentsThemeList");
-            $.ajax({
-                url: '/EndUser/BattleReport/GetFactionThemeNames/' + factionSelected,
-                type: 'GET',
-                dataType: 'json',
-                success: function (data) {
-                    $('#OpponentsThemeList').empty();
-                    for (var i = 0; i < data.length; i++) {
-                        themeList.options[themeList.options.length] = new Option(data[i], data[i]);
-                    }
-                }
-            });
-        }
-
-        function updateOpponentsCasterList() {
-            var factionSelected = document.getElementById("OpponentsFactionList").value;
-            var factionList = document.getElementById("OpponentsCasterList");
-            $.ajax({
-                url: '/EndUser/BattleReport/GetFactionCasterNames/' + factionSelected,
-                type: 'GET',
-                dataType: 'json',
-                success: function (data) {
-                    $('#OpponentsCasterList').empty();
-                    for (var i = 0; i < data.length; i++) {
-                        factionList.options[factionList.options.length] = new Option(data[i], data[i]);
-                    }
-                }
-            });
-        }
-
-        $("#OpponentsFactionList").on("change", function () {
-            updateOpponentsThemeList();
-            updateOpponentsCasterList();
+            var casterList = document.getElementById("OpponentsCasterList");
+            updateThemeList(factionSelected, themeList);
+            updateCasterList(factionSelected, casterList);
         });
     </script>
 }
