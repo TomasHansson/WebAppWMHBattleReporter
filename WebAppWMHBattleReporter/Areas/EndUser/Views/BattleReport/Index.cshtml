@@ -191,9 +191,9 @@
                         <label class="col-form-label">Declare Winner</label>
                     </div>
                     <div class="col-12">
-                        <input asp-for="@Model.PosterWon" type="radio" name="winner" checked value="You won!" />
+                        @Html.RadioButtonFor(m => m.PosterWon, true)
                         <label>You won!</label>
-                        <input type="radio" name="winner" value="Opponent won." />
+                        @Html.RadioButtonFor(m => m.PosterWon, false)
                         <label>Opponent won.</label>
                     </div>
                 </div>

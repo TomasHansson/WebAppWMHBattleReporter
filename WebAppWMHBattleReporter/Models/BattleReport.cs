@@ -56,28 +56,13 @@ namespace WebAppWMHBattleReporter.Models
         [Required]
         public string EndCondition { get; set; }
 
-        [Required]
         public string WinnersUsername { get; set; }
-
-        [Required]
         public string WinningFaction { get; set; }
-
-        [Required]
         public string WinningCaster { get; set; }
-
-        [Required]
         public string WinningTheme { get; set; }
-
-        [Required]
         public string LosersUsername { get; set; }
-
-        [Required]
         public string LosingFaction { get; set; }
-
-        [Required]
         public string LosingCaster { get; set; }
-
-        [Required]
         public string LosingTheme { get; set; }
     }
 }
