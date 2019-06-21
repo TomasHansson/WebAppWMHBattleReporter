@@ -4,12 +4,10 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<br />
-<h2 class="text-info">Delete Faction</h2>
-<br />
-
 <form method="post" asp-action="DeleteConfirmed" asp-route-id="@Model.Id">
     <div class="border applicationFormGroup">
+        <h2 class="text-info">Delete Faction</h2>
+        <br />
         <div class="form-group row">
             <div class="col-2">
                 <label asp-for="Name" class="col-form-label"></label>
