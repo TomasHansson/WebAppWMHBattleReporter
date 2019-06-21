@@ -24,6 +24,12 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
 
         public async Task<IActionResult> Index()
         {
+            List<BattleReport> battleReports = await _db.BattleReports.ToListAsync();
+            return View(battleReports);
+        }
+
+        public async Task<IActionResult> Create()
+        {
             BattleReportViewModel viewModel = new BattleReportViewModel()
             {
                 Factions = await _db.Factions.ToListAsync(),
@@ -63,7 +69,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Index(BattleReportViewModel viewModel)
+        public async Task<IActionResult> Create(BattleReportViewModel viewModel)
         {
             viewModel.StatusMessage = string.Empty;
             if (!ModelState.IsValid)
@@ -106,7 +112,31 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
 
             _db.BattleReports.Add(viewModel.BattleReport);
             await _db.SaveChangesAsync();
-            return RedirectToAction(nameof(Index), "Home", new { Area = "Home" });
+            return RedirectToAction("Index", "Home", new { Area = "Home" });
+        }
+
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            BattleReport reportFromDB = await _db.BattleReports.FindAsync(id);
+            if (reportFromDB == null)
+                return NotFound();
+
+            return View(reportFromDB);
+        }
+
+        public async Task<IActionResult> UnconfirmedBattleReports(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                return NotFound();
+
+            List<BattleReport> usersUnconfirmedBattleReports = await _db.BattleReports.Where(br => br.OpponentsUsername == id && br.ConfirmedByOpponent == false).ToListAsync();
+            if (usersUnconfirmedBattleReports == null)
+                return NotFound();
+
+            return View(usersUnconfirmedBattleReports);
         }
     }
 }

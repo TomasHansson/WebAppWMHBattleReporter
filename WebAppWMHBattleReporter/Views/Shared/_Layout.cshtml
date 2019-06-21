@@ -41,8 +41,16 @@
                                 <a asp-area="Admin" asp-controller="Caster" asp-action="Index" class="dropdown-item">Casters</a>
                             </div>
                         </li>
-                        <li class="nav-item">
-                            <a asp-area="EndUser" asp-controller="BattleReport" asp-action="Index" class="nav-link text-dark">Add Battle Report</a>
+                        <li class="nav-item dropdown text-white-50">
+                            <a class="nav-link text-dark dropdown-toggle" href="#" id="navbarDropDownBattleReport" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Battle Reports
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropDownBattleReport">
+                                <a asp-area="EndUser" asp-controller="BattleReport" asp-action="Index" class="nav-link text-dark">View All Reports</a>
+                                <a asp-area="EndUser" asp-controller="BattleReport" asp-action="UnconfirmedBattleReports" asp-route-Id="Admin" class="nav-link text-dark">Unconfirmed Reports</a>
+                                @*This needs to be changed to look for the logged in users Unconfirmed Battle Reports, rather than defaulting to the user with username as Admin.*@
+                                <a asp-area="EndUser" asp-controller="BattleReport" asp-action="Create" class="nav-link text-dark">Add Report</a>
+                            </div>
                         </li>
                     </ul>
                 </div>
