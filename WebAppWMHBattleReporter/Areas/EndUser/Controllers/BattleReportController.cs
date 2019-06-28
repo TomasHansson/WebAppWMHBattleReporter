@@ -24,7 +24,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
 
         public async Task<IActionResult> Index()
         {
-            List<BattleReport> battleReports = await _db.BattleReports.ToListAsync();
+            List<BattleReport> battleReports = await _db.BattleReports.Where(br => br.ConfirmedByOpponent).ToListAsync();
             return View(battleReports);
         }
 
@@ -137,6 +137,60 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
                 return NotFound();
 
             return View(usersUnconfirmedBattleReports);
+        }
+
+        public async Task<IActionResult> AcceptUnconfirmedView(int? id)
+        {
+            // Add necessary data for a view where the user can accept an Unconfirmed Battle Report.
+            return View();
+        }
+
+        public async Task<IActionResult> AcceptUnconfirmed(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            BattleReport battleReport = await _db.BattleReports.FindAsync(id);
+            if (battleReport == null)
+                return NotFound();
+
+            string username = battleReport.OpponentsUsername;
+            battleReport.ConfirmedByOpponent = true;
+            await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(UnconfirmedBattleReports), new { id = username });
+        }
+
+        public async Task<IActionResult> DeleteUnconfirmedView(int? id)
+        {
+            // Add necessary data for a view where the user can delete an Unconfirmed Battle Report.
+            return View();
+        }
+
+        public async Task<IActionResult> DeleteUnconfirmed(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            BattleReport battleReport = await _db.BattleReports.FindAsync(id);
+            if (battleReport == null)
+                return NotFound();
+
+            string username = battleReport.OpponentsUsername;
+            _db.BattleReports.Remove(battleReport);
+            await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(UnconfirmedBattleReports), new { id = username });
+        }
+
+        public async Task<IActionResult> DetailsUnconfirmed(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            BattleReport battleReport = await _db.BattleReports.FindAsync(id);
+            if (battleReport == null)
+                return NotFound();
+
+            return View(battleReport);
         }
     }
 }
