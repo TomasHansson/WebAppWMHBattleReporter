@@ -141,8 +141,14 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
 
         public async Task<IActionResult> AcceptUnconfirmedView(int? id)
         {
-            // Add necessary data for a view where the user can accept an Unconfirmed Battle Report.
-            return View();
+            if (id == null)
+                return NotFound();
+
+            BattleReport battleReport = await _db.BattleReports.FindAsync(id);
+            if (battleReport == null)
+                return NotFound();
+
+            return View(battleReport);
         }
 
         public async Task<IActionResult> AcceptUnconfirmed(int? id)
@@ -162,8 +168,14 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
 
         public async Task<IActionResult> DeleteUnconfirmedView(int? id)
         {
-            // Add necessary data for a view where the user can delete an Unconfirmed Battle Report.
-            return View();
+            if (id == null)
+                return NotFound();
+
+            BattleReport battleReport = await _db.BattleReports.FindAsync(id);
+            if (battleReport == null)
+                return NotFound();
+
+            return View(battleReport);
         }
 
         public async Task<IActionResult> DeleteUnconfirmed(int? id)

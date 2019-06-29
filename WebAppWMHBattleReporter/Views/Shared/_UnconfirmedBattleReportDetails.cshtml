@@ -1,0 +1,67 @@
+﻿@model BattleReport
+
+<div class="row">
+    <div class="col-12 text-center">
+        Date played: @Model.DatePlayed.ToShortDateString()
+    </div>
+</div>
+<div class="row">
+    <div class="col-2">
+        @Model.PostersUsername
+    </div>
+    <div class="col-3">
+        Faction: @Model.PostersFaction
+    </div>
+    <div class="offset-2 col-3">
+        Faction: @Model.OpponentsFaction
+    </div>
+    <div class="col-2">
+        @Model.OpponentsUsername
+    </div>
+</div>
+<div class="row">
+    <div class="offset-2 col-3">
+        Theme: @Model.PostersTheme
+    </div>
+    <div class="offset-2 col-3">
+        Theme: @Model.OpponentsTheme
+    </div>
+</div>
+<div class="row">
+    <div class="offset-2 col-3">
+        Caster: @Model.PostersCaster
+    </div>
+    <div class="offset-2 col-3">
+        Caster: @Model.OpponentsCaster
+    </div>
+</div>
+<div class="row">
+    <div class="offset-2 col-1">
+        CP: @Model.PostersControlPoints
+    </div>
+    <div class="offset-1 col-1">
+        AP: @Model.PostersArmyPoints
+    </div>
+    <div class="offset-2 col-1">
+        CP: @Model.OpponentsControlPoints
+    </div>
+    <div class="offset-1 col-1">
+        AP: @Model.OpponentsArmyPoints
+    </div>
+</div>
+<div class="row">
+    <div class="offset-2 col-3 text-center">
+        Game Size: @Model.GameSize
+    </div>
+    <div class="offset-2 col-3 text-center">
+        Scenario: @Model.Scenario
+    </div>
+</div>
+<div class="row">
+    <div class="offset-2 col-3 text-center">
+        Winner: @Model.WinnersUsername
+    </div>
+    <div class="offset-2 col-3 text-center">
+        End Condition: @Model.EndCondition
+    </div>
+</div>

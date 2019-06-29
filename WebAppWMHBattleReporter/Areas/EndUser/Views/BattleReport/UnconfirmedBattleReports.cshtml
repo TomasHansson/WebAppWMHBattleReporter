@@ -41,13 +41,13 @@
                     <td>@battleReport.EndCondition</td>
                     <td class="tableButtonsGroup">
                         <div class="btn-group" role="group">
-                            <a class="btn btn-primary text-white" asp-action="AcceptUnconfirmed" asp-route-Id="@battleReport.Id">
+                            <a class="btn btn-primary text-white" asp-action="AcceptUnconfirmedView" asp-route-Id="@battleReport.Id">
                                 <i class="fas fa-thumbs-up"></i>
                             </a>
                             <a class="btn btn-success text-white" asp-action="DetailsUnconfirmed" asp-route-Id="@battleReport.Id">
                                 <i class="fas fa-list-alt"></i>
                             </a>
-                            <a class="btn btn-danger text-white" asp-action="DeleteUnconfirmed" asp-route-Id="@battleReport.Id">
+                            <a class="btn btn-danger text-white" asp-action="DeleteUnconfirmedView" asp-route-Id="@battleReport.Id">
                                 <i class="fas fa-thumbs-down"></i>
                             </a>
                         </div>
