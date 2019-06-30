@@ -39,7 +39,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             int firstFactionId = viewModel.Factions.FirstOrDefault().Id;
             viewModel.FirstFactionThemes = await _db.Themes.Where(t => t.FactionId == firstFactionId).ToListAsync();
             viewModel.FirstFactionCasters = await _db.Casters.Where(c => c.FactionId == firstFactionId).ToListAsync();
-            viewModel.BattleReport.PostersUsername = "Posters Username"; // This should be changed to fetch the username with the use of the UserClaim.
+            viewModel.BattleReport.PostersUsername = "Poster"; // This should be changed to fetch the username with the use of the UserClaim.
             return View(viewModel);
         }
 
@@ -160,10 +160,56 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             if (battleReport == null)
                 return NotFound();
 
-            string username = battleReport.OpponentsUsername;
             battleReport.ConfirmedByOpponent = true;
+
+            ApplicationUser poster = await _db.ApplicationUsers.Where(au => au.UserName == battleReport.PostersUsername).FirstAsync();
+            poster.NumberOfGamesPlayed++;
+            if (battleReport.WinnersUsername == poster.UserName)
+                poster.NumberOfGamesWon++;
+            else
+                poster.NumberOfGamesLost++;
+            poster.Winrate = (float)poster.NumberOfGamesWon / (float)poster.NumberOfGamesPlayed;
+
+            ApplicationUser opponent = await _db.ApplicationUsers.Where(au => au.UserName == battleReport.OpponentsUsername).FirstAsync();
+            opponent.NumberOfGamesPlayed++;
+            if (battleReport.WinnersUsername == opponent.UserName)
+                opponent.NumberOfGamesWon++;
+            else
+                opponent.NumberOfGamesLost++;
+            opponent.Winrate = (float)opponent.NumberOfGamesWon / (float)opponent.NumberOfGamesPlayed;
+
+            Faction winningFaction = await _db.Factions.Where(f => f.Name == battleReport.WinningFaction).FirstAsync();
+            winningFaction.NumberOfGamesPlayed++;
+            winningFaction.NumberOfGamesWon++;
+            winningFaction.Winrate = (float)winningFaction.NumberOfGamesWon / (float)winningFaction.NumberOfGamesPlayed;
+
+            Faction losingFaction = await _db.Factions.Where(f => f.Name == battleReport.LosingFaction).FirstAsync();
+            losingFaction.NumberOfGamesPlayed++;
+            losingFaction.NumberOfGamesLost++;
+            losingFaction.Winrate = (float)losingFaction.NumberOfGamesWon / (float)losingFaction.NumberOfGamesPlayed;
+
+            Theme winningTheme = await _db.Themes.Where(t => t.Name == battleReport.WinningTheme).FirstAsync();
+            winningTheme.NumberOfGamesPlayed++;
+            winningTheme.NumberOfGamesWon++;
+            winningTheme.Winrate = (float)winningTheme.NumberOfGamesWon / (float)winningTheme.NumberOfGamesPlayed;
+
+            Theme losingTheme = await _db.Themes.Where(t => t.Name == battleReport.LosingTheme).FirstAsync();
+            losingTheme.NumberOfGamesPlayed++;
+            losingTheme.NumberOfGamesLost++;
+            losingTheme.Winrate = (float)losingTheme.NumberOfGamesWon / (float)losingTheme.NumberOfGamesPlayed;
+
+            Caster winningCaster = await _db.Casters.Where(c => c.Name == battleReport.WinningCaster).FirstAsync();
+            winningCaster.NumberOfGamesPlayed++;
+            winningCaster.NumberOfGamesWon++;
+            winningCaster.Winrate = (float)winningCaster.NumberOfGamesWon / (float)winningCaster.NumberOfGamesPlayed;
+
+            Caster losingCaster = await _db.Casters.Where(c => c.Name == battleReport.LosingCaster).FirstAsync();
+            losingCaster.NumberOfGamesPlayed++;
+            losingCaster.NumberOfGamesLost++;
+            losingCaster.Winrate = (float)losingCaster.NumberOfGamesWon / (float)losingCaster.NumberOfGamesPlayed;
+
             await _db.SaveChangesAsync();
-            return RedirectToAction(nameof(UnconfirmedBattleReports), new { id = username });
+            return RedirectToAction(nameof(UnconfirmedBattleReports), new { id = battleReport.OpponentsUsername });
         }
 
         public async Task<IActionResult> DeleteUnconfirmedView(int? id)
