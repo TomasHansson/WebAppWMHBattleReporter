@@ -1,8 +1,129 @@
 ﻿@model DashBoardViewModel
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Dashboard";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h1>Index</h1>
-
+<div class="border applicationFormGroup">
+    <h2 class="text-info">Dashboard</h2>
+    <br />
+    <h5 class="text-info">Top 10 Factions</h5>
+    <div>
+        @if (Model.Top10Factions.Count() == 0)
+        {
+            <p>There are no factions in the database.</p>
+        }
+        else
+        {
+            <table class="table table-striped border">
+                <tr class="table-secondary">
+                    <th>#</th>
+                    <th>Faction</th>
+                    <th>Lost</th>
+                    <th>Won</th>
+                    <th>Played</th>
+                    <th>Winrate</th>
+                    <th>Details</th>
+                </tr>
+                @{ int counter = 1; }
+                @foreach (Faction faction in Model.Top10Factions)
+                {
+                    <tr>
+                        <td>@counter</td>
+                        <td>@faction.Name</td>
+                        <td>@faction.NumberOfGamesLost</td>
+                        <td>@faction.NumberOfGamesWon</td>
+                        <td>@faction.NumberOfGamesPlayed</td>
+                        <td>@faction.Winrate</td>
+                        <td>
+                            <a class="btn btn-success text-white" asp-action="Details" asp-route-Id="@Model">
+                                <i class="fas fa-list-alt"></i>
+                            </a>
+                        </td>
+                        @{ counter++; }
+                    </tr>
+                }
+            </table>
+        }
+    </div>
+    <br />
+    <h5 class="text-info">Top 10 Themes</h5>
+    <div>
+        @if (Model.Top10Themes.Count() == 0)
+        {
+            <p>There are no themes in the database.</p>
+        }
+        else
+        {
+            <table class="table table-striped border">
+                <tr class="table-secondary">
+                    <th>#</th>
+                    <th>Theme</th>
+                    <th>Lost</th>
+                    <th>Won</th>
+                    <th>Played</th>
+                    <th>Winrate</th>
+                    <th>Details</th>
+                </tr>
+                @{ int counter = 1; }
+                @foreach (Theme theme in Model.Top10Themes)
+                {
+                    <tr>
+                        <td>@counter</td>
+                        <td>@theme.Name</td>
+                        <td>@theme.NumberOfGamesLost</td>
+                        <td>@theme.NumberOfGamesWon</td>
+                        <td>@theme.NumberOfGamesPlayed</td>
+                        <td>@theme.Winrate</td>
+                        <td>
+                            <a class="btn btn-success text-white" asp-action="Details" asp-route-Id="@Model">
+                                <i class="fas fa-list-alt"></i>
+                            </a>
+                        </td>
+                        @{ counter++; }
+                    </tr>
+                }
+            </table>
+        }
+    </div>
+    <br />
+    <h5 class="text-info">Top 10 Casters</h5>
+    <div>
+        @if (Model.Top10Factions.Count() == 0)
+        {
+            <p>There are no factions in the database.</p>
+        }
+        else
+        {
+            <table class="table table-striped border">
+                <tr class="table-secondary">
+                    <th>#</th>
+                    <th>Faction</th>
+                    <th>Lost</th>
+                    <th>Won</th>
+                    <th>Played</th>
+                    <th>Winrate</th>
+                    <th>Details</th>
+                </tr>
+                @{ int counter = 1; }
+                @foreach (Faction faction in Model.Top10Factions)
+                {
+                    <tr>
+                        <td>@counter</td>
+                        <td>@faction.Name</td>
+                        <td>@faction.NumberOfGamesLost</td>
+                        <td>@faction.NumberOfGamesWon</td>
+                        <td>@faction.NumberOfGamesPlayed</td>
+                        <td>@faction.Winrate</td>
+                        <td>
+                            <a class="btn btn-success text-white" asp-action="Details" asp-route-Id="@Model">
+                                <i class="fas fa-list-alt"></i>
+                            </a>
+                        </td>
+                        @{ counter++; }
+                    </tr>
+                }
+            </table>
+        }
+    </div>
+</div>
