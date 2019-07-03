@@ -9,6 +9,7 @@ namespace WebAppWMHBattleReporter.Utility
     {
         public const string Administrator = "Administrator";
         public const string EndUser = "EndUser";
+        public const string AllRegions = "All Regions";
         public const string Africa = "Africa";
         public const string Asia = "Asia";
         public const string Europe = "Europe";
