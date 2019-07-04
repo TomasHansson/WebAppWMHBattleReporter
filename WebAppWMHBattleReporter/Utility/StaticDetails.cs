@@ -17,6 +17,7 @@ namespace WebAppWMHBattleReporter.Utility
         public const string Oceania = "Oceania";
         public const string SouthAmerica = "South America";
         public static readonly List<string> Regions = new List<string>{ Africa, Asia, Europe, NorthAmerica, Oceania, SouthAmerica };
+        public static readonly List<string> AllAndRegions = new List<string>{ AllRegions, Africa, Asia, Europe, NorthAmerica, Oceania, SouthAmerica };
         public const int GameSize35 = 35; 
         public const int GameSize50 = 50; 
         public const int GameSize75 = 75; 
