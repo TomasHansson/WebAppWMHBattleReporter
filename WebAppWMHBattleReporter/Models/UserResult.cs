@@ -7,6 +7,7 @@ namespace WebAppWMHBattleReporter.Models
 {
     public class UserResult
     {
+        public int ListPosition { get; set; }
         public string Username { get; set; }
         public int NumberOfGamesPlayed { get; set; }
         public int NumberOfGamesWon { get; set; }

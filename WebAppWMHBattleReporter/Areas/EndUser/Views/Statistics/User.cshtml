@@ -1,0 +1,124 @@
+﻿@model UserResultViewModel
+@{
+    ViewData["Title"] = "User";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="border applicationFormGroup">
+    <h2 class="text-info">User Details</h2>
+    <br />
+    <div class="row">
+        <div class="col-4-col-lg-3">
+            <label asp-for="@Model.Username">Insert Username: </label>
+            <input id="chosenUsername" asp-for="@Model.Username" class="form-control" />
+            <a id="loadUserDetails" class="btn btn-primary form-control mt-1" asp-action="User" asp-route-id="@Model.Username">Load Details</a>
+        </div>
+    </div>
+    <br />
+    @if (!string.IsNullOrWhiteSpace(Model.StatusMessage))
+    {
+        <p>@Model.StatusMessage</p>
+    }
+    else
+    {
+        @if (Model.Factions.Count() == 0)
+        {
+            <p>The user hasn't played any games.</p>
+        }
+        else
+        {
+            <h5 class="text-info">Statistics</h5>
+            <hr />
+            <partial name="_UserDetails" model="@Model.UserResult" />
+            <hr />
+            <h5 class="text-info">Played Factions</h5>
+            <div>
+                <table class="table table-striped border">
+                    <tr class="table-secondary">
+                        <th>#</th>
+                        <th>Faction</th>
+                        <th>Lost</th>
+                        <th>Won</th>
+                        <th>Played</th>
+                        <th>Winrate</th>
+                    </tr>
+                    @{ int counter = 1; }
+                    @foreach (Faction faction in Model.Factions)
+                    {
+                        <tr>
+                            <td>@counter</td>
+                            <td>@faction.Name</td>
+                            <td>@faction.NumberOfGamesLost</td>
+                            <td>@faction.NumberOfGamesWon</td>
+                            <td>@faction.NumberOfGamesPlayed</td>
+                            <td>@faction.Winrate.ToString("P1")</td>
+                            @{ counter++; }
+                        </tr>
+                    }
+                </table>
+            </div>
+            <br />
+            <h5 class="text-info">Played Themes</h5>
+            <div>
+                <table class="table table-striped border">
+                    <tr class="table-secondary">
+                        <th>#</th>
+                        <th>Theme</th>
+                        <th>Lost</th>
+                        <th>Won</th>
+                        <th>Played</th>
+                        <th>Winrate</th>
+                    </tr>
+                    @{ counter = 1; }
+                    @foreach (Theme theme in Model.Themes)
+                    {
+                        <tr>
+                            <td>@counter</td>
+                            <td>@theme.Name</td>
+                            <td>@theme.NumberOfGamesLost</td>
+                            <td>@theme.NumberOfGamesWon</td>
+                            <td>@theme.NumberOfGamesPlayed</td>
+                            <td>@theme.Winrate.ToString("P1")</td>
+                            @{ counter++; }
+                        </tr>
+                    }
+                </table>
+            </div>
+            <br />
+            <h5 class="text-info">Played Casters</h5>
+            <div>
+                <table class="table table-striped border">
+                    <tr class="table-secondary">
+                        <th>#</th>
+                        <th>Faction</th>
+                        <th>Lost</th>
+                        <th>Won</th>
+                        <th>Played</th>
+                        <th>Winrate</th>
+                    </tr>
+                    @{ counter = 1; }
+                    @foreach (Faction faction in Model.Factions)
+                    {
+                        <tr>
+                            <td>@counter</td>
+                            <td>@faction.Name</td>
+                            <td>@faction.NumberOfGamesLost</td>
+                            <td>@faction.NumberOfGamesWon</td>
+                            <td>@faction.NumberOfGamesPlayed</td>
+                            <td>@faction.Winrate.ToString("P1")</td>
+                            @{ counter++; }
+                        </tr>
+                    }
+                </table>
+            </div>
+        }
+    }
+</div>
+
+@section Scripts {
+    <script>
+        $("#chosenUsername").change(function () {
+            $("#loadUserDetails").attr('href', this.value);
+        });
+    </script>
+}

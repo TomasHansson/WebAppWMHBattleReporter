@@ -1,0 +1,51 @@
+﻿@model UserResult
+
+<div class="row">
+    <div class="col-12 text-center">
+        @Model.Username
+    </div>
+</div>
+<div class="row">
+    <div class="offset-1 col-2">
+        Games Won: @Model.NumberOfGamesWon
+    </div>
+    <div class="offset-1 col-2">
+        Games Lost: @Model.NumberOfGamesLost
+    </div>
+    <div class="offset-1 col-2">
+        Games Played: @Model.NumberOfGamesPlayed
+    </div>
+</div>
+<div class="row">
+    <div class="col-1">
+        @if (Model.ListPosition != 0)
+        {
+            @Model.ListPosition
+        }
+    </div>
+    <div class="col-5">
+        Most Played Faction: @Model.MostPlayedFaction (@Model.GamesWithMostPlayedFaction)
+    </div>
+    <div class="offset-1 col-4">
+        Best Faction: @Model.BestPerformingFaction (@Model.WinrateBestPerformingFaction.ToString("P1"))
+    </div>
+    <div class="col-1">
+        @Model.Winrate.ToString("P1")
+    </div>
+</div>
+<div class="row">
+    <div class="offset-1 col-5">
+        Most Played Theme: @Model.MostPlayedTheme (@Model.GamesWithMostPlayedTheme)
+    </div>
+    <div class="offset-1 col-4">
+        Best Theme: @Model.BestPerformingTheme (@Model.WinrateBestPerformingTheme.ToString("P1"))
+    </div>
+</div>
+<div class="row">
+    <div class="offset-1 col-5">
+        Most Played Caster: @Model.MostPlayedCaster (@Model.GamesWithMostPlayedCaster)
+    </div>
+    <div class="offset-1 col-4">
+        Best Caster: @Model.BestPerformingCaster (@Model.WinrateBestPerformingCaster.ToString("P1"))
+    </div>
+</div>

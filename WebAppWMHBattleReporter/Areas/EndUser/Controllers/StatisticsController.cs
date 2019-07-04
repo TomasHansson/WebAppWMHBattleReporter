@@ -34,7 +34,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
 
         public async Task<IActionResult> Users(string id)
         {
-            if (string.IsNullOrWhiteSpace(id))
+            if (string.IsNullOrWhiteSpace(id) || !StaticDetails.AllAndRegions.Contains(id))
                 id = StaticDetails.AllRegions;
             UserResultsViewModel viewModel = new UserResultsViewModel()
             {
@@ -42,6 +42,185 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
                 UserResults = await UserResults(id)
             };
             return View(viewModel);
+        }
+
+        public new async Task<IActionResult> User(string id)
+        {
+            if (!await _db.ApplicationUsers.AnyAsync(au => au.UserName == id) || string.IsNullOrWhiteSpace(id))
+            {
+                UserResultViewModel errorMessageViewModel = new UserResultViewModel()
+                {
+                    Username = id,
+                    StatusMessage = "You must specify the name of a registered user.",
+                    UserResult = new UserResult(),
+                    Factions = new List<Faction>(),
+                    Themes = new List<Theme>(),
+                    Casters = new List<Caster>()
+                };
+                return View(errorMessageViewModel);
+            }
+
+            ApplicationUser user = await _db.ApplicationUsers.FirstAsync(au => au.UserName == id);
+            List<BattleReport> battleReports = await _db.BattleReports.Where(br => br.PostersUsername == user.UserName || br.OpponentsUsername == user.UserName).ToListAsync();
+            UserResultViewModel viewModel = new UserResultViewModel()
+            {
+                Username = user.UserName,
+                StatusMessage = string.Empty,
+                UserResult = CreateUserResult(user, battleReports),
+                Factions = FactionResults(user.UserName, battleReports),
+                Themes = ThemeResults(user.UserName, battleReports),
+                Casters = CasterResults(user.UserName, battleReports)
+            };
+            return View(viewModel);
+        }
+
+        private List<Faction> FactionResults(string username, List<BattleReport> battleReports)
+        {
+            List<Faction> playedFactions = new List<Faction>();
+            foreach (BattleReport battleReport in battleReports)
+            {
+                string factionName = battleReport.PostersUsername == username ? battleReport.PostersFaction : battleReport.OpponentsFaction;
+                if (playedFactions.Any(f => f.Name == factionName))
+                {
+                    Faction faction = playedFactions.Find(f => f.Name == factionName);
+                    faction.NumberOfGamesPlayed++;
+                    if (battleReport.WinningFaction == faction.Name)
+                        faction.NumberOfGamesWon++;
+                    else
+                        faction.NumberOfGamesLost++;
+                    faction.Winrate = (float)faction.NumberOfGamesWon / (float)faction.NumberOfGamesPlayed;
+                }
+                else
+                {
+                    Faction faction = new Faction()
+                    {
+                        Name = factionName,
+                        NumberOfGamesPlayed = 1,
+                        NumberOfGamesLost = battleReport.WinnersUsername == username ? 0 : 1,
+                        NumberOfGamesWon = battleReport.WinnersUsername == username ? 1 : 0
+                    };
+                    faction.Winrate = (float)faction.NumberOfGamesWon / (float)faction.NumberOfGamesPlayed;
+                    playedFactions.Add(faction);
+                }
+            }
+            return playedFactions;
+        }
+
+        private List<Theme> ThemeResults(string username, List<BattleReport> battleReports)
+        {
+            List<Theme> playedThemes = new List<Theme>();
+            foreach (BattleReport battleReport in battleReports)
+            {
+                string themeName = battleReport.PostersUsername == username ? battleReport.PostersTheme : battleReport.OpponentsTheme;
+                if (playedThemes.Any(f => f.Name == themeName))
+                {
+                    Theme theme = playedThemes.Find(t => t.Name == themeName);
+                    theme.NumberOfGamesPlayed++;
+                    if (battleReport.WinningTheme == theme.Name)
+                        theme.NumberOfGamesWon++;
+                    else
+                        theme.NumberOfGamesLost++;
+                    theme.Winrate = (float)theme.NumberOfGamesWon / (float)theme.NumberOfGamesPlayed;
+                }
+                else
+                {
+                    Theme theme = new Theme()
+                    {
+                        Name = themeName,
+                        NumberOfGamesPlayed = 1,
+                        NumberOfGamesLost = battleReport.WinnersUsername == username ? 0 : 1,
+                        NumberOfGamesWon = battleReport.WinnersUsername == username ? 1 : 0
+                    };
+                    theme.Winrate = (float)theme.NumberOfGamesWon / (float)theme.NumberOfGamesPlayed;
+                    playedThemes.Add(theme);
+                }
+            }
+            return playedThemes;
+        }
+
+        private List<Caster> CasterResults(string username, List<BattleReport> battleReports)
+        {
+            List<Caster> playedCasters = new List<Caster>();
+            foreach (BattleReport battleReport in battleReports)
+            {
+                string casterName = battleReport.PostersUsername == username ? battleReport.PostersCaster : battleReport.OpponentsCaster;
+                if (playedCasters.Any(c => c.Name == casterName))
+                {
+                    Caster caster = playedCasters.Find(c => c.Name == casterName);
+                    caster.NumberOfGamesPlayed++;
+                    if (battleReport.WinningCaster == caster.Name)
+                        caster.NumberOfGamesWon++;
+                    else
+                        caster.NumberOfGamesLost++;
+                    caster.Winrate = (float)caster.NumberOfGamesWon / (float)caster.NumberOfGamesPlayed;
+                }
+                else
+                {
+                    Caster caster = new Caster()
+                    {
+                        Name = casterName,
+                        NumberOfGamesPlayed = 1,
+                        NumberOfGamesLost = battleReport.WinnersUsername == username ? 0 : 1,
+                        NumberOfGamesWon = battleReport.WinnersUsername == username ? 1 : 0
+                    };
+                    caster.Winrate = (float)caster.NumberOfGamesWon / (float)caster.NumberOfGamesPlayed;
+                    playedCasters.Add(caster);
+                }
+            }
+            return playedCasters;
+        }
+
+        private UserResult CreateUserResult(ApplicationUser user, List<BattleReport> battleReports)
+        {
+            Dictionary<string, int> gamesPlayedWithEachFaction = new Dictionary<string, int>();
+            Dictionary<string, int> gamesPlayedWithEachTheme = new Dictionary<string, int>();
+            Dictionary<string, int> gamesPlayedWithEachCaster = new Dictionary<string, int>();
+
+            Dictionary<string, int> gamesWonWithEachFaction = new Dictionary<string, int>();
+            Dictionary<string, int> gamesWonWithEachTheme = new Dictionary<string, int>();
+            Dictionary<string, int> gamesWonWithEachCaster = new Dictionary<string, int>();
+
+            CollectBattleReportsData(user, battleReports, gamesPlayedWithEachFaction, gamesPlayedWithEachTheme, gamesPlayedWithEachCaster,
+                                     gamesWonWithEachFaction, gamesWonWithEachTheme, gamesWonWithEachCaster);
+
+            string mostPlayedFaction = FindTopResult(gamesPlayedWithEachFaction, out int gamesWithMostPlayedFaction);
+            string mostPlayedTheme = FindTopResult(gamesPlayedWithEachTheme, out int gamesWithMostPlayedTheme);
+            string mostPlayedCaster = FindTopResult(gamesPlayedWithEachCaster, out int gamesWithMostPlayedCaster);
+
+            Dictionary<string, float> winrateWithEachFaction = new Dictionary<string, float>();
+            Dictionary<string, float> winrateWithEachTheme = new Dictionary<string, float>();
+            Dictionary<string, float> winrateWithEachCaster = new Dictionary<string, float>();
+
+            FindWinRate(gamesPlayedWithEachFaction, gamesWonWithEachFaction, winrateWithEachFaction);
+            FindWinRate(gamesPlayedWithEachTheme, gamesWonWithEachTheme, winrateWithEachTheme);
+            FindWinRate(gamesPlayedWithEachCaster, gamesWonWithEachCaster, winrateWithEachCaster);
+
+            string bestPerformingFaction = FindTopResult(winrateWithEachFaction, out float winrateBestPerformingFaction);
+            string bestPerformingTheme = FindTopResult(winrateWithEachTheme, out float winrateBestPerformingTheme);
+            string bestPerformingCaster = FindTopResult(winrateWithEachCaster, out float winrateBestPerformingCaster);
+
+            UserResult userResult = new UserResult()
+            {
+                Username = user.UserName,
+                NumberOfGamesPlayed = user.NumberOfGamesPlayed,
+                NumberOfGamesWon = user.NumberOfGamesWon,
+                NumberOfGamesLost = user.NumberOfGamesLost,
+                Winrate = user.Winrate,
+                MostPlayedFaction = mostPlayedFaction,
+                GamesWithMostPlayedFaction = gamesWithMostPlayedFaction,
+                MostPlayedTheme = mostPlayedTheme,
+                GamesWithMostPlayedTheme = gamesWithMostPlayedTheme,
+                MostPlayedCaster = mostPlayedCaster,
+                GamesWithMostPlayedCaster = gamesWithMostPlayedCaster,
+                BestPerformingFaction = bestPerformingFaction,
+                WinrateBestPerformingFaction = winrateBestPerformingFaction,
+                BestPerformingTheme = bestPerformingTheme,
+                WinrateBestPerformingTheme = winrateBestPerformingTheme,
+                BestPerformingCaster = bestPerformingCaster,
+                WinrateBestPerformingCaster = winrateBestPerformingCaster
+            };
+
+            return userResult;
         }
 
         private async Task<List<UserResult>> UserResults(string region)
@@ -53,57 +232,8 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
 
             foreach (ApplicationUser user in users)
             {
-                Dictionary<string, int> gamesPlayedWithEachFaction = new Dictionary<string, int>();
-                Dictionary<string, int> gamesPlayedWithEachTheme = new Dictionary<string, int>();
-                Dictionary<string, int> gamesPlayedWithEachCaster = new Dictionary<string, int>();
-
-                Dictionary<string, int> gamesWonWithEachFaction = new Dictionary<string, int>();
-                Dictionary<string, int> gamesWonWithEachTheme = new Dictionary<string, int>();
-                Dictionary<string, int> gamesWonWithEachCaster = new Dictionary<string, int>();
-
                 List<BattleReport> usersBattleReports = await _db.BattleReports.Where(br => br.PostersUsername == user.UserName || br.OpponentsUsername == user.UserName).ToListAsync();
-
-                CollectBattleReportsData(user, usersBattleReports, gamesPlayedWithEachFaction, gamesPlayedWithEachTheme, gamesPlayedWithEachCaster,
-                                         gamesWonWithEachFaction, gamesWonWithEachTheme, gamesWonWithEachCaster);
-
-                string mostPlayedFaction = FindTopResult(gamesPlayedWithEachFaction, out int gamesWithMostPlayedFaction);
-                string mostPlayedTheme = FindTopResult(gamesPlayedWithEachTheme, out int gamesWithMostPlayedTheme);
-                string mostPlayedCaster = FindTopResult(gamesPlayedWithEachCaster, out int gamesWithMostPlayedCaster);
-
-                Dictionary<string, float> winrateWithEachFaction = new Dictionary<string, float>();
-                Dictionary<string, float> winrateWithEachTheme = new Dictionary<string, float>();
-                Dictionary<string, float> winrateWithEachCaster = new Dictionary<string, float>();
-
-                FindWinRate(gamesPlayedWithEachFaction, gamesWonWithEachFaction, winrateWithEachFaction);
-                FindWinRate(gamesPlayedWithEachTheme, gamesWonWithEachTheme, winrateWithEachTheme);
-                FindWinRate(gamesPlayedWithEachCaster, gamesWonWithEachCaster, winrateWithEachCaster);
-
-                string bestPerformingFaction = FindTopResult(winrateWithEachFaction, out float winrateBestPerformingFaction);
-                string bestPerformingTheme = FindTopResult(winrateWithEachTheme, out float winrateBestPerformingTheme);
-                string bestPerformingCaster = FindTopResult(winrateWithEachCaster, out float winrateBestPerformingCaster);
-
-                UserResult usersResult = new UserResult()
-                {
-                    Username = user.UserName,
-                    NumberOfGamesPlayed = user.NumberOfGamesPlayed,
-                    NumberOfGamesWon = user.NumberOfGamesWon,
-                    NumberOfGamesLost = user.NumberOfGamesLost,
-                    Winrate = user.Winrate,
-                    MostPlayedFaction = mostPlayedFaction,
-                    GamesWithMostPlayedFaction = gamesWithMostPlayedFaction,
-                    MostPlayedTheme = mostPlayedTheme,
-                    GamesWithMostPlayedTheme = gamesWithMostPlayedTheme,
-                    MostPlayedCaster = mostPlayedCaster,
-                    GamesWithMostPlayedCaster = gamesWithMostPlayedCaster,
-                    BestPerformingFaction = bestPerformingFaction,
-                    WinrateBestPerformingFaction = winrateBestPerformingFaction,
-                    BestPerformingTheme = bestPerformingTheme,
-                    WinrateBestPerformingTheme = winrateBestPerformingTheme,
-                    BestPerformingCaster = bestPerformingCaster,
-                    WinrateBestPerformingCaster = winrateBestPerformingCaster
-                };
-
-                userResults.Add(usersResult);
+                userResults.Add(CreateUserResult(user, usersBattleReports));
             }
 
             return userResults;

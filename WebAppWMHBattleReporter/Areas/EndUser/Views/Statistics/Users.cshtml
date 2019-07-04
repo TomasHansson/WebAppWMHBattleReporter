@@ -16,7 +16,6 @@
         </div>
     </div>
     <br />
-    @{ int counter = 1; }
     @if (Model.UserResults.Count() == 0)
     {
         @if (Model.Region == StaticDetails.AllRegions)
@@ -31,56 +30,12 @@
     else
     {
         <hr />
-
+        int counter = 1;
         @foreach (UserResult userResult in Model.UserResults)
         {
-            <div class="row">
-                <div class="col-12 text-center">
-                    @userResult.Username
-                </div>
-            </div>
-            <div class="row">
-                <div class="offset-1 col-2">
-                    Games Won: @userResult.NumberOfGamesWon
-                </div>
-                <div class="offset-1 col-2">
-                    Games Lost: @userResult.NumberOfGamesLost
-                </div>
-                <div class="offset-1 col-2">
-                    Games Played: @userResult.NumberOfGamesPlayed
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-1">
-                    @counter
-                    @{ counter++; }
-                </div>
-                <div class="col-5">
-                    Most Played Faction: @userResult.MostPlayedFaction (@userResult.GamesWithMostPlayedFaction)
-                </div>
-                <div class="offset-1 col-4">
-                    Best Faction: @userResult.BestPerformingFaction (@userResult.WinrateBestPerformingFaction.ToString("P1"))
-                </div>
-                <div class="col-1">
-                    @userResult.Winrate.ToString("P1")
-                </div>
-            </div>
-            <div class="row">
-                <div class="offset-1 col-5">
-                    Most Played Theme: @userResult.MostPlayedTheme (@userResult.GamesWithMostPlayedTheme)
-                </div>
-                <div class="offset-1 col-4">
-                    Best Theme: @userResult.BestPerformingTheme (@userResult.WinrateBestPerformingTheme.ToString("P1"))
-                </div>
-            </div>
-            <div class="row">
-                <div class="offset-1 col-5">
-                    Most Played Caster: @userResult.MostPlayedCaster (@userResult.GamesWithMostPlayedCaster)
-                </div>
-                <div class="offset-1 col-4">
-                    Best Caster: @userResult.BestPerformingCaster (@userResult.WinrateBestPerformingCaster.ToString("P1"))
-                </div>
-            </div>
+            userResult.ListPosition = counter;
+            <partial name="_UserDetails" model="@userResult" />
+            counter = counter + 1;
             <hr />
         }
     }
