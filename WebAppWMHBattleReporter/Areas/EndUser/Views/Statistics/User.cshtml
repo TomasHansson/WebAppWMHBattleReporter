@@ -11,7 +11,7 @@
         <div class="col-4-col-lg-3">
             <label asp-for="@Model.Username">Insert Username: </label>
             <input id="chosenUsername" asp-for="@Model.Username" class="form-control" />
-            <a id="loadUserDetails" class="btn btn-primary form-control mt-1" asp-action="User" asp-route-id="@Model.Username">Load Details</a>
+            <a id="loadUserDetails" class="btn btn-primary form-control mt-1" href="/EndUser/Statistics/User">Load Details</a>
         </div>
     </div>
     <br />
@@ -111,6 +111,163 @@
                     }
                 </table>
             </div>
+            <h5 class="text-info">Game Sizes</h5>
+            <div>
+                <table class="table table-striped border">
+                    <tr class="table-secondary">
+                        <th>#</th>
+                        <th>Game Size</th>
+                        <th>Lost</th>
+                        <th>Won</th>
+                        <th>Played</th>
+                        <th>Winrate</th>
+                    </tr>
+                    @{ counter = 1; }
+                    @foreach (EntityResult gameSize in Model.GameSizes)
+                    {
+                        <tr>
+                            <td>@counter</td>
+                            <td>@gameSize.Name</td>
+                            <td>@gameSize.NumberOfGamesLost</td>
+                            <td>@gameSize.NumberOfGamesWon</td>
+                            <td>@gameSize.NumberOfGamesPlayed</td>
+                            <td>@gameSize.Winrate.ToString("P1")</td>
+                            @{ counter++; }
+                        </tr>
+                    }
+                </table>
+            </div>
+            <h5 class="text-info">Scenarios</h5>
+            <div>
+                <table class="table table-striped border">
+                    <tr class="table-secondary">
+                        <th>#</th>
+                        <th>Scenario</th>
+                        <th>Lost</th>
+                        <th>Won</th>
+                        <th>Played</th>
+                        <th>Winrate</th>
+                    </tr>
+                    @{ counter = 1; }
+                    @foreach (EntityResult scenario in Model.Scenarios)
+                    {
+                        <tr>
+                            <td>@counter</td>
+                            <td>@scenario.Name</td>
+                            <td>@scenario.NumberOfGamesLost</td>
+                            <td>@scenario.NumberOfGamesWon</td>
+                            <td>@scenario.NumberOfGamesPlayed</td>
+                            <td>@scenario.Winrate.ToString("P1")</td>
+                            @{ counter++; }
+                        </tr>
+                    }
+                </table>
+            </div>
+            <h5 class="text-info">End Conditions</h5>
+            <div>
+                <table class="table table-striped border">
+                    <tr class="table-secondary">
+                        <th>#</th>
+                        <th>End Condition</th>
+                        <th>Lost</th>
+                        <th>Won</th>
+                        <th>Played</th>
+                        <th>Winrate</th>
+                    </tr>
+                    @{ counter = 1; }
+                    @foreach (EntityResult endCondition in Model.EndConditions)
+                    {
+                        <tr>
+                            <td>@counter</td>
+                            <td>@endCondition.Name</td>
+                            <td>@endCondition.NumberOfGamesLost</td>
+                            <td>@endCondition.NumberOfGamesWon</td>
+                            <td>@endCondition.NumberOfGamesPlayed</td>
+                            <td>@endCondition.Winrate.ToString("P1")</td>
+                            @{ counter++; }
+                        </tr>
+                    }
+                </table>
+            </div>
+            <h5 class="text-info">Versus Factions</h5>
+            <div>
+                <table class="table table-striped border">
+                    <tr class="table-secondary">
+                        <th>#</th>
+                        <th>Enemy Faction</th>
+                        <th>Lost</th>
+                        <th>Won</th>
+                        <th>Played</th>
+                        <th>Winrate</th>
+                    </tr>
+                    @{ counter = 1; }
+                    @foreach (EntityResult enemyFaction in Model.VersusFactions)
+                    {
+                        <tr>
+                            <td>@counter</td>
+                            <td>@enemyFaction.Name</td>
+                            <td>@enemyFaction.NumberOfGamesLost</td>
+                            <td>@enemyFaction.NumberOfGamesWon</td>
+                            <td>@enemyFaction.NumberOfGamesPlayed</td>
+                            <td>@enemyFaction.Winrate.ToString("P1")</td>
+                            @{ counter++; }
+                        </tr>
+                    }
+                </table>
+            </div>
+            <h5 class="text-info">Versus Themes</h5>
+            <div>
+                <table class="table table-striped border">
+                    <tr class="table-secondary">
+                        <th>#</th>
+                        <th>Enemy Theme</th>
+                        <th>Lost</th>
+                        <th>Won</th>
+                        <th>Played</th>
+                        <th>Winrate</th>
+                    </tr>
+                    @{ counter = 1; }
+                    @foreach (EntityResult enemyTheme in Model.VersusThemes)
+                    {
+                        <tr>
+                            <td>@counter</td>
+                            <td>@enemyTheme.Name</td>
+                            <td>@enemyTheme.NumberOfGamesLost</td>
+                            <td>@enemyTheme.NumberOfGamesWon</td>
+                            <td>@enemyTheme.NumberOfGamesPlayed</td>
+                            <td>@enemyTheme.Winrate.ToString("P1")</td>
+                            @{ counter++; }
+                        </tr>
+                    }
+                </table>
+            </div>
+            <h5 class="text-info">Versus Casters</h5>
+            <div>
+                <table class="table table-striped border">
+                    <tr class="table-secondary">
+                        <th>#</th>
+                        <th>Enemy Caster</th>
+                        <th>Lost</th>
+                        <th>Won</th>
+                        <th>Played</th>
+                        <th>Winrate</th>
+                    </tr>
+                    @{ counter = 1; }
+                    @foreach (EntityResult enemyCaster in Model.VersusCasters)
+                    {
+                    <tr>
+                        <td>@counter</td>
+                        <td>@enemyCaster.Name</td>
+                        <td>@enemyCaster.NumberOfGamesLost</td>
+                        <td>@enemyCaster.NumberOfGamesWon</td>
+                        <td>@enemyCaster.NumberOfGamesPlayed</td>
+                        Admin
+                        <td>@enemyCaster.Winrate.ToString("P1")</td>
+                        @{ counter++; }
+                    </tr>
+                    }
+                </table>
+            </div>
         }
     }
 </div>
@@ -118,7 +275,7 @@
 @section Scripts {
     <script>
         $("#chosenUsername").change(function () {
-            $("#loadUserDetails").attr('href', this.value);
+            $("#loadUserDetails").attr('href', '/EndUser/Statistics/User/' + this.value);
         });
     </script>
 }

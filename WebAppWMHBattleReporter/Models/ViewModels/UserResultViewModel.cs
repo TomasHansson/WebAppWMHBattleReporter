@@ -13,5 +13,11 @@ namespace WebAppWMHBattleReporter.Models.ViewModels
         public List<Faction> Factions { get; set; }
         public List<Theme> Themes { get; set; }
         public List<Caster> Casters { get; set; }
+        public List<EntityResult> GameSizes { get; set; }
+        public List<EntityResult> Scenarios { get; set; }
+        public List<EntityResult> EndConditions { get; set; }
+        public List<EntityResult> VersusFactions { get; set; }
+        public List<EntityResult> VersusThemes { get; set; }
+        public List<EntityResult> VersusCasters { get; set; }
     }
 }

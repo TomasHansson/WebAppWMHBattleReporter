@@ -12,7 +12,7 @@
         <div class="col-4-col-lg-3">
             <label asp-for="@Model.Region">Select Region: </label>
             <select id="selectRegion" asp-for="@Model.Region" asp-items="StaticDetails.AllAndRegions.Select(x => new SelectListItem() { Value = x, Text = x }).ToList()" class="form-control"></select>
-            <a id="loadRegion" class="btn btn-primary form-control mt-1" asp-action="Users" asp-route-id="@Model.Region">Load Results</a>
+            <a id="loadRegion" class="btn btn-primary form-control mt-1" href="/EndUser/Statistics/Users">Load Results</a>
         </div>
     </div>
     <br />
@@ -44,7 +44,7 @@
 @section Scripts {
     <script>
         $("#selectRegion").change(function () {
-            $("#loadRegion").attr('href', this.value);
+            $("#loadRegion").attr('href', '/EndUser/Statistics/Users/' + this.value);
         });
     </script>
 }

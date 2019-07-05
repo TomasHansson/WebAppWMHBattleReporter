@@ -69,9 +69,207 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
                 UserResult = CreateUserResult(user, battleReports),
                 Factions = FactionResults(user.UserName, battleReports),
                 Themes = ThemeResults(user.UserName, battleReports),
-                Casters = CasterResults(user.UserName, battleReports)
+                Casters = CasterResults(user.UserName, battleReports),
+                GameSizes = GameSizeResults(user.UserName, battleReports),
+                Scenarios = ScenarioResults(user.UserName, battleReports),
+                EndConditions = EndConditionResults(user.UserName, battleReports),
+                VersusFactions = VersusFactionResults(user.UserName, battleReports),
+                VersusThemes = VersusThemesResults(user.UserName, battleReports),
+                VersusCasters = VersusCasterResults(user.UserName, battleReports)
             };
             return View(viewModel);
+        }
+
+        private List<EntityResult> GameSizeResults(string username, List<BattleReport> battleReports)
+        {
+            List<EntityResult> playedGameSizes = new List<EntityResult>();
+            foreach (BattleReport battleReport in battleReports)
+            {
+                string gameSize = battleReport.GameSize.ToString();
+                if (playedGameSizes.Any(gs => gs.Name == gameSize))
+                {
+                    EntityResult currentGameSize = playedGameSizes.Find(gs => gs.Name == gameSize);
+                    currentGameSize.NumberOfGamesPlayed++;
+                    if (battleReport.WinnersUsername == username)
+                        currentGameSize.NumberOfGamesWon++;
+                    else
+                        currentGameSize.NumberOfGamesLost++;
+                    currentGameSize.Winrate = (float)currentGameSize.NumberOfGamesWon / (float)currentGameSize.NumberOfGamesPlayed;
+                }
+                else
+                {
+                    EntityResult currentGameSize = new EntityResult()
+                    {
+                        Name = gameSize,
+                        NumberOfGamesPlayed = 1,
+                        NumberOfGamesLost = battleReport.WinnersUsername == username ? 0 : 1,
+                        NumberOfGamesWon = battleReport.WinnersUsername == username ? 1 : 0
+                    };
+                    currentGameSize.Winrate = (float)currentGameSize.NumberOfGamesWon / (float)currentGameSize.NumberOfGamesPlayed;
+                    playedGameSizes.Add(currentGameSize);
+                }
+            }
+            return playedGameSizes.OrderByDescending(gs => gs.Winrate).ToList();
+        }
+
+        private List<EntityResult> ScenarioResults(string username, List<BattleReport> battleReports)
+        {
+            List<EntityResult> playedScenarios = new List<EntityResult>();
+            foreach (BattleReport battleReport in battleReports)
+            {
+                string scenarioName = battleReport.Scenario;
+                if (playedScenarios.Any(s => s.Name == scenarioName))
+                {
+                    EntityResult scenario = playedScenarios.Find(s => s.Name == scenarioName);
+                    scenario.NumberOfGamesPlayed++;
+                    if (battleReport.WinnersUsername == username)
+                        scenario.NumberOfGamesWon++;
+                    else
+                        scenario.NumberOfGamesLost++;
+                    scenario.Winrate = (float)scenario.NumberOfGamesWon / (float)scenario.NumberOfGamesPlayed;
+                }
+                else
+                {
+                    EntityResult scenario = new EntityResult()
+                    {
+                        Name = scenarioName,
+                        NumberOfGamesPlayed = 1,
+                        NumberOfGamesLost = battleReport.WinnersUsername == username ? 0 : 1,
+                        NumberOfGamesWon = battleReport.WinnersUsername == username ? 1 : 0
+                    };
+                    scenario.Winrate = (float)scenario.NumberOfGamesWon / (float)scenario.NumberOfGamesPlayed;
+                    playedScenarios.Add(scenario);
+                }
+            }
+            return playedScenarios.OrderByDescending(s => s.Winrate).ToList();
+        }
+
+        private List<EntityResult> EndConditionResults(string username, List<BattleReport> battleReports)
+        {
+            List<EntityResult> playedEndConditions = new List<EntityResult>();
+            foreach (BattleReport battleReport in battleReports)
+            {
+                string endConditionName = battleReport.EndCondition;
+                if (playedEndConditions.Any(e => e.Name == endConditionName))
+                {
+                    EntityResult endCondition = playedEndConditions.Find(e => e.Name == endConditionName);
+                    endCondition.NumberOfGamesPlayed++;
+                    if (battleReport.WinnersUsername == username)
+                        endCondition.NumberOfGamesWon++;
+                    else
+                        endCondition.NumberOfGamesLost++;
+                    endCondition.Winrate = (float)endCondition.NumberOfGamesWon / (float)endCondition.NumberOfGamesPlayed;
+                }
+                else
+                {
+                    EntityResult endCondition = new EntityResult()
+                    {
+                        Name = endConditionName,
+                        NumberOfGamesPlayed = 1,
+                        NumberOfGamesLost = battleReport.WinnersUsername == username ? 0 : 1,
+                        NumberOfGamesWon = battleReport.WinnersUsername == username ? 1 : 0
+                    };
+                    endCondition.Winrate = (float)endCondition.NumberOfGamesWon / (float)endCondition.NumberOfGamesPlayed;
+                    playedEndConditions.Add(endCondition);
+                }
+            }
+            return playedEndConditions.OrderByDescending(e => e.Winrate).ToList();
+        }
+
+        private List<EntityResult> VersusFactionResults(string username, List<BattleReport> battleReports)
+        {
+            List<EntityResult> versusFactions = new List<EntityResult>();
+            foreach (BattleReport battleReport in battleReports)
+            {
+                string opposingFaction = battleReport.PostersUsername == username ? battleReport.OpponentsFaction : battleReport.PostersFaction;
+                if (versusFactions.Any(f => f.Name == opposingFaction))
+                {
+                    EntityResult enemyFaction = versusFactions.Find(f => f.Name == opposingFaction);
+                    enemyFaction.NumberOfGamesPlayed++;
+                    if (battleReport.WinnersUsername == username)
+                        enemyFaction.NumberOfGamesWon++;
+                    else
+                        enemyFaction.NumberOfGamesLost++;
+                    enemyFaction.Winrate = (float)enemyFaction.NumberOfGamesWon / (float)enemyFaction.NumberOfGamesPlayed;
+                }
+                else
+                {
+                    EntityResult enemeyFaction = new EntityResult()
+                    {
+                        Name = opposingFaction,
+                        NumberOfGamesPlayed = 1,
+                        NumberOfGamesLost = battleReport.WinnersUsername == username ? 0 : 1,
+                        NumberOfGamesWon = battleReport.WinnersUsername == username ? 1 : 0
+                    };
+                    enemeyFaction.Winrate = (float)enemeyFaction.NumberOfGamesWon / (float)enemeyFaction.NumberOfGamesPlayed;
+                    versusFactions.Add(enemeyFaction);
+                }
+            }
+            return versusFactions.OrderByDescending(f => f.Winrate).ToList();
+        }
+
+        private List<EntityResult> VersusThemesResults(string username, List<BattleReport> battleReports)
+        {
+            List<EntityResult> versusThemes = new List<EntityResult>();
+            foreach (BattleReport battleReport in battleReports)
+            {
+                string opposingTheme = battleReport.PostersUsername == username ? battleReport.OpponentsTheme : battleReport.PostersTheme;
+                if (versusThemes.Any(f => f.Name == opposingTheme))
+                {
+                    EntityResult enemyTheme = versusThemes.Find(f => f.Name == opposingTheme);
+                    enemyTheme.NumberOfGamesPlayed++;
+                    if (battleReport.WinnersUsername == username)
+                        enemyTheme.NumberOfGamesWon++;
+                    else
+                        enemyTheme.NumberOfGamesLost++;
+                    enemyTheme.Winrate = (float)enemyTheme.NumberOfGamesWon / (float)enemyTheme.NumberOfGamesPlayed;
+                }
+                else
+                {
+                    EntityResult enemeyTheme = new EntityResult()
+                    {
+                        Name = opposingTheme,
+                        NumberOfGamesPlayed = 1,
+                        NumberOfGamesLost = battleReport.WinnersUsername == username ? 0 : 1,
+                        NumberOfGamesWon = battleReport.WinnersUsername == username ? 1 : 0
+                    };
+                    enemeyTheme.Winrate = (float)enemeyTheme.NumberOfGamesWon / (float)enemeyTheme.NumberOfGamesPlayed;
+                    versusThemes.Add(enemeyTheme);
+                }
+            }
+            return versusThemes.OrderByDescending(t => t.Winrate).ToList();
+        }
+
+        private List<EntityResult> VersusCasterResults(string username, List<BattleReport> battleReports)
+        {
+            List<EntityResult> versusCasters = new List<EntityResult>();
+            foreach (BattleReport battleReport in battleReports)
+            {
+                string opposingCaster = battleReport.PostersUsername == username ? battleReport.OpponentsCaster : battleReport.PostersCaster;
+                if (versusCasters.Any(f => f.Name == opposingCaster))
+                {
+                    EntityResult enemyCaster = versusCasters.Find(f => f.Name == opposingCaster);
+                    enemyCaster.NumberOfGamesPlayed++;
+                    if (battleReport.WinnersUsername == username)
+                        enemyCaster.NumberOfGamesWon++;
+                    else
+                        enemyCaster.NumberOfGamesLost++;
+                    enemyCaster.Winrate = (float)enemyCaster.NumberOfGamesWon / (float)enemyCaster.NumberOfGamesPlayed;
+                }
+                else
+                {
+                    EntityResult enemeyCaster = new EntityResult()
+                    {
+                        Name = opposingCaster,
+                        NumberOfGamesPlayed = 1,
+                        NumberOfGamesLost = battleReport.WinnersUsername == username ? 0 : 1,
+                        NumberOfGamesWon = battleReport.WinnersUsername == username ? 1 : 0
+                    };
+                    enemeyCaster.Winrate = (float)enemeyCaster.NumberOfGamesWon / (float)enemeyCaster.NumberOfGamesPlayed;
+                    versusCasters.Add(enemeyCaster);
+                }
+            }
+            return versusCasters.OrderByDescending(c => c.Winrate).ToList();
         }
 
         private List<Faction> FactionResults(string username, List<BattleReport> battleReports)
@@ -84,7 +282,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
                 {
                     Faction faction = playedFactions.Find(f => f.Name == factionName);
                     faction.NumberOfGamesPlayed++;
-                    if (battleReport.WinningFaction == faction.Name)
+                    if (battleReport.WinnersUsername == username)
                         faction.NumberOfGamesWon++;
                     else
                         faction.NumberOfGamesLost++;
@@ -103,7 +301,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
                     playedFactions.Add(faction);
                 }
             }
-            return playedFactions;
+            return playedFactions.OrderByDescending(f => f.Winrate).ToList();
         }
 
         private List<Theme> ThemeResults(string username, List<BattleReport> battleReports)
@@ -116,7 +314,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
                 {
                     Theme theme = playedThemes.Find(t => t.Name == themeName);
                     theme.NumberOfGamesPlayed++;
-                    if (battleReport.WinningTheme == theme.Name)
+                    if (battleReport.WinnersUsername == username)
                         theme.NumberOfGamesWon++;
                     else
                         theme.NumberOfGamesLost++;
@@ -135,7 +333,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
                     playedThemes.Add(theme);
                 }
             }
-            return playedThemes;
+            return playedThemes.OrderByDescending(t => t.Winrate).ToList();
         }
 
         private List<Caster> CasterResults(string username, List<BattleReport> battleReports)
@@ -148,7 +346,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
                 {
                     Caster caster = playedCasters.Find(c => c.Name == casterName);
                     caster.NumberOfGamesPlayed++;
-                    if (battleReport.WinningCaster == caster.Name)
+                    if (battleReport.WinnersUsername == username)
                         caster.NumberOfGamesWon++;
                     else
                         caster.NumberOfGamesLost++;
@@ -167,7 +365,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
                     playedCasters.Add(caster);
                 }
             }
-            return playedCasters;
+            return playedCasters.OrderByDescending(c => c.Winrate).ToList();
         }
 
         private UserResult CreateUserResult(ApplicationUser user, List<BattleReport> battleReports)
