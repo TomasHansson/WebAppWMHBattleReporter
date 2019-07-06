@@ -1,0 +1,26 @@
+﻿@model EntityResult
+<div>
+    <table class="table table-striped border">
+        <tr class="table-secondary">
+            <th>#</th>
+            <th>@Model.Type</th>
+            <th>Lost</th>
+            <th>Won</th>
+            <th>Played</th>
+            <th>Winrate</th>
+        </tr>
+        @{ int counter = 1; }
+        @foreach (Entity entity in Model.Results)
+        {
+            <tr>
+                <td>@counter</td>
+                <td>@entity.Name</td>
+                <td>@entity.NumberOfGamesLost</td>
+                <td>@entity.NumberOfGamesWon</td>
+                <td>@entity.NumberOfGamesPlayed</td>
+                <td>@entity.Winrate.ToString("P1")</td>
+                @{ counter++; }
+            </tr>
+        }
+    </table>
+</div>

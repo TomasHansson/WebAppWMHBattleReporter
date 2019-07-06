@@ -34,5 +34,14 @@ namespace WebAppWMHBattleReporter.Utility
         public const string Assassination = "Assassination";
         public const string Clock = "Clock";
         public static readonly List<string> EndConditionOptions = new List<string> { Scenario, Assassination, Clock };
+        public const string FactionType = "Faction";
+        public const string ThemeType = "Theme";
+        public const string CasterType = "Caster";
+        public const string GameSizeType = "Game Size";
+        public const string ScenarioType = "Scenario";
+        public const string EndConditionType = "End Condition";
+        public const string VersusFactionType = "Enemy Faction";
+        public const string VersusThemeType = "Enemy Theme";
+        public const string VersusCasterType = "Enemy Caster";
     }
 }
