@@ -76,6 +76,143 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             return View(viewModel);
         }
 
+        public async Task<IActionResult> Factions()
+        {
+            List<Faction> factions = await _db.Factions.ToListAsync();
+            List<BattleReport> battleReports = await _db.BattleReports.ToListAsync();
+            List<FactionResult> factionResults = CreateFactionResults(factions, battleReports);
+            return View(factionResults);
+        }
+
+        //public async Task<IActionResult> Faction(string id)
+        //{
+
+        //}
+
+        private List<FactionResult> CreateFactionResults(List<Faction> factions, List<BattleReport> battleReports)
+        {
+            List<FactionResult> factionResults = new List<FactionResult>();
+            foreach (Faction faction in factions)
+            {
+                List<BattleReport> factionsBattleReports = battleReports.Where(br => br.PostersFaction == faction.Name || br.OpponentsFaction == faction.Name).ToList();
+                List<Theme> factionsPlayedThemes = new List<Theme>();
+                List<Caster> factionsPlayedCasters = new List<Caster>();
+                FactionResult factionResult = new FactionResult()
+                {
+                    Name = faction.Name
+                };
+                foreach (BattleReport battleReport in factionsBattleReports)
+                {
+                    factionResult.NumberOfGamesPlayed++;
+                    if (battleReport.PostersFaction == battleReport.OpponentsFaction)
+                    {
+                        factionResult.NumberOfGamesLost++;
+                        factionResult.NumberOfGamesWon++;
+                        factionResult.NumberOfMirrorMatches++;
+                    }
+                    else
+                    {
+                        if (battleReport.WinningFaction == faction.Name)
+                            factionResult.NumberOfGamesWon++;
+                        else
+                            factionResult.NumberOfGamesLost++;
+                    }
+                    if (battleReport.WinningFaction == faction.Name)
+                    {
+                        if (factionsPlayedThemes.Any(t => t.Name == battleReport.WinningTheme))
+                        {
+                            Theme theme = factionsPlayedThemes.First(t => t.Name == battleReport.WinningTheme);
+                            theme.NumberOfGamesPlayed++;
+                            theme.NumberOfGamesWon++;
+                            theme.Winrate = (float)theme.NumberOfGamesWon / (float)theme.NumberOfGamesPlayed;
+                        }
+                        else
+                        {
+                            Theme theme = new Theme()
+                            {
+                                Name = battleReport.WinningTheme,
+                                NumberOfGamesPlayed = 1,
+                                NumberOfGamesWon = 1,
+                                Winrate = 1
+                            };
+                            factionsPlayedThemes.Add(theme);
+                        }
+                        if (factionsPlayedCasters.Any(c => c.Name == battleReport.WinningCaster))
+                        {
+                            Caster caster = factionsPlayedCasters.First(c => c.Name == battleReport.WinningCaster);
+                            caster.NumberOfGamesPlayed++;
+                            caster.NumberOfGamesWon++;
+                            caster.Winrate = (float)caster.NumberOfGamesWon / (float)caster.NumberOfGamesPlayed;
+                        }
+                        else
+                        {
+                            Caster caster = new Caster()
+                            {
+                                Name = battleReport.WinningCaster,
+                                NumberOfGamesPlayed = 1,
+                                NumberOfGamesWon = 1,
+                                Winrate = 1
+                            };
+                            factionsPlayedCasters.Add(caster);
+                        }
+                    }
+                    if (battleReport.LosingFaction == faction.Name)
+                    {
+                        if (factionsPlayedThemes.Any(t => t.Name == battleReport.LosingTheme))
+                        {
+                            Theme theme = factionsPlayedThemes.First(t => t.Name == battleReport.LosingTheme);
+                            theme.NumberOfGamesPlayed++;
+                            theme.NumberOfGamesLost++;
+                            theme.Winrate = (float)theme.NumberOfGamesWon / (float)theme.NumberOfGamesPlayed;
+                        }
+                        else
+                        {
+                            Theme theme = new Theme()
+                            {
+                                Name = battleReport.LosingTheme,
+                                NumberOfGamesPlayed = 1,
+                                NumberOfGamesLost = 1
+                            };
+                            factionsPlayedThemes.Add(theme);
+                        }
+                        if (factionsPlayedCasters.Any(c => c.Name == battleReport.LosingCaster))
+                        {
+                            Caster caster = factionsPlayedCasters.First(c => c.Name == battleReport.LosingCaster);
+                            caster.NumberOfGamesPlayed++;
+                            caster.NumberOfGamesLost++;
+                            caster.Winrate = (float)caster.NumberOfGamesWon / (float)caster.NumberOfGamesPlayed;
+                        }
+                        else
+                        {
+                            Caster caster = new Caster()
+                            {
+                                Name = battleReport.LosingCaster,
+                                NumberOfGamesPlayed = 1,
+                                NumberOfGamesLost = 1
+                            };
+                            factionsPlayedCasters.Add(caster);
+                        }
+                    }
+                }
+                factionResult.Winrate = (float)(factionResult.NumberOfGamesWon - factionResult.NumberOfMirrorMatches) / (float)(factionResult.NumberOfGamesPlayed - factionResult.NumberOfMirrorMatches);
+                Theme mostPlayedTheme = factionsPlayedThemes.OrderByDescending(t => t.NumberOfGamesPlayed).FirstOrDefault();
+                factionResult.MostPlayedTheme = mostPlayedTheme.Name;
+                factionResult.GamesWithMostPlayedTheme = mostPlayedTheme.NumberOfGamesPlayed;
+                Theme bestPerformingTheme = factionsPlayedThemes.OrderByDescending(t => t.Winrate).FirstOrDefault();
+                factionResult.BestPerformingTheme = bestPerformingTheme.Name;
+                factionResult.WinrateBestPerformingTheme = bestPerformingTheme.Winrate;
+                Caster mostPlayedCaster = factionsPlayedCasters.OrderByDescending(c => c.NumberOfGamesPlayed).FirstOrDefault();
+                factionResult.MostPlayedCaster = mostPlayedCaster.Name;
+                factionResult.GamesWithMostPlayedCaster = mostPlayedCaster.NumberOfGamesPlayed;
+                Caster bestPerformingCaster = factionsPlayedCasters.OrderByDescending(c => c.Winrate).FirstOrDefault();
+                factionResult.BestPerformingCaster = bestPerformingCaster.Name;
+                factionResult.WinrateBestPerformingCaster = bestPerformingCaster.Winrate;
+                factionResults.Add(factionResult);
+            }
+            factionResults = factionResults.OrderByDescending(fr => fr.Winrate).ToList();
+            return factionResults;
+        }
+
         private EntityResult EntityResult(string type, string username, List<BattleReport> battleReports)
         {
             EntityResult result = new EntityResult

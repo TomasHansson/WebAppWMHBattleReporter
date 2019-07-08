@@ -1,0 +1,26 @@
+﻿@model List<FactionResult>
+@{
+    ViewData["Title"] = "Factions";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="border applicationFormGroup">
+    <h2 class="text-info">Faction Results</h2>
+    <br />
+    @if (Model.Count() == 0)
+    {
+        <p>There are no factions in the database.</p>
+    }
+    else
+    {
+        <hr />
+        int counter = 1;
+        @foreach (FactionResult factionResult in Model)
+        {
+            factionResult.ListPosition = counter;
+            <partial name="_FactionDetails" model="@factionResult" />
+            counter = counter + 1;
+            <hr />
+        }
+    }
+</div>
