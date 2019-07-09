@@ -10,6 +10,7 @@ namespace WebAppWMHBattleReporter.Models.ViewModels
         public string Theme { get; set; }
         public string StatusMessage { get; set; }
         public List<Faction> Factions { get; set; }
+        public List<Theme> Themes { get; set; }
         public ThemeResult ThemeResult { get; set; }
         public EntityResult Casters { get; set; }
         public EntityResult GameSizes { get; set; }

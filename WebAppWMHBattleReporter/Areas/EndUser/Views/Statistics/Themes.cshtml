@@ -1,0 +1,26 @@
+﻿@model List<ThemeResult>
+@{
+    ViewData["Title"] = "Themes";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="border applicationFormGroup">
+    <h2 class="text-info">Theme Results</h2>
+    <br />
+    @if (Model.Count() == 0)
+    {
+        <p>There are no themes in the database.</p>
+    }
+    else
+    {
+        <hr />
+        int counter = 1;
+        @foreach (ThemeResult themeResult in Model)
+        {
+            themeResult.ListPosition = counter;
+            <partial name="_ThemeDetails" model="@themeResult" />
+            counter = counter + 1;
+            <hr />
+        }
+    }
+</div>

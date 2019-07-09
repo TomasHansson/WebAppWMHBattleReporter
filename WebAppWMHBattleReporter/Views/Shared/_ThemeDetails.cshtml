@@ -1,0 +1,35 @@
+﻿@model ThemeResult
+
+<div class="row">
+    <div class="col-4 text-right">
+        @Model.ListPosition
+    </div>
+    <div class="col-4 font-weight-bold text-center">
+        @Model.Name
+    </div>
+    <div class="col-4 text-left">
+        @Model.Winrate.ToString("P1")
+    </div>
+</div>
+<div class="row">
+    <div class="col-6">
+        Games Played: @Model.NumberOfGamesPlayed
+    </div>
+    <div class="col-6">
+        Games Won: @Model.NumberOfGamesWon
+    </div>
+    <div class="col-6">
+        Games Lost: @Model.NumberOfGamesLost
+    </div>
+    <div class="col-6">
+        Mirror Matches: @Model.NumberOfMirrorMatches
+    </div>
+</div>
+<div class="row">
+    <div class="col-6">
+        Most Played Caster: @Model.MostPlayedCaster (@Model.GamesWithMostPlayedCaster)
+    </div>
+    <div class="col-6">
+        Best Caster: @Model.BestPerformingCaster (@Model.WinrateBestPerformingCaster.ToString("P1"))
+    </div>
+</div>
