@@ -130,38 +130,35 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
 
         public async Task<IActionResult> Theme(string id)
         {
-            //FactionResultViewModel viewModel = new FactionResultViewModel
-            //{
-            //    Factions = await _db.Factions.ToListAsync()
-            //};
-            //if (!await _db.Factions.AnyAsync(f => f.Name == id))
-            //{
-            //    viewModel.Faction = viewModel.Factions.FirstOrDefault().Name;
-            //    viewModel.StatusMessage = "Select a faction to view its results.";
-            //    return View(viewModel);
-            //}
+            ThemeResultViewModel viewModel = new ThemeResultViewModel
+            {
+                Factions = await _db.Factions.ToListAsync(),
+                Themes = await _db.Themes.ToListAsync()
+            };
+            if (!await _db.Themes.AnyAsync(t => t.Name == id))
+            {
+                viewModel.Theme = viewModel.Themes.FirstOrDefault().Name;
+                viewModel.StatusMessage = "Select a theme to view its results.";
+                return View(viewModel);
+            }
 
-            //Faction faction = await _db.Factions.FirstAsync(f => f.Name == id);
-            //List<Theme> factionThemes = await _db.Themes.Where(t => t.FactionId == faction.Id).ToListAsync();
-            //List<Caster> factionCasters = await _db.Casters.Where(c => c.FactionId == faction.Id).ToListAsync();
-            //List<BattleReport> factionBattleReports = await _db.BattleReports.Where(br => br.WinningFaction == faction.Name || br.LosingFaction == faction.Name).ToListAsync();
-            //int numberOfMirrorMatches = factionBattleReports.Where(br => br.WinningFaction == br.LosingFaction).Count();
-            //FactionResult factionResult = CreateFactionResult(faction, factionThemes, factionCasters, numberOfMirrorMatches);
+            Theme theme = await _db.Themes.FirstAsync(t => t.Name == id);
+            List<BattleReport> themeBattleReports = await _db.BattleReports.Where(br => br.WinningTheme == theme.Name || br.LosingTheme == theme.Name).ToListAsync();
+            int numberOfMirrorMatches = themeBattleReports.Where(br => br.WinningTheme == br.LosingTheme).Count();
+            ThemeResult themeResult = CreateThemeResult(theme, themeBattleReports);
 
-            //viewModel.Faction = faction.Name;
-            //viewModel.StatusMessage = string.Empty;
-            //viewModel.FactionResult = factionResult;
-            //viewModel.Themes = FactionEntityResult(StaticDetails.ThemeType, faction.Name, factionBattleReports);
-            //viewModel.Casters = FactionEntityResult(StaticDetails.CasterType, faction.Name, factionBattleReports);
-            //viewModel.GameSizes = FactionEntityResult(StaticDetails.GameSizeType, faction.Name, factionBattleReports);
-            //viewModel.Scenarios = FactionEntityResult(StaticDetails.ScenarioType, faction.Name, factionBattleReports);
-            //viewModel.EndConditions = FactionEntityResult(StaticDetails.EndConditionType, faction.Name, factionBattleReports);
-            //viewModel.VersusFactions = FactionEntityResult(StaticDetails.VersusFactionType, faction.Name, factionBattleReports);
-            //viewModel.VersusThemes = FactionEntityResult(StaticDetails.VersusThemeType, faction.Name, factionBattleReports);
-            //viewModel.VersusCasters = FactionEntityResult(StaticDetails.VersusCasterType, faction.Name, factionBattleReports);
-            //return View(viewModel);
+            viewModel.Theme = theme.Name;
+            viewModel.StatusMessage = string.Empty;
+            viewModel.ThemeResult = themeResult;
+            viewModel.Casters = ThemeEntityResult(StaticDetails.CasterType, theme.Name, themeBattleReports);
+            viewModel.GameSizes = ThemeEntityResult(StaticDetails.GameSizeType, theme.Name, themeBattleReports);
+            viewModel.Scenarios = ThemeEntityResult(StaticDetails.ScenarioType, theme.Name, themeBattleReports);
+            viewModel.EndConditions = ThemeEntityResult(StaticDetails.EndConditionType, theme.Name, themeBattleReports);
+            viewModel.VersusFactions = ThemeEntityResult(StaticDetails.VersusFactionType, theme.Name, themeBattleReports);
+            viewModel.VersusThemes = ThemeEntityResult(StaticDetails.VersusThemeType, theme.Name, themeBattleReports);
+            viewModel.VersusCasters = ThemeEntityResult(StaticDetails.VersusCasterType, theme.Name, themeBattleReports);
 
-            return View();
+            return View(viewModel);
         }
 
         private ThemeResult CreateThemeResult(Theme theme, List<BattleReport> battleReports)
@@ -174,7 +171,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
                 NumberOfGamesLost = theme.NumberOfGamesLost,
                 NumberOfGamesWon = theme.NumberOfGamesWon,
                 Winrate = theme.Winrate,
-                NumberOfMirrorMatches = themeBattleReports.Count()
+                NumberOfMirrorMatches = themeBattleReports.Where(br => br.WinningTheme == br.LosingTheme).Count()
             };
             List<Caster> playedCasters = new List<Caster>();
             foreach (BattleReport battleReport in themeBattleReports)
@@ -237,7 +234,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
                     {
                         Caster caster = new Caster()
                         {
-                            Name = battleReport.WinningCaster,
+                            Name = battleReport.LosingCaster,
                             NumberOfGamesPlayed = 1,
                             NumberOfGamesWon = 0,
                             NumberOfGamesLost = 1,
@@ -303,6 +300,53 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             }
             factionResults = factionResults.OrderByDescending(fr => fr.Winrate).ToList();
             return factionResults;
+        }
+
+        private EntityResult ThemeEntityResult(string type, string theme, List<BattleReport> battleReports)
+        {
+            EntityResult result = new EntityResult
+            {
+                Type = type,
+                Results = new List<Entity>()
+            };
+            foreach (BattleReport battleReport in battleReports)
+            {
+                string entityName = string.Empty;
+                switch (result.Type)
+                {
+                    case StaticDetails.CasterType: entityName = battleReport.WinningTheme == theme ? battleReport.WinningCaster : battleReport.LosingCaster; break;
+                    case StaticDetails.GameSizeType: entityName = battleReport.GameSize.ToString(); break;
+                    case StaticDetails.ScenarioType: entityName = battleReport.Scenario; break;
+                    case StaticDetails.EndConditionType: entityName = battleReport.EndCondition; break;
+                    case StaticDetails.VersusFactionType: entityName = battleReport.WinningTheme == theme ? battleReport.LosingFaction : battleReport.WinningFaction; break;
+                    case StaticDetails.VersusThemeType: entityName = battleReport.WinningTheme == theme ? battleReport.LosingTheme : battleReport.WinningTheme; break;
+                    case StaticDetails.VersusCasterType: entityName = battleReport.WinningTheme == theme ? battleReport.LosingCaster : battleReport.WinningCaster; break;
+                }
+                if (result.Results.Any(e => e.Name == entityName))
+                {
+                    Entity entity = result.Results.Find(e => e.Name == entityName);
+                    entity.NumberOfGamesPlayed++;
+                    if (battleReport.WinningTheme == theme)
+                        entity.NumberOfGamesWon++;
+                    else
+                        entity.NumberOfGamesLost++;
+                    entity.Winrate = (float)entity.NumberOfGamesWon / (float)entity.NumberOfGamesPlayed;
+                }
+                else
+                {
+                    Entity entity = new Entity()
+                    {
+                        Name = entityName,
+                        NumberOfGamesPlayed = 1,
+                        NumberOfGamesLost = battleReport.WinningTheme == theme ? 0 : 1,
+                        NumberOfGamesWon = battleReport.WinningTheme == theme ? 1 : 0
+                    };
+                    entity.Winrate = (float)entity.NumberOfGamesWon / (float)entity.NumberOfGamesPlayed;
+                    result.Results.Add(entity);
+                }
+            }
+            result.Results = result.Results.OrderByDescending(e => e.Winrate).ToList();
+            return result;
         }
 
         private EntityResult FactionEntityResult(string type, string faction, List<BattleReport> battleReports)

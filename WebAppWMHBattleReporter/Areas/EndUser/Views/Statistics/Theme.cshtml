@@ -1,0 +1,51 @@
+﻿@model ThemeResultViewModel
+@{
+    ViewData["Title"] = "Theme";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="border applicationFormGroup">
+    <h2 class="text-info">Theme Details</h2>
+    <br />
+    <div class="row">
+        <div class="col-4-col-lg-3">
+            <label asp-for="@Model.Theme">Select Theme: </label>
+            <select id="selectTheme" asp-for="@Model.Theme" asp-items="@Model.Themes.Select(x => new SelectListItem() { Value = x.Name, Text = x.Name }).ToList()" class="form-control"></select>
+            <a id="loadTheme" class="btn btn-primary form-control mt-1" href="@string.Concat("/EndUser/Statistics/Theme/", Model.Theme)">Load Result</a>
+        </div>
+    </div>
+    <br />
+    @if (!string.IsNullOrWhiteSpace(Model.StatusMessage))
+    {
+        <p>@Model.StatusMessage</p>
+    }
+    else
+    {
+        <h5 class="text-info">Statistics</h5>
+        <hr />
+        <partial name="_ThemeDetails" model="@Model.ThemeResult" />
+        <hr />
+        <h5 class="text-info">Played Casters</h5>
+        <partial name="_EntityResultsTable" model="@Model.Casters" />
+        <h5 class="text-info">Game Sizes</h5>
+        <partial name="_EntityResultsTable" model="@Model.GameSizes" />
+        <h5 class="text-info">Scenarios</h5>
+        <partial name="_EntityResultsTable" model="@Model.Scenarios" />
+        <h5 class="text-info">End Conditions</h5>
+        <partial name="_EntityResultsTable" model="@Model.EndConditions" />
+        <h5 class="text-info">Versus Factions</h5>
+        <partial name="_EntityResultsTable" model="@Model.VersusFactions" />
+        <h5 class="text-info">Versus Themes</h5>
+        <partial name="_EntityResultsTable" model="@Model.VersusThemes" />
+        <h5 class="text-info">Versus Casters</h5>
+        <partial name="_EntityResultsTable" model="@Model.VersusCasters" />
+    }
+</div>
+
+@section Scripts {
+    <script>
+        $("#selectTheme").change(function () {
+            $("#loadTheme").attr('href', '/EndUser/Statistics/Theme/' + this.value);
+        });
+    </script>
+}
