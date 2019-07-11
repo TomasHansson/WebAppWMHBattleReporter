@@ -1,0 +1,26 @@
+﻿@model List<CasterResult>
+@{
+    ViewData["Title"] = "Casters";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="border applicationFormGroup">
+    <h2 class="text-info">Caster Results</h2>
+    <br />
+    @if (Model.Count() == 0)
+    {
+        <p>There are no casters in the database.</p>
+    }
+    else
+    {
+        <hr />
+        int counter = 1;
+        @foreach (CasterResult casterResult in Model)
+        {
+            casterResult.ListPosition = counter;
+            <partial name="_CasterDetails" model="@casterResult" />
+            counter = counter + 1;
+            <hr />
+        }
+    }
+</div>
