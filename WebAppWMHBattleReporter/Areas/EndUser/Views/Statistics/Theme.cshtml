@@ -4,14 +4,26 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
+
+
 <div class="border applicationFormGroup">
     <h2 class="text-info">Theme Details</h2>
     <br />
     <div class="row">
-        <div class="col-4-col-lg-3">
+        <div class="col-7 col-lg-5">
+            <label asp-for="@Model.Faction">Select Faction: </label>
+            <select asp-for="@Model.Faction" asp-items="@Model.Factions.Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList()" class="form-control mb-1" id="factionList"></select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-7 col-lg-5">
             <label asp-for="@Model.Theme">Select Theme: </label>
-            <select id="selectTheme" asp-for="@Model.Theme" asp-items="@Model.Themes.Select(x => new SelectListItem() { Value = x.Name, Text = x.Name }).ToList()" class="form-control"></select>
-            <a id="loadTheme" class="btn btn-primary form-control mt-1" href="@string.Concat("/EndUser/Statistics/Theme/", Model.Theme)">Load Result</a>
+            <select id="selectTheme" asp-for="@Model.Theme" asp-items="@Model.Themes.Select(x => new SelectListItem() { Value = x.Name, Text = x.Name }).ToList()" class="form-control mb-1"></select>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-4 col-lg-3">
+            <a id="loadTheme" class="btn btn-primary form-control" href="@string.Concat("/EndUser/Statistics/Theme/", Model.Theme)">Load Result</a>
         </div>
     </div>
     <br />
@@ -47,5 +59,28 @@
         $("#selectTheme").change(function () {
             $("#loadTheme").attr('href', '/EndUser/Statistics/Theme/' + this.value);
         });
+
+        $("#factionList").on("change", function () {
+            var factionSelected = document.getElementById("factionList").value;
+            var themeList = document.getElementById("selectTheme");
+            updateThemeList(factionSelected, themeList);
+        });
+
+        function updateThemeList(factionSelected, themeList) {
+            $.ajax({
+                url: '/EndUser/BattleReport/GetFactionThemeNames/' + factionSelected,
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    themeList.options.length = 0;
+                    for (var i = 0; i < data.length; i++) {
+                        themeList.options[themeList.options.length] = new Option(data[i], data[i]);
+                    }
+                    if (themeList.options.length > 0) {
+                        $("#loadTheme").attr('href', '/EndUser/Statistics/Theme/' + themeList.options[0].value);
+                    }
+                }
+            });
+        }
     </script>
 }

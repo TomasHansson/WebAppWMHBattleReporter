@@ -7,6 +7,7 @@ namespace WebAppWMHBattleReporter.Models.ViewModels
 {
     public class CasterResultViewModel
     {
+        public string Faction { get; set; }
         public string Caster { get; set; }
         public string StatusMessage { get; set; }
         public List<Faction> Factions { get; set; }

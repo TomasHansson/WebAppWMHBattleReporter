@@ -7,6 +7,7 @@ namespace WebAppWMHBattleReporter.Models.ViewModels
 {
     public class ThemeResultViewModel
     {
+        public string Faction { get; set; }
         public string Theme { get; set; }
         public string StatusMessage { get; set; }
         public List<Faction> Factions { get; set; }

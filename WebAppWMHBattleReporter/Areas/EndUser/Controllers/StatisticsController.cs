@@ -135,18 +135,24 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
                 Factions = await _db.Factions.ToListAsync(),
                 Themes = await _db.Themes.ToListAsync()
             };
-            if (!await _db.Themes.AnyAsync(t => t.Name == id))
+            if (!viewModel.Themes.Any(t => t.Name == id))
             {
+                viewModel.Faction = viewModel.Factions.FirstOrDefault().Name;
+                Faction faction = viewModel.Factions.First(f => f.Name == viewModel.Faction);
+                viewModel.Themes = viewModel.Themes.Where(t => t.FactionId == faction.Id).ToList();
                 viewModel.Theme = viewModel.Themes.FirstOrDefault().Name;
                 viewModel.StatusMessage = "Select a theme to view its results.";
                 return View(viewModel);
             }
 
-            Theme theme = await _db.Themes.FirstAsync(t => t.Name == id);
+            Theme theme = viewModel.Themes.First(t => t.Name == id);
+            Faction themesFaction = viewModel.Factions.First(f => f.Id == theme.FactionId);
             List<BattleReport> themeBattleReports = await _db.BattleReports.Where(br => br.ConfirmedByOpponent && (br.WinningTheme == theme.Name || br.LosingTheme == theme.Name)).ToListAsync();
             ThemeResult themeResult = CreateThemeResult(theme, themeBattleReports);
 
+            viewModel.Faction = themesFaction.Name;
             viewModel.Theme = theme.Name;
+            viewModel.Themes = viewModel.Themes.Where(t => t.FactionId == themesFaction.Id).ToList();
             viewModel.StatusMessage = string.Empty;
             viewModel.ThemeResult = themeResult;
             viewModel.Casters = ThemeEntityResult(StaticDetails.CasterType, theme.Name, themeBattleReports);
@@ -175,18 +181,24 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
                 Factions = await _db.Factions.ToListAsync(),
                 Casters = await _db.Casters.ToListAsync()
             };
-            if (!await _db.Casters.AnyAsync(c => c.Name == id))
+            if (!viewModel.Casters.Any(c => c.Name == id))
             {
+                viewModel.Faction = viewModel.Factions.FirstOrDefault().Name;
+                Faction faction = viewModel.Factions.First(f => f.Name == viewModel.Faction);
+                viewModel.Casters = viewModel.Casters.Where(c => c.FactionId == faction.Id).ToList();
                 viewModel.Caster = viewModel.Casters.FirstOrDefault().Name;
-                viewModel.StatusMessage = "Select a caster to view its results.";
+                viewModel.StatusMessage = "Select a theme to view its results.";
                 return View(viewModel);
             }
 
-            Caster caster = await _db.Casters.FirstAsync(c => c.Name == id);
+            Caster caster = viewModel.Casters.First(c => c.Name == id);
+            Faction castersFaction = viewModel.Factions.First(f => f.Id == caster.FactionId);
             List<BattleReport> casterBattleReports = await _db.BattleReports.Where(br => br.ConfirmedByOpponent && (br.WinningCaster == caster.Name || br.LosingCaster == caster.Name)).ToListAsync();
             CasterResult casterResult = CreateCasterResult(caster, casterBattleReports);
 
+            viewModel.Faction = castersFaction.Name;
             viewModel.Caster = caster.Name;
+            viewModel.Casters = viewModel.Casters.Where(c => c.FactionId == castersFaction.Id).ToList();
             viewModel.StatusMessage = string.Empty;
             viewModel.CasterResult = casterResult;
             viewModel.Themes = CasterEntityResult(StaticDetails.ThemeType, caster.Name, casterBattleReports);
