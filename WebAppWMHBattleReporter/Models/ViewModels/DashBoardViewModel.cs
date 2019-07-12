@@ -10,5 +10,6 @@ namespace WebAppWMHBattleReporter.Models.ViewModels
         public List<Faction> Top10Factions { get; set; }
         public List<Theme> Top10Themes { get; set; }
         public List<Caster> Top10Casters { get; set; }
+        public List<ApplicationUser> Top10Users { get; set; }
     }
 }

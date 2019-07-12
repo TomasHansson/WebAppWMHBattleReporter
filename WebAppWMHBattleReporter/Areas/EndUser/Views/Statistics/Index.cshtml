@@ -36,7 +36,7 @@
                         <td>@faction.NumberOfGamesPlayed</td>
                         <td>@faction.Winrate</td>
                         <td>
-                            <a class="btn btn-success text-white" asp-action="Details" asp-route-Id="@Model">
+                            <a class="btn btn-success text-white" asp-area="EndUser" asp-controller="Statistics" asp-action="Faction" asp-route-Id="@faction.Name">
                                 <i class="fas fa-list-alt"></i>
                             </a>
                         </td>
@@ -76,7 +76,7 @@
                         <td>@theme.NumberOfGamesPlayed</td>
                         <td>@theme.Winrate</td>
                         <td>
-                            <a class="btn btn-success text-white" asp-action="Details" asp-route-Id="@Model">
+                            <a class="btn btn-success text-white" asp-area="EndUser" asp-controller="Statistics" asp-action="Theme" asp-route-Id="@theme.Name">
                                 <i class="fas fa-list-alt"></i>
                             </a>
                         </td>
@@ -116,7 +116,47 @@
                         <td>@caster.NumberOfGamesPlayed</td>
                         <td>@caster.Winrate</td>
                         <td>
-                            <a class="btn btn-success text-white" asp-action="Details" asp-route-Id="@Model">
+                            <a class="btn btn-success text-white" asp-area="EndUser" asp-controller="Statistics" asp-action="Caster" asp-route-Id="@caster.Name">
+                                <i class="fas fa-list-alt"></i>
+                            </a>
+                        </td>
+                        @{ counter++; }
+                    </tr>
+                }
+            </table>
+        }
+    </div>
+    <br />
+    <h5 class="text-info">Top 10 Users</h5>
+    <div>
+        @if (Model.Top10Users.Count() == 0)
+        {
+            <p>There are no users in the database.</p>
+        }
+        else
+        {
+            <table class="table table-striped border">
+                <tr class="table-secondary">
+                    <th>#</th>
+                    <th>User</th>
+                    <th>Lost</th>
+                    <th>Won</th>
+                    <th>Played</th>
+                    <th>Winrate</th>
+                    <th>Details</th>
+                </tr>
+                @{ int counter = 1; }
+                @foreach (ApplicationUser user in Model.Top10Users)
+                {
+                    <tr>
+                        <td>@counter</td>
+                        <td>@user.UserName</td>
+                        <td>@user.NumberOfGamesLost</td>
+                        <td>@user.NumberOfGamesWon</td>
+                        <td>@user.NumberOfGamesPlayed</td>
+                        <td>@user.Winrate</td>
+                        <td>
+                            <a class="btn btn-success text-white" asp-area="EndUser" asp-controller="Statistics" asp-action="User" asp-route-Id="@user.UserName">
                                 <i class="fas fa-list-alt"></i>
                             </a>
                         </td>

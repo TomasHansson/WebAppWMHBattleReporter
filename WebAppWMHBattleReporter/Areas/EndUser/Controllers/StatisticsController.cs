@@ -27,7 +27,8 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             {
                 Top10Factions = await _db.Factions.OrderByDescending(f => f.Winrate).Take(10).ToListAsync(),
                 Top10Themes = await _db.Themes.OrderByDescending(t => t.Winrate).Take(10).ToListAsync(),
-                Top10Casters = await _db.Casters.OrderByDescending(c => c.Winrate).Take(10).ToListAsync()
+                Top10Casters = await _db.Casters.OrderByDescending(c => c.Winrate).Take(10).ToListAsync(),
+                Top10Users = await _db.ApplicationUsers.OrderByDescending(au => au.Winrate).Take(10).ToListAsync()
             };
             return View(viewModel);
         }
