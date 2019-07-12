@@ -57,7 +57,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             }
 
             ApplicationUser user = await _db.ApplicationUsers.FirstAsync(au => au.UserName == id);
-            List<BattleReport> battleReports = await _db.BattleReports.Where(br => br.PostersUsername == user.UserName || br.OpponentsUsername == user.UserName).ToListAsync();
+            List<BattleReport> battleReports = await _db.BattleReports.Where(br => br.ConfirmedByOpponent && (br.PostersUsername == user.UserName || br.OpponentsUsername == user.UserName)).ToListAsync();
             UserResultViewModel viewModel = new UserResultViewModel()
             {
                 Username = user.UserName,
@@ -81,7 +81,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             List<Faction> factions = await _db.Factions.ToListAsync();
             List<Theme> themes = await _db.Themes.ToListAsync();
             List<Caster> casters = await _db.Casters.ToListAsync();
-            List<BattleReport> battleReports = await _db.BattleReports.ToListAsync();
+            List<BattleReport> battleReports = await _db.BattleReports.Where(br => br.ConfirmedByOpponent).ToListAsync();
             List<FactionResult> factionResults = CreateFactionResults(factions, themes, casters, battleReports);
             return View(factionResults);
         }
@@ -102,9 +102,8 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             Faction faction = await _db.Factions.FirstAsync(f => f.Name == id);
             List<Theme> factionThemes = await _db.Themes.Where(t => t.FactionId == faction.Id).ToListAsync();
             List<Caster> factionCasters = await _db.Casters.Where(c => c.FactionId == faction.Id).ToListAsync();
-            List<BattleReport> factionBattleReports = await _db.BattleReports.Where(br => br.WinningFaction == faction.Name || br.LosingFaction == faction.Name).ToListAsync();
-            int numberOfMirrorMatches = factionBattleReports.Where(br => br.WinningFaction == br.LosingFaction).Count();
-            FactionResult factionResult = CreateFactionResult(faction, factionThemes, factionCasters, numberOfMirrorMatches);
+            List<BattleReport> factionBattleReports = await _db.BattleReports.Where(br => br.ConfirmedByOpponent && (br.WinningFaction == faction.Name || br.LosingFaction == faction.Name)).ToListAsync();
+            FactionResult factionResult = CreateFactionResult(faction, factionThemes, factionCasters, factionBattleReports);
 
             viewModel.Faction = faction.Name;
             viewModel.StatusMessage = string.Empty;
@@ -123,7 +122,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
         public async Task<IActionResult> Themes()
         {
             List<Theme> themes = await _db.Themes.ToListAsync();
-            List<BattleReport> battleReports = await _db.BattleReports.ToListAsync();
+            List<BattleReport> battleReports = await _db.BattleReports.Where(br => br.ConfirmedByOpponent).ToListAsync();
             List<ThemeResult> themeResults = CreateThemeResults(themes, battleReports);
             return View(themeResults);
         }
@@ -143,8 +142,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             }
 
             Theme theme = await _db.Themes.FirstAsync(t => t.Name == id);
-            List<BattleReport> themeBattleReports = await _db.BattleReports.Where(br => br.WinningTheme == theme.Name || br.LosingTheme == theme.Name).ToListAsync();
-            int numberOfMirrorMatches = themeBattleReports.Where(br => br.WinningTheme == br.LosingTheme).Count();
+            List<BattleReport> themeBattleReports = await _db.BattleReports.Where(br => br.ConfirmedByOpponent && (br.WinningTheme == theme.Name || br.LosingTheme == theme.Name)).ToListAsync();
             ThemeResult themeResult = CreateThemeResult(theme, themeBattleReports);
 
             viewModel.Theme = theme.Name;
@@ -164,7 +162,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
         public async Task<IActionResult> Casters()
         {
             List<Caster> casters = await _db.Casters.ToListAsync();
-            List<BattleReport> battleReports = await _db.BattleReports.ToListAsync();
+            List<BattleReport> battleReports = await _db.BattleReports.Where(br => br.ConfirmedByOpponent).ToListAsync();
             List<CasterResult> casterResults = CreateCasterResults(casters, battleReports);
             return View(casterResults);
         }
@@ -184,7 +182,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             }
 
             Caster caster = await _db.Casters.FirstAsync(c => c.Name == id);
-            List<BattleReport> casterBattleReports = await _db.BattleReports.Where(br => br.WinningCaster == caster.Name || br.LosingCaster == caster.Name).ToListAsync();
+            List<BattleReport> casterBattleReports = await _db.BattleReports.Where(br => br.ConfirmedByOpponent && (br.WinningCaster == caster.Name || br.LosingCaster == caster.Name)).ToListAsync();
             CasterResult casterResult = CreateCasterResult(caster, casterBattleReports);
 
             viewModel.Caster = caster.Name;
@@ -198,25 +196,15 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             viewModel.VersusThemes = CasterEntityResult(StaticDetails.VersusThemeType, caster.Name, casterBattleReports);
             viewModel.VersusCasters = CasterEntityResult(StaticDetails.VersusCasterType, caster.Name, casterBattleReports);
 
-            viewModel.CasterResult.MostPlayedTheme = viewModel.Themes.Results.OrderByDescending(t => t.NumberOfGamesPlayed).FirstOrDefault().Name;
-            viewModel.CasterResult.GamesWithMostPlayedTheme = viewModel.Themes.Results.OrderByDescending(t => t.NumberOfGamesPlayed).FirstOrDefault().NumberOfGamesPlayed;
-            viewModel.CasterResult.BestPerformingTheme = viewModel.Themes.Results.OrderByDescending(t => t.Winrate).FirstOrDefault().Name;
-            viewModel.CasterResult.WinrateBestPerformingTheme = viewModel.Themes.Results.OrderByDescending(t => t.Winrate).FirstOrDefault().Winrate;
-            viewModel.CasterResult.MostPlayedScenario = viewModel.Scenarios.Results.OrderByDescending(s => s.NumberOfGamesPlayed).FirstOrDefault().Name;
-            viewModel.CasterResult.GamesMostPlayedScenario = viewModel.Scenarios.Results.OrderByDescending(s => s.NumberOfGamesPlayed).FirstOrDefault().NumberOfGamesPlayed;
-            viewModel.CasterResult.BestPerformingScenario = viewModel.Scenarios.Results.OrderByDescending(s => s.Winrate).FirstOrDefault().Name;
-            viewModel.CasterResult.WinrateBestPerformingScenario = viewModel.Scenarios.Results.OrderByDescending(s => s.Winrate).FirstOrDefault().Winrate;
-            viewModel.CasterResult.MostPlayedEndCondition = viewModel.EndConditions.Results.OrderByDescending(ec => ec.NumberOfGamesPlayed).FirstOrDefault().Name;
-            viewModel.CasterResult.GamesMostPlayedEndCondition = viewModel.EndConditions.Results.OrderByDescending(ec => ec.NumberOfGamesPlayed).FirstOrDefault().NumberOfGamesPlayed;
-            viewModel.CasterResult.BestPerformingEndCondition = viewModel.EndConditions.Results.OrderByDescending(ec => ec.Winrate).FirstOrDefault().Name;
-            viewModel.CasterResult.WinrateBestPerformingEndCondition = viewModel.EndConditions.Results.OrderByDescending(ec => ec.Winrate).FirstOrDefault().Winrate;
-
             return View(viewModel);
         }
 
         private CasterResult CreateCasterResult(Caster caster, List<BattleReport> battleReports)
         {
-            IEnumerable<BattleReport> casterBattleReports = battleReports.Where(br => br.WinningCaster == caster.Name || br.LosingCaster == caster.Name);
+            List<BattleReport> casterBattleReports = battleReports.Where(br => br.WinningCaster == caster.Name || br.LosingCaster == caster.Name).ToList();
+            EntityResult themes = CasterEntityResult(StaticDetails.ThemeType, caster.Name, battleReports);
+            EntityResult scenarios = CasterEntityResult(StaticDetails.ScenarioType, caster.Name, casterBattleReports);
+            EntityResult endConditions = CasterEntityResult(StaticDetails.EndConditionType, caster.Name, casterBattleReports);
             CasterResult casterResult = new CasterResult()
             {
                 Name = caster.Name,
@@ -224,86 +212,20 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
                 NumberOfGamesLost = caster.NumberOfGamesLost,
                 NumberOfGamesWon = caster.NumberOfGamesWon,
                 Winrate = caster.Winrate,
-                NumberOfMirrorMatches = casterBattleReports.Where(br => br.WinningCaster == br.LosingCaster).Count()
+                NumberOfMirrorMatches = casterBattleReports.Where(br => br.WinningCaster == br.LosingCaster).Count(),
+                MostPlayedTheme = themes.Results.OrderByDescending(t => t.NumberOfGamesPlayed).FirstOrDefault().Name,
+                GamesWithMostPlayedTheme = themes.Results.OrderByDescending(t => t.NumberOfGamesPlayed).FirstOrDefault().NumberOfGamesPlayed,
+                BestPerformingTheme = themes.Results.OrderByDescending(t => t.Winrate).FirstOrDefault().Name,
+                WinrateBestPerformingTheme = themes.Results.OrderByDescending(t => t.Winrate).FirstOrDefault().Winrate,
+                MostPlayedScenario = scenarios.Results.OrderByDescending(s => s.NumberOfGamesPlayed).FirstOrDefault().Name,
+                GamesMostPlayedScenario = scenarios.Results.OrderByDescending(s => s.NumberOfGamesPlayed).FirstOrDefault().NumberOfGamesPlayed,
+                BestPerformingScenario = scenarios.Results.OrderByDescending(s => s.Winrate).FirstOrDefault().Name,
+                WinrateBestPerformingScenario = scenarios.Results.OrderByDescending(s => s.Winrate).FirstOrDefault().Winrate,
+                MostPlayedEndCondition = endConditions.Results.OrderByDescending(ec => ec.NumberOfGamesPlayed).FirstOrDefault().Name,
+                GamesMostPlayedEndCondition = endConditions.Results.OrderByDescending(ec => ec.NumberOfGamesPlayed).FirstOrDefault().NumberOfGamesPlayed,
+                BestPerformingEndCondition = endConditions.Results.OrderByDescending(ec => ec.Winrate).FirstOrDefault().Name,
+                WinrateBestPerformingEndCondition = endConditions.Results.OrderByDescending(ec => ec.Winrate).FirstOrDefault().Winrate
             };
-            List<Theme> playedThemes = new List<Theme>();
-            foreach (BattleReport battleReport in casterBattleReports)
-            {
-                if (battleReport.WinningCaster == caster.Name && battleReport.LosingCaster == caster.Name)
-                {
-                    if (playedThemes.Any(t => t.Name == battleReport.WinningTheme))
-                    {
-                        Theme theme = playedThemes.First(t => t.Name == battleReport.WinningTheme);
-                        theme.NumberOfGamesPlayed += 2;
-                        theme.NumberOfGamesWon++;
-                        theme.NumberOfGamesLost++;
-                        theme.Winrate = (float)theme.NumberOfGamesWon / (float)theme.NumberOfGamesPlayed;
-                    }
-                    else
-                    {
-                        Theme theme = new Theme()
-                        {
-                            Name = battleReport.WinningCaster,
-                            NumberOfGamesPlayed = 2,
-                            NumberOfGamesWon = 1,
-                            NumberOfGamesLost = 1,
-                            Winrate = 0.5f
-                        };
-                        playedThemes.Add(theme);
-                    }
-                }
-                else if (battleReport.WinningCaster == caster.Name)
-                {
-                    if (playedThemes.Any(t => t.Name == battleReport.WinningTheme))
-                    {
-                        Theme theme = playedThemes.First(t => t.Name == battleReport.WinningTheme);
-                        theme.NumberOfGamesPlayed++;
-                        theme.NumberOfGamesWon++;
-                        theme.Winrate = (float)theme.NumberOfGamesWon / (float)theme.NumberOfGamesPlayed;
-                    }
-                    else
-                    {
-                        Theme theme = new Theme()
-                        {
-                            Name = battleReport.WinningTheme,
-                            NumberOfGamesPlayed = 1,
-                            NumberOfGamesWon = 1,
-                            NumberOfGamesLost = 0,
-                            Winrate = 1
-                        };
-                        playedThemes.Add(theme);
-                    }
-                }
-                else if (battleReport.LosingCaster == caster.Name)
-                {
-                    if (playedThemes.Any(t => t.Name == battleReport.LosingTheme))
-                    {
-                        Theme theme = playedThemes.First(t => t.Name == battleReport.LosingTheme);
-                        theme.NumberOfGamesPlayed++;
-                        theme.NumberOfGamesLost++;
-                        theme.Winrate = (float)theme.NumberOfGamesWon / (float)theme.NumberOfGamesPlayed;
-                    }
-                    else
-                    {
-                        Theme theme = new Theme()
-                        {
-                            Name = battleReport.LosingTheme,
-                            NumberOfGamesPlayed = 1,
-                            NumberOfGamesWon = 0,
-                            NumberOfGamesLost = 1,
-                            Winrate = 0
-                        };
-                        playedThemes.Add(theme);
-                    }
-                }
-            }
-
-            Theme mostPlayedTheme = playedThemes.OrderByDescending(t => t.NumberOfGamesPlayed).FirstOrDefault();
-            casterResult.MostPlayedTheme = mostPlayedTheme.Name;
-            casterResult.GamesWithMostPlayedTheme = mostPlayedTheme.NumberOfGamesPlayed;
-            Theme bestPerformingTheme = playedThemes.OrderByDescending(t => t.Winrate).FirstOrDefault();
-            casterResult.BestPerformingTheme = bestPerformingTheme.Name;
-            casterResult.WinrateBestPerformingTheme = bestPerformingTheme.Winrate;
             return casterResult;
         }
 
@@ -312,13 +234,12 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             List<CasterResult> casterResults = new List<CasterResult>();
             foreach (Caster caster in casters)
                 casterResults.Add(CreateCasterResult(caster, battleReports));
-            casterResults = casterResults.OrderByDescending(cr => cr.Winrate).ToList();
-            return casterResults;
+            return casterResults.OrderByDescending(cr => cr.Winrate).ToList();
         }
 
         private ThemeResult CreateThemeResult(Theme theme, List<BattleReport> battleReports)
         {
-            IEnumerable<BattleReport> themeBattleReports = battleReports.Where(br => br.WinningTheme == theme.Name || br.LosingTheme == theme.Name);
+            List<BattleReport> themeBattleReports = battleReports.Where(br => br.WinningTheme == theme.Name || br.LosingTheme == theme.Name).ToList();
             ThemeResult themeResult = new ThemeResult()
             {
                 Name = theme.Name,
@@ -328,81 +249,11 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
                 Winrate = theme.Winrate,
                 NumberOfMirrorMatches = themeBattleReports.Where(br => br.WinningTheme == br.LosingTheme).Count()
             };
-            List<Caster> playedCasters = new List<Caster>();
-            foreach (BattleReport battleReport in themeBattleReports)
-            {
-                if (battleReport.WinningTheme == theme.Name && battleReport.LosingTheme == theme.Name)
-                {
-                    if (playedCasters.Any(c => c.Name == battleReport.WinningCaster))
-                    {
-                        Caster caster = playedCasters.First(c => c.Name == battleReport.WinningCaster);
-                        caster.NumberOfGamesPlayed += 2;
-                        caster.NumberOfGamesWon++;
-                        caster.NumberOfGamesLost++;
-                        caster.Winrate = (float)caster.NumberOfGamesWon / (float)caster.NumberOfGamesPlayed;
-                    }
-                    else
-                    {
-                        Caster caster = new Caster()
-                        {
-                            Name = battleReport.WinningCaster,
-                            NumberOfGamesPlayed = 2,
-                            NumberOfGamesWon = 1,
-                            NumberOfGamesLost = 1,
-                            Winrate = 0.5f
-                        };
-                        playedCasters.Add(caster);
-                    }
-                }
-                else if (battleReport.WinningTheme == theme.Name)
-                {
-                    if (playedCasters.Any(c => c.Name == battleReport.WinningCaster))
-                    {
-                        Caster caster = playedCasters.First(c => c.Name == battleReport.WinningCaster);
-                        caster.NumberOfGamesPlayed++;
-                        caster.NumberOfGamesWon++;
-                        caster.Winrate = (float)caster.NumberOfGamesWon / (float)caster.NumberOfGamesPlayed;
-                    }
-                    else
-                    {
-                        Caster caster = new Caster()
-                        {
-                            Name = battleReport.WinningCaster,
-                            NumberOfGamesPlayed = 1,
-                            NumberOfGamesWon = 1,
-                            NumberOfGamesLost = 0,
-                            Winrate = 1
-                        };
-                        playedCasters.Add(caster);
-                    }
-                }
-                else if (battleReport.LosingTheme == theme.Name)
-                {
-                    if (playedCasters.Any(c => c.Name == battleReport.LosingCaster))
-                    {
-                        Caster caster = playedCasters.First(c => c.Name == battleReport.LosingCaster);
-                        caster.NumberOfGamesPlayed++;
-                        caster.NumberOfGamesLost++;
-                        caster.Winrate = (float)caster.NumberOfGamesWon / (float)caster.NumberOfGamesPlayed;
-                    }
-                    else
-                    {
-                        Caster caster = new Caster()
-                        {
-                            Name = battleReport.LosingCaster,
-                            NumberOfGamesPlayed = 1,
-                            NumberOfGamesWon = 0,
-                            NumberOfGamesLost = 1,
-                            Winrate = 0
-                        };
-                        playedCasters.Add(caster);
-                    }
-                }
-            }
-            Caster mostPlayedCaster = playedCasters.OrderByDescending(c => c.NumberOfGamesPlayed).FirstOrDefault();
+            EntityResult casters = ThemeEntityResult(StaticDetails.CasterType, theme.Name, battleReports);
+            Entity mostPlayedCaster = casters.Results.OrderByDescending(c => c.NumberOfGamesPlayed).FirstOrDefault();
             themeResult.MostPlayedCaster = mostPlayedCaster.Name;
             themeResult.GamesWithMostPlayedCaster = mostPlayedCaster.NumberOfGamesPlayed;
-            Caster bestPerformingCaster = playedCasters.OrderByDescending(c => c.Winrate).FirstOrDefault();
+            Entity bestPerformingCaster = casters.Results.OrderByDescending(c => c.Winrate).FirstOrDefault();
             themeResult.BestPerformingCaster = bestPerformingCaster.Name;
             themeResult.WinrateBestPerformingCaster = bestPerformingCaster.Winrate;
             return themeResult;
@@ -413,11 +264,10 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             List<ThemeResult> themeResults = new List<ThemeResult>();
             foreach (Theme theme in themes)
                 themeResults.Add(CreateThemeResult(theme, battleReports));
-            themeResults = themeResults.OrderByDescending(tr => tr.Winrate).ToList();
-            return themeResults;
+            return themeResults.OrderByDescending(tr => tr.Winrate).ToList();
         }
 
-        private FactionResult CreateFactionResult(Faction faction, List<Theme> factionThemes, List<Caster> factionCasters, int numberOfMirrorMatches)
+        private FactionResult CreateFactionResult(Faction faction, List<Theme> factionThemes, List<Caster> factionCasters, List<BattleReport> factionBattleReports)
         {
             FactionResult factionResult = new FactionResult()
             {
@@ -426,7 +276,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
                 NumberOfGamesLost = faction.NumberOfGamesLost,
                 NumberOfGamesWon = faction.NumberOfGamesWon,
                 Winrate = faction.Winrate,
-                NumberOfMirrorMatches = numberOfMirrorMatches
+                NumberOfMirrorMatches = factionBattleReports.Where(br => br.WinningFaction == br.LosingFaction).Count()
             };
             Theme mostPlayedTheme = factionThemes.OrderByDescending(t => t.NumberOfGamesPlayed).FirstOrDefault();
             factionResult.MostPlayedTheme = mostPlayedTheme.Name;
@@ -448,13 +298,12 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             List<FactionResult> factionResults = new List<FactionResult>();
             foreach (Faction faction in factions)
             {
-                int numberOfMirrorMatches = battleReports.Where(br => br.WinningFaction == faction.Name && br.LosingFaction == faction.Name).Count();
                 List<Theme> factionThemes = themes.Where(t => t.FactionId == faction.Id).ToList();
                 List<Caster> factionCasters = casters.Where(c => c.FactionId == faction.Id).ToList();
-                factionResults.Add(CreateFactionResult(faction, factionThemes, factionCasters, numberOfMirrorMatches));
+                List<BattleReport> factionBattleReports = battleReports.Where(br => br.ConfirmedByOpponent && (br.WinningFaction == faction.Name || br.LosingFaction == faction.Name)).ToList();
+                factionResults.Add(CreateFactionResult(faction, factionThemes, factionCasters, factionBattleReports));
             }
-            factionResults = factionResults.OrderByDescending(fr => fr.Winrate).ToList();
-            return factionResults;
+            return factionResults.OrderByDescending(fr => fr.Winrate).ToList();
         }
 
         private EntityResult CasterEntityResult(string type, string caster, List<BattleReport> battleReports)
@@ -480,11 +329,9 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
                 if (result.Results.Any(e => e.Name == entityName))
                 {
                     Entity entity = result.Results.Find(e => e.Name == entityName);
-                    entity.NumberOfGamesPlayed++;
-                    if (battleReport.WinningCaster == caster)
-                        entity.NumberOfGamesWon++;
-                    else
-                        entity.NumberOfGamesLost++;
+                    entity.NumberOfGamesPlayed = battleReport.WinningCaster == battleReport.LosingCaster ? entity.NumberOfGamesPlayed + 2 : entity.NumberOfGamesPlayed + 1;
+                    entity.NumberOfGamesLost = battleReport.LosingCaster == caster ? entity.NumberOfGamesLost + 1: entity.NumberOfGamesLost;
+                    entity.NumberOfGamesWon = battleReport.WinningCaster == caster ? entity.NumberOfGamesWon + 1 : entity.NumberOfGamesWon;
                     entity.Winrate = (float)entity.NumberOfGamesWon / (float)entity.NumberOfGamesPlayed;
                 }
                 else
@@ -492,8 +339,8 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
                     Entity entity = new Entity()
                     {
                         Name = entityName,
-                        NumberOfGamesPlayed = 1,
-                        NumberOfGamesLost = battleReport.WinningCaster == caster ? 0 : 1,
+                        NumberOfGamesPlayed = battleReport.WinningCaster == battleReport.LosingCaster ? 2 : 1,
+                        NumberOfGamesLost = battleReport.LosingCaster == caster ? 1 : 0,
                         NumberOfGamesWon = battleReport.WinningCaster == caster ? 1 : 0
                     };
                     entity.Winrate = (float)entity.NumberOfGamesWon / (float)entity.NumberOfGamesPlayed;
@@ -527,11 +374,9 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
                 if (result.Results.Any(e => e.Name == entityName))
                 {
                     Entity entity = result.Results.Find(e => e.Name == entityName);
-                    entity.NumberOfGamesPlayed++;
-                    if (battleReport.WinningTheme == theme)
-                        entity.NumberOfGamesWon++;
-                    else
-                        entity.NumberOfGamesLost++;
+                    entity.NumberOfGamesPlayed = battleReport.WinningTheme == battleReport.LosingTheme ? entity.NumberOfGamesPlayed + 2 : entity.NumberOfGamesPlayed + 1;
+                    entity.NumberOfGamesLost = battleReport.LosingTheme == theme ? entity.NumberOfGamesLost + 1 : entity.NumberOfGamesLost;
+                    entity.NumberOfGamesWon = battleReport.WinningTheme == theme ? entity.NumberOfGamesWon + 1 : entity.NumberOfGamesWon;
                     entity.Winrate = (float)entity.NumberOfGamesWon / (float)entity.NumberOfGamesPlayed;
                 }
                 else
@@ -539,8 +384,8 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
                     Entity entity = new Entity()
                     {
                         Name = entityName,
-                        NumberOfGamesPlayed = 1,
-                        NumberOfGamesLost = battleReport.WinningTheme == theme ? 0 : 1,
+                        NumberOfGamesPlayed = battleReport.WinningTheme == battleReport.LosingTheme ? 2 : 1,
+                        NumberOfGamesLost = battleReport.LosingTheme == theme ? 1 : 0,
                         NumberOfGamesWon = battleReport.WinningTheme == theme ? 1 : 0
                     };
                     entity.Winrate = (float)entity.NumberOfGamesWon / (float)entity.NumberOfGamesPlayed;
@@ -575,11 +420,9 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
                 if (result.Results.Any(e => e.Name == entityName))
                 {
                     Entity entity = result.Results.Find(e => e.Name == entityName);
-                    entity.NumberOfGamesPlayed++;
-                    if (battleReport.WinningFaction == faction)
-                        entity.NumberOfGamesWon++;
-                    else
-                        entity.NumberOfGamesLost++;
+                    entity.NumberOfGamesPlayed = battleReport.WinningFaction == battleReport.LosingFaction ? entity.NumberOfGamesPlayed + 2 : entity.NumberOfGamesPlayed + 1;
+                    entity.NumberOfGamesLost = battleReport.LosingFaction == faction ? entity.NumberOfGamesLost + 1 : entity.NumberOfGamesLost;
+                    entity.NumberOfGamesWon = battleReport.WinningFaction == faction ? entity.NumberOfGamesWon + 1 : entity.NumberOfGamesWon;
                     entity.Winrate = (float)entity.NumberOfGamesWon / (float)entity.NumberOfGamesPlayed;
                 }
                 else
@@ -587,8 +430,8 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
                     Entity entity = new Entity()
                     {
                         Name = entityName,
-                        NumberOfGamesPlayed = 1,
-                        NumberOfGamesLost = battleReport.WinningFaction == faction ? 0 : 1,
+                        NumberOfGamesPlayed = battleReport.WinningFaction == battleReport.LosingFaction ? 2 : 1,
+                        NumberOfGamesLost = battleReport.LosingFaction == faction ? 1 : 0,
                         NumberOfGamesWon = battleReport.WinningFaction == faction ? 1 : 0
                     };
                     entity.Winrate = (float)entity.NumberOfGamesWon / (float)entity.NumberOfGamesPlayed;
@@ -625,10 +468,8 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
                 {
                     Entity entity = result.Results.Find(e => e.Name == entityName);
                     entity.NumberOfGamesPlayed++;
-                    if (battleReport.WinnersUsername == username)
-                        entity.NumberOfGamesWon++;
-                    else
-                        entity.NumberOfGamesLost++;
+                    entity.NumberOfGamesLost = battleReport.LosersUsername == username ? entity.NumberOfGamesLost + 1 : entity.NumberOfGamesLost;
+                    entity.NumberOfGamesWon = battleReport.WinnersUsername == username ? entity.NumberOfGamesWon + 1 : entity.NumberOfGamesWon;
                     entity.Winrate = (float)entity.NumberOfGamesWon / (float)entity.NumberOfGamesPlayed;
                 }
                 else
@@ -637,7 +478,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
                     {
                         Name = entityName,
                         NumberOfGamesPlayed = 1,
-                        NumberOfGamesLost = battleReport.WinnersUsername == username ? 0 : 1,
+                        NumberOfGamesLost = battleReport.LosersUsername == username ? 1 : 0,
                         NumberOfGamesWon = battleReport.WinnersUsername == username ? 1 : 0
                     };
                     entity.Winrate = (float)entity.NumberOfGamesWon / (float)entity.NumberOfGamesPlayed;
@@ -650,33 +491,9 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
 
         private UserResult CreateUserResult(ApplicationUser user, List<BattleReport> battleReports)
         {
-            Dictionary<string, int> gamesPlayedWithEachFaction = new Dictionary<string, int>();
-            Dictionary<string, int> gamesPlayedWithEachTheme = new Dictionary<string, int>();
-            Dictionary<string, int> gamesPlayedWithEachCaster = new Dictionary<string, int>();
-
-            Dictionary<string, int> gamesWonWithEachFaction = new Dictionary<string, int>();
-            Dictionary<string, int> gamesWonWithEachTheme = new Dictionary<string, int>();
-            Dictionary<string, int> gamesWonWithEachCaster = new Dictionary<string, int>();
-
-            CollectBattleReportsData(user, battleReports, gamesPlayedWithEachFaction, gamesPlayedWithEachTheme, gamesPlayedWithEachCaster,
-                                     gamesWonWithEachFaction, gamesWonWithEachTheme, gamesWonWithEachCaster);
-
-            string mostPlayedFaction = FindTopResult(gamesPlayedWithEachFaction, out int gamesWithMostPlayedFaction);
-            string mostPlayedTheme = FindTopResult(gamesPlayedWithEachTheme, out int gamesWithMostPlayedTheme);
-            string mostPlayedCaster = FindTopResult(gamesPlayedWithEachCaster, out int gamesWithMostPlayedCaster);
-
-            Dictionary<string, float> winrateWithEachFaction = new Dictionary<string, float>();
-            Dictionary<string, float> winrateWithEachTheme = new Dictionary<string, float>();
-            Dictionary<string, float> winrateWithEachCaster = new Dictionary<string, float>();
-
-            FindWinRate(gamesPlayedWithEachFaction, gamesWonWithEachFaction, winrateWithEachFaction);
-            FindWinRate(gamesPlayedWithEachTheme, gamesWonWithEachTheme, winrateWithEachTheme);
-            FindWinRate(gamesPlayedWithEachCaster, gamesWonWithEachCaster, winrateWithEachCaster);
-
-            string bestPerformingFaction = FindTopResult(winrateWithEachFaction, out float winrateBestPerformingFaction);
-            string bestPerformingTheme = FindTopResult(winrateWithEachTheme, out float winrateBestPerformingTheme);
-            string bestPerformingCaster = FindTopResult(winrateWithEachCaster, out float winrateBestPerformingCaster);
-
+            EntityResult factionResult = UserEntityResult(StaticDetails.FactionType, user.UserName, battleReports);
+            EntityResult themeResult = UserEntityResult(StaticDetails.ThemeType, user.UserName, battleReports);
+            EntityResult casterResult = UserEntityResult(StaticDetails.CasterType, user.UserName, battleReports);
             UserResult userResult = new UserResult()
             {
                 Username = user.UserName,
@@ -684,20 +501,19 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
                 NumberOfGamesWon = user.NumberOfGamesWon,
                 NumberOfGamesLost = user.NumberOfGamesLost,
                 Winrate = user.Winrate,
-                MostPlayedFaction = mostPlayedFaction,
-                GamesWithMostPlayedFaction = gamesWithMostPlayedFaction,
-                MostPlayedTheme = mostPlayedTheme,
-                GamesWithMostPlayedTheme = gamesWithMostPlayedTheme,
-                MostPlayedCaster = mostPlayedCaster,
-                GamesWithMostPlayedCaster = gamesWithMostPlayedCaster,
-                BestPerformingFaction = bestPerformingFaction,
-                WinrateBestPerformingFaction = winrateBestPerformingFaction,
-                BestPerformingTheme = bestPerformingTheme,
-                WinrateBestPerformingTheme = winrateBestPerformingTheme,
-                BestPerformingCaster = bestPerformingCaster,
-                WinrateBestPerformingCaster = winrateBestPerformingCaster
+                MostPlayedFaction = factionResult.Results.OrderByDescending(e => e.NumberOfGamesPlayed).FirstOrDefault().Name,
+                GamesWithMostPlayedFaction = factionResult.Results.OrderByDescending(e => e.NumberOfGamesPlayed).FirstOrDefault().NumberOfGamesPlayed,
+                MostPlayedTheme = themeResult.Results.OrderByDescending(e => e.NumberOfGamesPlayed).FirstOrDefault().Name,
+                GamesWithMostPlayedTheme = themeResult.Results.OrderByDescending(e => e.NumberOfGamesPlayed).FirstOrDefault().NumberOfGamesPlayed,
+                MostPlayedCaster = casterResult.Results.OrderByDescending(e => e.NumberOfGamesPlayed).FirstOrDefault().Name,
+                GamesWithMostPlayedCaster = casterResult.Results.OrderByDescending(e => e.NumberOfGamesPlayed).FirstOrDefault().NumberOfGamesPlayed,
+                BestPerformingFaction = factionResult.Results.OrderByDescending(e => e.Winrate).FirstOrDefault().Name,
+                WinrateBestPerformingFaction = factionResult.Results.OrderByDescending(e => e.Winrate).FirstOrDefault().Winrate,
+                BestPerformingTheme = themeResult.Results.OrderByDescending(e => e.Winrate).FirstOrDefault().Name,
+                WinrateBestPerformingTheme = themeResult.Results.OrderByDescending(e => e.Winrate).FirstOrDefault().Winrate,
+                BestPerformingCaster = casterResult.Results.OrderByDescending(e => e.Winrate).FirstOrDefault().Name,
+                WinrateBestPerformingCaster = casterResult.Results.OrderByDescending(e => e.Winrate).FirstOrDefault().Winrate
             };
-
             return userResult;
         }
 
@@ -707,94 +523,12 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             List<ApplicationUser> users = region == StaticDetails.AllRegions ?
                 await _db.ApplicationUsers.OrderByDescending(au => au.Winrate).ToListAsync() :
                 await _db.ApplicationUsers.Where(au => au.Region == region).OrderByDescending(au => au.Winrate).ToListAsync();
-
             foreach (ApplicationUser user in users)
             {
                 List<BattleReport> usersBattleReports = await _db.BattleReports.Where(br => br.PostersUsername == user.UserName || br.OpponentsUsername == user.UserName).ToListAsync();
                 userResults.Add(CreateUserResult(user, usersBattleReports));
             }
-
             return userResults;
-        }
-
-        private void CollectBattleReportsData(ApplicationUser user, List<BattleReport> usersBattleReports,
-            Dictionary<string, int> gamesPlayedWithEachFaction, Dictionary<string, int> gamesPlayedWithEachTheme, Dictionary<string, int> gamesPlayedWithEachCaster,
-            Dictionary<string, int> gamesWonWithEachFaction, Dictionary<string, int> gamesWonWithEachTheme, Dictionary<string, int> gamesWonWithEachCaster)
-        {
-            foreach (BattleReport battleReport in usersBattleReports)
-            {
-                CollectFactionResults(user, gamesPlayedWithEachFaction, gamesWonWithEachFaction, battleReport);
-                CollectThemeResults(user, gamesPlayedWithEachTheme, gamesWonWithEachTheme, battleReport);
-                CollectCasterResults(user, gamesPlayedWithEachCaster, gamesWonWithEachCaster, battleReport);
-            }
-        }
-
-        private void CollectFactionResults(ApplicationUser user, Dictionary<string, int> gamesPlayedWithEachFaction, Dictionary<string, int> gamesWonWithEachFaction, BattleReport battleReport)
-        {
-            string faction = user.UserName == battleReport.PostersUsername ? battleReport.PostersFaction : battleReport.OpponentsFaction;
-            if (gamesPlayedWithEachFaction.ContainsKey(faction))
-                gamesPlayedWithEachFaction[faction]++;
-            else
-                gamesPlayedWithEachFaction.Add(faction, 1);
-
-            if (faction == battleReport.WinningFaction)
-            {
-                if (gamesWonWithEachFaction.ContainsKey(faction))
-                    gamesWonWithEachFaction[faction]++;
-                else
-                    gamesWonWithEachFaction.Add(faction, 1);
-            }
-        }
-
-        private void CollectThemeResults(ApplicationUser user, Dictionary<string, int> gamesPlayedWithEachTheme, Dictionary<string, int> gamesWonWithEachTheme, BattleReport battleReport)
-        {
-            string theme = user.UserName == battleReport.PostersUsername ? battleReport.PostersTheme : battleReport.OpponentsTheme;
-            if (gamesPlayedWithEachTheme.ContainsKey(theme))
-                gamesPlayedWithEachTheme[theme]++;
-            else
-                gamesPlayedWithEachTheme.Add(theme, 1);
-
-            if (theme == battleReport.WinningTheme)
-            {
-                if (gamesWonWithEachTheme.ContainsKey(theme))
-                    gamesWonWithEachTheme[theme]++;
-                else
-                    gamesWonWithEachTheme.Add(theme, 1);
-            }
-        }
-
-        private void CollectCasterResults(ApplicationUser user, Dictionary<string, int> gamesPlayedWithEachCaster, Dictionary<string, int> gamesWonWithEachCaster, BattleReport battleReport)
-        {
-            string caster = user.UserName == battleReport.PostersUsername ? battleReport.PostersCaster : battleReport.OpponentsCaster;
-            if (gamesPlayedWithEachCaster.ContainsKey(caster))
-                gamesPlayedWithEachCaster[caster]++;
-            else
-                gamesPlayedWithEachCaster.Add(caster, 1);
-
-            if (caster == battleReport.WinningCaster)
-            {
-                if (gamesWonWithEachCaster.ContainsKey(caster))
-                    gamesWonWithEachCaster[caster]++;
-                else
-                    gamesWonWithEachCaster.Add(caster, 1);
-            }
-        }
-
-        private void FindWinRate(Dictionary<string, int> gamesPlayedWithEachItem, Dictionary<string, int> gamesWonWithEachItem, Dictionary<string, float> winrateWithEachItem)
-        {
-            foreach (var keyValuePair in gamesPlayedWithEachItem)
-            {
-                string item = keyValuePair.Key;
-                float gamesPlayed = keyValuePair.Value;
-                float gamesWon = gamesWonWithEachItem.ContainsKey(item) ? gamesWonWithEachItem[item] : 0;
-                winrateWithEachItem.Add(item, gamesWon / gamesPlayed);
-            }
-        }
-
-        private string FindTopResult<T>(Dictionary<string, T> results, out T value)
-        {
-            value = results.Values.Max();
-            return results.First(kvp => kvp.Value.Equals(results.Values.Max())).Key;
         }
     }
 }

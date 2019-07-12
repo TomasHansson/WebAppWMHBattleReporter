@@ -89,16 +89,16 @@
     <br />
     <h5 class="text-info">Top 10 Casters</h5>
     <div>
-        @if (Model.Top10Factions.Count() == 0)
+        @if (Model.Top10Casters.Count() == 0)
         {
-            <p>There are no factions in the database.</p>
+            <p>There are no casters in the database.</p>
         }
         else
         {
             <table class="table table-striped border">
                 <tr class="table-secondary">
                     <th>#</th>
-                    <th>Faction</th>
+                    <th>Caster</th>
                     <th>Lost</th>
                     <th>Won</th>
                     <th>Played</th>
@@ -106,15 +106,15 @@
                     <th>Details</th>
                 </tr>
                 @{ int counter = 1; }
-                @foreach (Faction faction in Model.Top10Factions)
+                @foreach (Caster caster in Model.Top10Casters)
                 {
                     <tr>
                         <td>@counter</td>
-                        <td>@faction.Name</td>
-                        <td>@faction.NumberOfGamesLost</td>
-                        <td>@faction.NumberOfGamesWon</td>
-                        <td>@faction.NumberOfGamesPlayed</td>
-                        <td>@faction.Winrate</td>
+                        <td>@caster.Name</td>
+                        <td>@caster.NumberOfGamesLost</td>
+                        <td>@caster.NumberOfGamesWon</td>
+                        <td>@caster.NumberOfGamesPlayed</td>
+                        <td>@caster.Winrate</td>
                         <td>
                             <a class="btn btn-success text-white" asp-action="Details" asp-route-Id="@Model">
                                 <i class="fas fa-list-alt"></i>
