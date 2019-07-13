@@ -46,6 +46,7 @@ namespace WebAppWMHBattleReporter
                 .AddDefaultUI(UIFramework.Bootstrap4)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
+            services.AddScoped<IDbInitializer, DbInitializer>();
             services.AddSingleton<IEmailSender, EmailSender>();
             services.Configure<EmailOptions>(Configuration);
 
@@ -53,7 +54,7 @@ namespace WebAppWMHBattleReporter
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IDbInitializer dbInitializer)
         {
             if (env.IsDevelopment())
             {
@@ -66,6 +67,8 @@ namespace WebAppWMHBattleReporter
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            dbInitializer.Initialize();
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
