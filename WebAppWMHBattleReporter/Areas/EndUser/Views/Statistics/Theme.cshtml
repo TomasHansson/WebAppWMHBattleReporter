@@ -4,8 +4,6 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-
-
 <div class="border applicationFormGroup">
     <h2 class="text-info">Theme Details</h2>
     <br />
@@ -37,20 +35,27 @@
         <hr />
         <partial name="_ThemeDetails" model="@Model.ThemeResult" />
         <hr />
-        <h5 class="text-info">Played Casters</h5>
-        <partial name="_EntityResultsTable" model="@Model.Casters" />
-        <h5 class="text-info">Game Sizes</h5>
-        <partial name="_EntityResultsTable" model="@Model.GameSizes" />
-        <h5 class="text-info">Scenarios</h5>
-        <partial name="_EntityResultsTable" model="@Model.Scenarios" />
-        <h5 class="text-info">End Conditions</h5>
-        <partial name="_EntityResultsTable" model="@Model.EndConditions" />
-        <h5 class="text-info">Versus Factions</h5>
-        <partial name="_EntityResultsTable" model="@Model.VersusFactions" />
-        <h5 class="text-info">Versus Themes</h5>
-        <partial name="_EntityResultsTable" model="@Model.VersusThemes" />
-        <h5 class="text-info">Versus Casters</h5>
-        <partial name="_EntityResultsTable" model="@Model.VersusCasters" />
+        @if (Model.ThemeResult.NumberOfGamesPlayed == 0)
+        {
+            <p>There are no recorded games with this theme.</p>
+        }
+        else
+        {
+            <h5 class="text-info">Played Casters</h5>
+            <partial name="_EntityResultsTable" model="@Model.Casters" />
+            <h5 class="text-info">Game Sizes</h5>
+            <partial name="_EntityResultsTable" model="@Model.GameSizes" />
+            <h5 class="text-info">Scenarios</h5>
+            <partial name="_EntityResultsTable" model="@Model.Scenarios" />
+            <h5 class="text-info">End Conditions</h5>
+            <partial name="_EntityResultsTable" model="@Model.EndConditions" />
+            <h5 class="text-info">Versus Factions</h5>
+            <partial name="_EntityResultsTable" model="@Model.VersusFactions" />
+            <h5 class="text-info">Versus Themes</h5>
+            <partial name="_EntityResultsTable" model="@Model.VersusThemes" />
+            <h5 class="text-info">Versus Casters</h5>
+            <partial name="_EntityResultsTable" model="@Model.VersusCasters" />
+        }
     }
 </div>
 

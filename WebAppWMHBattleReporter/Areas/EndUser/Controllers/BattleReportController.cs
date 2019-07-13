@@ -49,6 +49,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             return View(viewModel);
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> GetFactionThemeNames(int? id)
         {
             if (id == null)
@@ -61,6 +62,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             return Json(factionThemes);
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> GetFactionCasterNames(int? id)
         {
             if (id == null)
