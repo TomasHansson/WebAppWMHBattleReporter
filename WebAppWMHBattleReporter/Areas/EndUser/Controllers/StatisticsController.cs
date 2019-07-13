@@ -504,9 +504,6 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
 
         private UserResult CreateUserResult(ApplicationUser user, List<BattleReport> battleReports)
         {
-            EntityResult factionResult = UserEntityResult(StaticDetails.FactionType, user.UserName, battleReports);
-            EntityResult themeResult = UserEntityResult(StaticDetails.ThemeType, user.UserName, battleReports);
-            EntityResult casterResult = UserEntityResult(StaticDetails.CasterType, user.UserName, battleReports);
             UserResult userResult = new UserResult()
             {
                 Username = user.UserName,
@@ -514,19 +511,34 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
                 NumberOfGamesWon = user.NumberOfGamesWon,
                 NumberOfGamesLost = user.NumberOfGamesLost,
                 Winrate = user.Winrate,
-                MostPlayedFaction = factionResult.Results.OrderByDescending(e => e.NumberOfGamesPlayed).FirstOrDefault().Name,
-                GamesWithMostPlayedFaction = factionResult.Results.OrderByDescending(e => e.NumberOfGamesPlayed).FirstOrDefault().NumberOfGamesPlayed,
-                MostPlayedTheme = themeResult.Results.OrderByDescending(e => e.NumberOfGamesPlayed).FirstOrDefault().Name,
-                GamesWithMostPlayedTheme = themeResult.Results.OrderByDescending(e => e.NumberOfGamesPlayed).FirstOrDefault().NumberOfGamesPlayed,
-                MostPlayedCaster = casterResult.Results.OrderByDescending(e => e.NumberOfGamesPlayed).FirstOrDefault().Name,
-                GamesWithMostPlayedCaster = casterResult.Results.OrderByDescending(e => e.NumberOfGamesPlayed).FirstOrDefault().NumberOfGamesPlayed,
-                BestPerformingFaction = factionResult.Results.OrderByDescending(e => e.Winrate).FirstOrDefault().Name,
-                WinrateBestPerformingFaction = factionResult.Results.OrderByDescending(e => e.Winrate).FirstOrDefault().Winrate,
-                BestPerformingTheme = themeResult.Results.OrderByDescending(e => e.Winrate).FirstOrDefault().Name,
-                WinrateBestPerformingTheme = themeResult.Results.OrderByDescending(e => e.Winrate).FirstOrDefault().Winrate,
-                BestPerformingCaster = casterResult.Results.OrderByDescending(e => e.Winrate).FirstOrDefault().Name,
-                WinrateBestPerformingCaster = casterResult.Results.OrderByDescending(e => e.Winrate).FirstOrDefault().Winrate
             };
+            if (battleReports.Count == 0)
+            {
+                userResult.MostPlayedFaction = StaticDetails.NoRecords;
+                userResult.MostPlayedTheme = StaticDetails.NoRecords;
+                userResult.MostPlayedCaster = StaticDetails.NoRecords;
+                userResult.BestPerformingFaction = StaticDetails.NoRecords;
+                userResult.BestPerformingTheme = StaticDetails.NoRecords;
+                userResult.BestPerformingCaster = StaticDetails.NoRecords;
+            }
+            else
+            {
+                EntityResult factionResult = UserEntityResult(StaticDetails.FactionType, user.UserName, battleReports);
+                EntityResult themeResult = UserEntityResult(StaticDetails.ThemeType, user.UserName, battleReports);
+                EntityResult casterResult = UserEntityResult(StaticDetails.CasterType, user.UserName, battleReports);
+                userResult.MostPlayedFaction = factionResult.Results.OrderByDescending(e => e.NumberOfGamesPlayed).FirstOrDefault().Name;
+                userResult.GamesWithMostPlayedFaction = factionResult.Results.OrderByDescending(e => e.NumberOfGamesPlayed).FirstOrDefault().NumberOfGamesPlayed;
+                userResult.MostPlayedTheme = themeResult.Results.OrderByDescending(e => e.NumberOfGamesPlayed).FirstOrDefault().Name;
+                userResult.GamesWithMostPlayedTheme = themeResult.Results.OrderByDescending(e => e.NumberOfGamesPlayed).FirstOrDefault().NumberOfGamesPlayed;
+                userResult.MostPlayedCaster = casterResult.Results.OrderByDescending(e => e.NumberOfGamesPlayed).FirstOrDefault().Name;
+                userResult.GamesWithMostPlayedCaster = casterResult.Results.OrderByDescending(e => e.NumberOfGamesPlayed).FirstOrDefault().NumberOfGamesPlayed;
+                userResult.BestPerformingFaction = factionResult.Results.OrderByDescending(e => e.Winrate).FirstOrDefault().Name;
+                userResult.WinrateBestPerformingFaction = factionResult.Results.OrderByDescending(e => e.Winrate).FirstOrDefault().Winrate;
+                userResult.BestPerformingTheme = themeResult.Results.OrderByDescending(e => e.Winrate).FirstOrDefault().Name;
+                userResult.WinrateBestPerformingTheme = themeResult.Results.OrderByDescending(e => e.Winrate).FirstOrDefault().Winrate;
+                userResult.BestPerformingCaster = casterResult.Results.OrderByDescending(e => e.Winrate).FirstOrDefault().Name;
+                userResult.WinrateBestPerformingCaster = casterResult.Results.OrderByDescending(e => e.Winrate).FirstOrDefault().Winrate;
+            }
             return userResult;
         }
 

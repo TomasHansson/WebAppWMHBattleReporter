@@ -43,5 +43,6 @@ namespace WebAppWMHBattleReporter.Utility
         public const string VersusFactionType = "Enemy Faction";
         public const string VersusThemeType = "Enemy Theme";
         public const string VersusCasterType = "Enemy Caster";
+        public const string NoRecords = "No records";
     }
 }

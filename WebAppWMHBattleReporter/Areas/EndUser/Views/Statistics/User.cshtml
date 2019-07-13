@@ -11,7 +11,15 @@
         <div class="col-4-col-lg-3">
             <label asp-for="@Model.Username">Insert Username: </label>
             <input id="chosenUsername" asp-for="@Model.Username" class="form-control" />
-            <a id="loadUserDetails" class="btn btn-primary form-control mt-1" href="/EndUser/Statistics/User">Load Details</a>
+            @if (string.IsNullOrWhiteSpace(Model.Username))
+            {
+                <a id="loadUserDetails" class="btn btn-primary form-control mt-1" href="/EndUser/Statistics/User">Load Details</a>
+            }
+            else
+            {
+                string url = "/EndUser/Statistics/User/" + Model.Username;
+                <a id="loadUserDetails" class="btn btn-primary form-control mt-1" href="@url">Load Details</a>
+            }
         </div>
     </div>
     <br />
