@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -12,6 +13,7 @@ using WebAppWMHBattleReporter.Models.ViewModels;
 
 namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
 {
+    [Authorize]
     [Area("EndUser")]
     public class BattleReportController : Controller
     {
@@ -22,6 +24,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             _db = db;
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             List<BattleReport> battleReports = await _db.BattleReports.Where(br => br.ConfirmedByOpponent).ToListAsync();
@@ -39,7 +42,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             int firstFactionId = viewModel.Factions.FirstOrDefault().Id;
             viewModel.FirstFactionThemes = await _db.Themes.Where(t => t.FactionId == firstFactionId).ToListAsync();
             viewModel.FirstFactionCasters = await _db.Casters.Where(c => c.FactionId == firstFactionId).ToListAsync();
-            viewModel.BattleReport.PostersUsername = "Poster"; // This should be changed to fetch the username with the use of the UserClaim.
+            viewModel.BattleReport.PostersUsername = User.Identity.Name;
             return View(viewModel);
         }
 
@@ -115,6 +118,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             return RedirectToAction("Index", "Home", new { Area = "Home" });
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -129,6 +133,9 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
 
         public async Task<IActionResult> UnconfirmedBattleReports(string id)
         {
+            if (id != User.Identity.Name)
+                return Unauthorized();
+
             if (string.IsNullOrWhiteSpace(id))
                 return NotFound();
 

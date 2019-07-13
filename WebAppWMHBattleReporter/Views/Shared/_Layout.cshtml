@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using WebAppWMHBattleReporter.Utility
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
@@ -31,25 +32,30 @@
                 <div class="navbar-collapse collapse d-sm-inline-flex flex-sm-row-reverse">
                     <partial name="_LoginPartial" />
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item dropdown text-white-50">
-                            <a class="nav-link text-dark dropdown-toggle" href="#" id="navbarDropDownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                Administration
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropDownMenuLink">
-                                <a asp-area="Admin" asp-controller="Faction" asp-action="Index" class="dropdown-item">Factions</a>
-                                <a asp-area="Admin" asp-controller="Theme" asp-action="Index" class="dropdown-item">Themes</a>
-                                <a asp-area="Admin" asp-controller="Caster" asp-action="Index" class="dropdown-item">Casters</a>
-                            </div>
-                        </li>
+                        @if (User.IsInRole(StaticDetails.Administrator))
+                        {
+                            <li class="nav-item dropdown text-white-50">
+                                <a class="nav-link text-dark dropdown-toggle" href="#" id="navbarDropDownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Administration
+                                </a>
+                                <div class="dropdown-menu" aria-labelledby="navbarDropDownMenuLink">
+                                    <a asp-area="Admin" asp-controller="Faction" asp-action="Index" class="dropdown-item">Factions</a>
+                                    <a asp-area="Admin" asp-controller="Theme" asp-action="Index" class="dropdown-item">Themes</a>
+                                    <a asp-area="Admin" asp-controller="Caster" asp-action="Index" class="dropdown-item">Casters</a>
+                                </div>
+                            </li>
+                        }
                         <li class="nav-item dropdown text-white-50">
                             <a class="nav-link text-dark dropdown-toggle" href="#" id="navbarDropDownBattleReport" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Battle Reports
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropDownBattleReport">
                                 <a asp-area="EndUser" asp-controller="BattleReport" asp-action="Index" class="nav-link text-dark">View All Reports</a>
-                                <a asp-area="EndUser" asp-controller="BattleReport" asp-action="UnconfirmedBattleReports" asp-route-Id="Admin" class="nav-link text-dark">Unconfirmed Reports</a>
-                                @*This needs to be changed to look for the logged in users Unconfirmed Battle Reports, rather than defaulting to the user with username as Admin.*@
-                                <a asp-area="EndUser" asp-controller="BattleReport" asp-action="Create" class="nav-link text-dark">Add Report</a>
+                                @if (User.Identity.IsAuthenticated)
+                                {
+                                    <a asp-area="EndUser" asp-controller="BattleReport" asp-action="UnconfirmedBattleReports" asp-route-Id="@User.Identity.Name" class="nav-link text-dark">Unconfirmed Reports</a>
+                                    <a asp-area="EndUser" asp-controller="BattleReport" asp-action="Create" class="nav-link text-dark">Add Report</a>
+                                }
                             </div>
                         </li>
                         <li class="nav-item dropdown text-white-50">

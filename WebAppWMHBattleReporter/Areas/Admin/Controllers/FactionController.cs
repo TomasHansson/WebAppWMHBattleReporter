@@ -2,14 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebAppWMHBattleReporter.Data;
 using WebAppWMHBattleReporter.Models;
 using WebAppWMHBattleReporter.Models.ViewModels;
+using WebAppWMHBattleReporter.Utility;
 
 namespace WebAppWMHBattleReporter.Areas.Admin.Controllers
 {
+    [Authorize(Roles = StaticDetails.Administrator)]
     [Area("Admin")]
     public class FactionController : Controller
     {

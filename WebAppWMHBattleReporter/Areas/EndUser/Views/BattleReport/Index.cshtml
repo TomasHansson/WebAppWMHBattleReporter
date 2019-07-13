@@ -9,9 +9,12 @@
         <div class="col-6">
             <h2 class="text-info">Battle Reports List</h2>
         </div>
-        <div class="col-6 text-right">
-            <partial name="_CreateButton" />
-        </div>
+        @if (User.Identity.IsAuthenticated)
+        {
+            <div class="col-6 text-right">
+                <partial name="_CreateButton" />
+            </div>
+        }
     </div>
     <br />
     <div>
