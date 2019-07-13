@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -18,10 +19,12 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
     public class BattleReportController : Controller
     {
         private ApplicationDbContext _db;
+        private readonly IEmailSender _emailSender;
 
-        public BattleReportController(ApplicationDbContext db)
+        public BattleReportController(ApplicationDbContext db, IEmailSender emailSender)
         {
             _db = db;
+            _emailSender = emailSender;
         }
 
         [AllowAnonymous]
@@ -114,6 +117,10 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             viewModel.BattleReport.WinningCaster = viewModel.PosterWon ? viewModel.BattleReport.PostersCaster : viewModel.BattleReport.OpponentsCaster;
 
             _db.BattleReports.Add(viewModel.BattleReport);
+
+            ApplicationUser opponent = await _db.ApplicationUsers.FirstAsync(au => au.UserName == viewModel.BattleReport.OpponentsUsername);
+            string opponentsEmail = opponent.Email;
+            await _emailSender.SendEmailAsync(opponentsEmail, "Battle Report Posted", "The user " + viewModel.BattleReport.PostersUsername + " has added a battle report with you as their opponent. Please log in and confirm the battle report when able.");
             await _db.SaveChangesAsync();
             return RedirectToAction("Index", "Home", new { Area = "Home" });
         }

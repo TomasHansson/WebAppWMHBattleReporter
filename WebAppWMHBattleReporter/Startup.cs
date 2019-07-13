@@ -13,6 +13,8 @@ using Microsoft.EntityFrameworkCore;
 using WebAppWMHBattleReporter.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using WebAppWMHBattleReporter.Service;
+using Microsoft.AspNetCore.Identity.UI.Services;
 
 namespace WebAppWMHBattleReporter
 {
@@ -43,6 +45,9 @@ namespace WebAppWMHBattleReporter
                 .AddDefaultTokenProviders()
                 .AddDefaultUI(UIFramework.Bootstrap4)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            services.AddSingleton<IEmailSender, EmailSender>();
+            services.Configure<EmailOptions>(Configuration);
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
         }

@@ -15,7 +15,7 @@
             <a asp-action="AcceptUnconfirmed" asp-route-id="@Model.Id" class="btn btn-info form-control mb-1">Confirm Battle Report</a>
         </div>
         <div class="col-12 col-md-4">
-            <a asp-action="UnconfirmedBattleReports" asp-route-id="Admin" class="btn btn-success form-control">Back to List</a>
+            <a asp-action="UnconfirmedBattleReports" asp-route-id="@User.Identity.Name" class="btn btn-success form-control">Back to List</a>
         </div>
     </div>
 </div>

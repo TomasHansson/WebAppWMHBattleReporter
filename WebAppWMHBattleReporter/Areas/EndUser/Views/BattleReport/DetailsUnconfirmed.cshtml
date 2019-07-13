@@ -12,7 +12,7 @@
     <hr />
     <div class="form-group row">
         <div class="col-12 col-md-4">
-            <a asp-action="UnconfirmedBattleReports" asp-route-id="Admin" class="btn btn-success form-control">Back to List</a>
+            <a asp-action="UnconfirmedBattleReports" asp-route-id="@User.Identity.Name" class="btn btn-success form-control">Back to List</a>
         </div>
     </div>
 </div>
