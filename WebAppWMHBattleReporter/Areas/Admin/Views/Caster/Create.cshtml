@@ -45,9 +45,12 @@
         <div class="col-3 offset-1">
             @if (Model.Casters.Count() > 0)
             {
-                <p>Existing Casters: </p>
                 <div id="CasterList">
-                    <ul class="list-group"></ul>
+                    <table class="table table-striped border">
+                        <tr class="table-secondary">
+                            <th>Existing Casters</th>
+                        </tr>
+                    </table>
                 </div>
             }
         </div>
@@ -69,11 +72,12 @@
                 success: function (data) {
                     results = JSON.parse(data);
                     $list.html('');
-                    $list.append(' <ul class="list-group"> ')
+                    var newTable = '<table class="table table-striped border"><tr class="table-secondary"><th>Existing Casters</th></tr>';
                     for (i in results) {
-                        $list.append('<li class="list-group-item">' + results[i].text + '</li>');
+                        newTable += ('<tr><td>' + results[i].text + '</td></tr>');
                     }
-                    $list.append('</ul>');
+                    newTable += '</table>';
+                    $list.html(newTable);
                 }
             });
         }
