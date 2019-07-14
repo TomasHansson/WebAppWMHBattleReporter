@@ -129,6 +129,27 @@ namespace WebAppWMHBattleReporter.Areas.Admin.Controllers
             if (themeFromDB == null)
                 return NotFound();
 
+            List<BattleReport> battleReports = await _db.BattleReports.Where(br => br.PostersTheme == themeFromDB.Name || br.OpponentsTheme == themeFromDB.Name).ToListAsync();
+            if (battleReports.Count > 0 && themeFromDB.FactionId != viewModel.Theme.FactionId)
+            {
+                viewModel.Factions = await _db.Factions.ToListAsync();
+                viewModel.Themes = await _db.Themes.ToListAsync();
+                viewModel.StatusMessage = "Error: You cannot change the Faction for a Theme for which there are already posted Battle Reports.";
+                return View(viewModel);
+            }
+
+            foreach (BattleReport battleReport in battleReports)
+            {
+                if (battleReport.PostersTheme == themeFromDB.Name)
+                    battleReport.PostersTheme = viewModel.Theme.Name;
+                if (battleReport.OpponentsTheme == themeFromDB.Name)
+                    battleReport.OpponentsTheme = viewModel.Theme.Name;
+                if (battleReport.WinningTheme == themeFromDB.Name)
+                    battleReport.WinningTheme = viewModel.Theme.Name;
+                if (battleReport.LosingTheme == themeFromDB.Name)
+                    battleReport.LosingTheme = viewModel.Theme.Name;
+            }
+
             themeFromDB.Name = viewModel.Theme.Name;
             themeFromDB.FactionId = viewModel.Theme.FactionId;
             await _db.SaveChangesAsync();
@@ -147,7 +168,12 @@ namespace WebAppWMHBattleReporter.Areas.Admin.Controllers
             if (themeFromDB == null)
                 return NotFound();
 
-            return View(themeFromDB);
+            ThemeViewModel viewModel = new ThemeViewModel()
+            {
+                Theme = themeFromDB
+            };
+
+            return View(viewModel);
         }
 
         [HttpPost]
@@ -157,9 +183,19 @@ namespace WebAppWMHBattleReporter.Areas.Admin.Controllers
             if (id == null)
                 return NotFound();
 
-            Theme themeFromDB = await _db.Themes.FindAsync(id);
+            Theme themeFromDB = await _db.Themes.Include(t => t.Faction).FirstAsync(t => t.Id == id);
             if (themeFromDB == null)
                 return NotFound();
+
+            if (await _db.BattleReports.AnyAsync(br => br.WinningTheme == themeFromDB.Name || br.LosingTheme == themeFromDB.Name))
+            {
+                ThemeViewModel viewModel = new ThemeViewModel()
+                {
+                    Theme = themeFromDB,
+                    StatusMessage = "Error: You cannot delete a Theme for which there are already posted Battle Reports."
+                };
+                return View(nameof(Delete), viewModel);
+            }
 
             _db.Themes.Remove(themeFromDB);
             await _db.SaveChangesAsync();

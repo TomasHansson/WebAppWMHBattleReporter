@@ -129,6 +129,27 @@ namespace WebAppWMHBattleReporter.Areas.Admin.Controllers
             if (casterFromDB == null)
                 return NotFound();
 
+            List<BattleReport> battleReports = await _db.BattleReports.Where(br => br.PostersCaster == casterFromDB.Name || br.OpponentsCaster == casterFromDB.Name).ToListAsync();
+            if (battleReports.Count > 0 && casterFromDB.FactionId != viewModel.Caster.FactionId)
+            {
+                viewModel.Factions = await _db.Factions.ToListAsync();
+                viewModel.Casters = await _db.Casters.ToListAsync();
+                viewModel.StatusMessage = "Error: You cannot change the Faction for a Caster for which there are already posted Battle Reports.";
+                return View(viewModel);
+            }
+
+            foreach (BattleReport battleReport in battleReports)
+            {
+                if (battleReport.PostersCaster == casterFromDB.Name)
+                    battleReport.PostersCaster = viewModel.Caster.Name;
+                if (battleReport.OpponentsCaster == casterFromDB.Name)
+                    battleReport.OpponentsCaster = viewModel.Caster.Name;
+                if (battleReport.WinningCaster == casterFromDB.Name)
+                    battleReport.WinningCaster = viewModel.Caster.Name;
+                if (battleReport.LosingCaster == casterFromDB.Name)
+                    battleReport.LosingCaster = viewModel.Caster.Name;
+            }
+
             casterFromDB.Name = viewModel.Caster.Name;
             casterFromDB.FactionId = viewModel.Caster.FactionId;
             await _db.SaveChangesAsync();
@@ -147,7 +168,12 @@ namespace WebAppWMHBattleReporter.Areas.Admin.Controllers
             if (casterFromDB == null)
                 return NotFound();
 
-            return View(casterFromDB);
+            CasterViewModel viewModel = new CasterViewModel()
+            {
+                Caster = casterFromDB
+            };
+
+            return View(viewModel);
         }
 
         [HttpPost]
@@ -157,9 +183,19 @@ namespace WebAppWMHBattleReporter.Areas.Admin.Controllers
             if (id == null)
                 return NotFound();
 
-            Caster casterFromDB = await _db.Casters.FindAsync(id);
+            Caster casterFromDB = await _db.Casters.Include(c => c.Faction).FirstAsync(c => c.Id == id);
             if (casterFromDB == null)
                 return NotFound();
+
+            if (await _db.BattleReports.AnyAsync(br => br.WinningCaster == casterFromDB.Name || br.LosingCaster == casterFromDB.Name))
+            {
+                CasterViewModel viewModel = new CasterViewModel()
+                {
+                    Caster = casterFromDB,
+                    StatusMessage = "Error: You cannot delete a Caster for which there are already posted Battle Reports."
+                };
+                return View(nameof(Delete), viewModel);
+            }
 
             _db.Casters.Remove(casterFromDB);
             await _db.SaveChangesAsync();

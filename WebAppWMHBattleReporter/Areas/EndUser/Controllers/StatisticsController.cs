@@ -187,7 +187,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
                 Faction faction = viewModel.Factions.First(f => f.Name == viewModel.Faction);
                 viewModel.Casters = viewModel.Casters.Where(c => c.FactionId == faction.Id).ToList();
                 viewModel.Caster = viewModel.Casters.FirstOrDefault().Name;
-                viewModel.StatusMessage = "Select a theme to view its results.";
+                viewModel.StatusMessage = "Select a caster to view its results.";
                 return View(viewModel);
             }
 

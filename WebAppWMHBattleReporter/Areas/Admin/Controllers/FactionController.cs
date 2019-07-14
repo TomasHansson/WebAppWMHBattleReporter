@@ -99,7 +99,21 @@ namespace WebAppWMHBattleReporter.Areas.Admin.Controllers
             if (factionFromDB == null)
                 return NotFound();
 
+            List<BattleReport> battleReports = await _db.BattleReports.Where(br => br.PostersFaction == factionFromDB.Name || br.OpponentsFaction == factionFromDB.Name).ToListAsync();
+            foreach (BattleReport battleReport in battleReports)
+            {
+                if (battleReport.PostersFaction == factionFromDB.Name)
+                    battleReport.PostersFaction = viewModel.Faction.Name;
+                if (battleReport.OpponentsFaction == factionFromDB.Name)
+                    battleReport.OpponentsFaction = viewModel.Faction.Name;
+                if (battleReport.WinningFaction == factionFromDB.Name)
+                    battleReport.WinningFaction = viewModel.Faction.Name;
+                if (battleReport.LosingFaction == factionFromDB.Name)
+                    battleReport.LosingFaction = viewModel.Faction.Name;
+            }
+
             factionFromDB.Name = viewModel.Faction.Name;
+
             await _db.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
@@ -113,7 +127,12 @@ namespace WebAppWMHBattleReporter.Areas.Admin.Controllers
             if (factionFromDB == null)
                 return NotFound();
 
-            return View(factionFromDB);
+            FactionViewModel viewModel = new FactionViewModel()
+            {
+                Faction = factionFromDB
+            };
+
+            return View(viewModel);
         }
 
         [HttpPost]
@@ -126,6 +145,16 @@ namespace WebAppWMHBattleReporter.Areas.Admin.Controllers
             Faction factionFromDB = await _db.Factions.FindAsync(id);
             if (factionFromDB == null)
                 return NotFound();
+
+            if (await _db.BattleReports.AnyAsync(br => br.WinningFaction == factionFromDB.Name || br.LosingFaction == factionFromDB.Name))
+            {
+                FactionViewModel viewModel = new FactionViewModel()
+                {
+                    Faction = factionFromDB,
+                    StatusMessage = "Error: You cannot delete a Faction for which there are already posted Battle Reports."
+                };
+                return View(nameof(Delete), viewModel);
+            }
 
             _db.Factions.Remove(factionFromDB);
             await _db.SaveChangesAsync();
