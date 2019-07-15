@@ -63,8 +63,17 @@ body {
     padding: 30px;
     border-radius: 10px;
     margin-bottom: 30px;
+    background: white;
 }
 
 .tableButtonsGroup {
     width: 150px;
+}
+
+.search-background {
+    background: url('/images/dust_scratches.png');
+}
+
+.white-background {
+    background: white;
 }
