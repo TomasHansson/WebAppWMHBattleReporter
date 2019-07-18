@@ -577,8 +577,8 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
         {
             List<UserResult> userResults = new List<UserResult>();
             List<ApplicationUser> users = region == StaticDetails.AllRegions ?
-                await _db.ApplicationUsers.OrderByDescending(au => au.Winrate).ToListAsync() :
-                await _db.ApplicationUsers.Where(au => au.Region == region).OrderByDescending(au => au.Winrate).ToListAsync();
+                await _db.ApplicationUsers.Where(au => au.NumberOfGamesPlayed > 0).OrderByDescending(au => au.Winrate).ToListAsync() :
+                await _db.ApplicationUsers.Where(au => au.NumberOfGamesPlayed > 0 && au.Region == region).OrderByDescending(au => au.Winrate).ToListAsync();
             foreach (ApplicationUser user in users)
             {
                 List<BattleReport> usersBattleReports = await _db.BattleReports.Where(br => br.PostersUsername == user.UserName || br.OpponentsUsername == user.UserName).ToListAsync();
