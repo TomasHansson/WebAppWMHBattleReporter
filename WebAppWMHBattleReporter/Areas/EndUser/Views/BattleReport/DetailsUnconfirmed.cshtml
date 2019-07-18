@@ -6,10 +6,8 @@
 
 <div class="border applicationFormGroup">
     <h2 class="text-info">Details Unconfirmed Battle Report</h2>
-    <hr />
     <h5 class="text-info">Report Details</h5>
     <partial name="_UnconfirmedBattleReportDetails" model="@Model" />
-    <hr />
     <div class="form-group row">
         <div class="col-12 col-md-4">
             <a asp-action="UnconfirmedBattleReports" asp-route-id="@User.Identity.Name" class="btn btn-success form-control">Back to List</a>
