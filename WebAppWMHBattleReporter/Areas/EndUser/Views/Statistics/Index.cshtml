@@ -15,35 +15,37 @@
         }
         else
         {
-            <table class="table table-striped border">
-                <tr class="table-secondary">
-                    <th>#</th>
-                    <th>Faction</th>
-                    <th>Lost</th>
-                    <th>Won</th>
-                    <th>Played</th>
-                    <th>Winrate</th>
-                    <th>Details</th>
-                </tr>
-                @{ int counter = 1; }
-                @foreach (Faction faction in Model.Top10Factions)
-                {
-                    <tr>
-                        <td>@counter</td>
-                        <td>@faction.Name</td>
-                        <td>@faction.NumberOfGamesLost</td>
-                        <td>@faction.NumberOfGamesWon</td>
-                        <td>@faction.NumberOfGamesPlayed</td>
-                        <td>@faction.Winrate.ToString("P1")</td>
-                        <td>
-                            <a class="btn btn-success text-white" asp-area="EndUser" asp-controller="Statistics" asp-action="Faction" asp-route-Id="@faction.Name">
-                                <i class="fas fa-list-alt"></i>
-                            </a>
-                        </td>
-                        @{ counter++; }
+            <div class="table-responsive">
+                <table class="table table-striped border">
+                    <tr class="table-secondary">
+                        <th>#</th>
+                        <th>Faction</th>
+                        <th>Lost</th>
+                        <th>Won</th>
+                        <th>Played</th>
+                        <th>Winrate</th>
+                        <th>Details</th>
                     </tr>
-                }
-            </table>
+                    @{ int counter = 1; }
+                    @foreach (Faction faction in Model.Top10Factions)
+                    {
+                        <tr>
+                            <td>@counter</td>
+                            <td>@faction.Name</td>
+                            <td>@faction.NumberOfGamesLost</td>
+                            <td>@faction.NumberOfGamesWon</td>
+                            <td>@faction.NumberOfGamesPlayed</td>
+                            <td>@faction.Winrate.ToString("P1")</td>
+                            <td>
+                                <a class="btn btn-success text-white" asp-area="EndUser" asp-controller="Statistics" asp-action="Faction" asp-route-Id="@faction.Name">
+                                    <i class="fas fa-list-alt"></i>
+                                </a>
+                            </td>
+                            @{ counter++; }
+                        </tr>
+                    }
+                </table>
+            </div>
         }
     </div>
     <br />
@@ -55,35 +57,37 @@
         }
         else
         {
-            <table class="table table-striped border">
-                <tr class="table-secondary">
-                    <th>#</th>
-                    <th>Theme</th>
-                    <th>Lost</th>
-                    <th>Won</th>
-                    <th>Played</th>
-                    <th>Winrate</th>
-                    <th>Details</th>
-                </tr>
-                @{ int counter = 1; }
-                @foreach (Theme theme in Model.Top10Themes)
-                {
-                    <tr>
-                        <td>@counter</td>
-                        <td>@theme.Name</td>
-                        <td>@theme.NumberOfGamesLost</td>
-                        <td>@theme.NumberOfGamesWon</td>
-                        <td>@theme.NumberOfGamesPlayed</td>
-                        <td>@theme.Winrate.ToString("P1")</td>
-                        <td>
-                            <a class="btn btn-success text-white" asp-area="EndUser" asp-controller="Statistics" asp-action="Theme" asp-route-Id="@theme.Name">
-                                <i class="fas fa-list-alt"></i>
-                            </a>
-                        </td>
-                        @{ counter++; }
+            <div class="table-responsive">
+                <table class="table table-striped border">
+                    <tr class="table-secondary">
+                        <th>#</th>
+                        <th>Theme</th>
+                        <th>Lost</th>
+                        <th>Won</th>
+                        <th>Played</th>
+                        <th>Winrate</th>
+                        <th>Details</th>
                     </tr>
-                }
-            </table>
+                    @{ int counter = 1; }
+                    @foreach (Theme theme in Model.Top10Themes)
+                    {
+                        <tr>
+                            <td>@counter</td>
+                            <td>@theme.Name</td>
+                            <td>@theme.NumberOfGamesLost</td>
+                            <td>@theme.NumberOfGamesWon</td>
+                            <td>@theme.NumberOfGamesPlayed</td>
+                            <td>@theme.Winrate.ToString("P1")</td>
+                            <td>
+                                <a class="btn btn-success text-white" asp-area="EndUser" asp-controller="Statistics" asp-action="Theme" asp-route-Id="@theme.Name">
+                                    <i class="fas fa-list-alt"></i>
+                                </a>
+                            </td>
+                            @{ counter++; }
+                        </tr>
+                    }
+                </table>
+            </div>
         }
     </div>
     <br />
@@ -95,35 +99,37 @@
         }
         else
         {
-            <table class="table table-striped border">
-                <tr class="table-secondary">
-                    <th>#</th>
-                    <th>Caster</th>
-                    <th>Lost</th>
-                    <th>Won</th>
-                    <th>Played</th>
-                    <th>Winrate</th>
-                    <th>Details</th>
-                </tr>
-                @{ int counter = 1; }
-                @foreach (Caster caster in Model.Top10Casters)
-                {
-                    <tr>
-                        <td>@counter</td>
-                        <td>@caster.Name</td>
-                        <td>@caster.NumberOfGamesLost</td>
-                        <td>@caster.NumberOfGamesWon</td>
-                        <td>@caster.NumberOfGamesPlayed</td>
-                        <td>@caster.Winrate.ToString("P1")</td>
-                        <td>
-                            <a class="btn btn-success text-white" asp-area="EndUser" asp-controller="Statistics" asp-action="Caster" asp-route-Id="@caster.Name">
-                                <i class="fas fa-list-alt"></i>
-                            </a>
-                        </td>
-                        @{ counter++; }
+            <div class="table-responsive">
+                <table class="table table-striped border">
+                    <tr class="table-secondary">
+                        <th>#</th>
+                        <th>Caster</th>
+                        <th>Lost</th>
+                        <th>Won</th>
+                        <th>Played</th>
+                        <th>Winrate</th>
+                        <th>Details</th>
                     </tr>
-                }
-            </table>
+                    @{ int counter = 1; }
+                    @foreach (Caster caster in Model.Top10Casters)
+                    {
+                        <tr>
+                            <td>@counter</td>
+                            <td>@caster.Name</td>
+                            <td>@caster.NumberOfGamesLost</td>
+                            <td>@caster.NumberOfGamesWon</td>
+                            <td>@caster.NumberOfGamesPlayed</td>
+                            <td>@caster.Winrate.ToString("P1")</td>
+                            <td>
+                                <a class="btn btn-success text-white" asp-area="EndUser" asp-controller="Statistics" asp-action="Caster" asp-route-Id="@caster.Name">
+                                    <i class="fas fa-list-alt"></i>
+                                </a>
+                            </td>
+                            @{ counter++; }
+                        </tr>
+                    }
+                </table>
+            </div>
         }
     </div>
     <br />
@@ -135,35 +141,37 @@
         }
         else
         {
-            <table class="table table-striped border">
-                <tr class="table-secondary">
-                    <th>#</th>
-                    <th>User</th>
-                    <th>Lost</th>
-                    <th>Won</th>
-                    <th>Played</th>
-                    <th>Winrate</th>
-                    <th>Details</th>
-                </tr>
-                @{ int counter = 1; }
-                @foreach (ApplicationUser user in Model.Top10Users)
-                {
-                    <tr>
-                        <td>@counter</td>
-                        <td>@user.UserName</td>
-                        <td>@user.NumberOfGamesLost</td>
-                        <td>@user.NumberOfGamesWon</td>
-                        <td>@user.NumberOfGamesPlayed</td>
-                        <td>@user.Winrate.ToString("P1")</td>
-                        <td>
-                            <a class="btn btn-success text-white" asp-area="EndUser" asp-controller="Statistics" asp-action="User" asp-route-Id="@user.UserName">
-                                <i class="fas fa-list-alt"></i>
-                            </a>
-                        </td>
-                        @{ counter++; }
+            <div class="table-responsive">
+                <table class="table table-striped border">
+                    <tr class="table-secondary">
+                        <th>#</th>
+                        <th>User</th>
+                        <th>Lost</th>
+                        <th>Won</th>
+                        <th>Played</th>
+                        <th>Winrate</th>
+                        <th>Details</th>
                     </tr>
-                }
-            </table>
+                    @{ int counter = 1; }
+                    @foreach (ApplicationUser user in Model.Top10Users)
+                    {
+                        <tr>
+                            <td>@counter</td>
+                            <td>@user.UserName</td>
+                            <td>@user.NumberOfGamesLost</td>
+                            <td>@user.NumberOfGamesWon</td>
+                            <td>@user.NumberOfGamesPlayed</td>
+                            <td>@user.Winrate.ToString("P1")</td>
+                            <td>
+                                <a class="btn btn-success text-white" asp-area="EndUser" asp-controller="Statistics" asp-action="User" asp-route-Id="@user.UserName">
+                                    <i class="fas fa-list-alt"></i>
+                                </a>
+                            </td>
+                            @{ counter++; }
+                        </tr>
+                    }
+                </table>
+            </div>
         }
     </div>
 </div>

@@ -31,39 +31,41 @@
             @foreach (Faction faction in Model.Factions)
             {
                 List<Caster> factionCasters = Model.Casters.Where(c => c.Faction.Name == faction.Name).ToList();
-                <table class="table table-striped border">
-                    <tr class="table-secondary">
-                        <th>
-                            @faction.Name
-                        </th>
-                        <th></th>
-                        <th></th>
-                    </tr>
-                    @if (factionCasters.Count() == 0)
-                    {
-                        <tr>
-                            <td>
-                                There are no casters for this faction in the database.
-                            </td>
-                            <td></td>
-                            <td></td>
+                <div class="table-responsive">
+                    <table class="table table-striped border">
+                        <tr class="table-secondary">
+                            <th>
+                                @faction.Name
+                            </th>
+                            <th></th>
+                            <th></th>
                         </tr>
-                    }
-                    else
-                    {
-                        @foreach (Caster caster in factionCasters)
+                        @if (factionCasters.Count() == 0)
                         {
                             <tr>
                                 <td>
-                                    @Html.DisplayFor(m => caster.Name)
+                                    There are no casters for this faction in the database.
                                 </td>
-                                <td>
-                                    <partial name="_TableButtons" model="caster.Id" />
-                                </td>
+                                <td></td>
+                                <td></td>
                             </tr>
                         }
-                    }
-                </table>
+                        else
+                        {
+                            @foreach (Caster caster in factionCasters)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(m => caster.Name)
+                                    </td>
+                                    <td>
+                                        <partial name="_TableButtons" model="caster.Id" />
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </table>
+                </div>
             }
         }
     </div>
