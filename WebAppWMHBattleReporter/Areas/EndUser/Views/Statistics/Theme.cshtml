@@ -10,13 +10,13 @@
     <div class="row">
         <div class="col-12 col-md-6 col-lg-4">
             <label asp-for="@Model.Faction">Select Faction: </label>
-            <select asp-for="@Model.Faction" asp-items="@Model.Factions.Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList()" class="form-control mb-1" id="factionList"></select>
+            <select asp-for="@Model.Faction" asp-items="@Model.Factions.Select(x => new SelectListItem() { Value = x.Name, Text = x.Name, Selected = x.Name == Model.Faction }).ToList()" class="form-control mb-1" id="factionList"></select>
         </div>
     </div>
     <div class="row">
         <div class="col-12 col-md-6 col-lg-4">
             <label asp-for="@Model.Theme">Select Theme: </label>
-            <select id="selectTheme" asp-for="@Model.Theme" asp-items="@Model.Themes.Select(x => new SelectListItem() { Value = x.Name, Text = x.Name }).ToList()" class="form-control mb-1"></select>
+            <select id="selectTheme" asp-for="@Model.Theme" asp-items="@Model.Themes.Select(x => new SelectListItem() { Value = x.Name, Text = x.Name, Selected = x.Name == Model.Theme }).ToList()" class="form-control mb-1"></select>
         </div>
     </div>
     <div class="row">
@@ -66,14 +66,14 @@
         });
 
         $("#factionList").on("change", function () {
-            var factionSelected = document.getElementById("factionList").value;
+            var factionSelected = $("#factionList option:selected").text();
             var themeList = document.getElementById("selectTheme");
             updateThemeList(factionSelected, themeList);
         });
 
         function updateThemeList(factionSelected, themeList) {
             $.ajax({
-                url: '/EndUser/BattleReport/GetFactionThemeNames/' + factionSelected,
+                url: '/EndUser/Statistics/GetFactionThemeNames/' + factionSelected,
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {

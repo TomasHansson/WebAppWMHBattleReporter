@@ -166,6 +166,32 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             return View(viewModel);
         }
 
+        public async Task<IActionResult> GetFactionThemeNames(string id)
+        {
+            if (id == null)
+                return NotFound();
+
+            if (!await _db.Factions.AnyAsync(f => f.Name == id))
+                return NotFound();
+
+            Faction faction = await _db.Factions.FirstAsync(f => f.Name == id);
+            List<string> factionThemes = await _db.Themes.Where(t => t.FactionId == faction.Id).Select(t => t.Name).ToListAsync();
+            return Json(factionThemes);
+        }
+
+        public async Task<IActionResult> GetFactionCasterNames(string id)
+        {
+            if (id == null)
+                return NotFound();
+
+            if (!await _db.Factions.AnyAsync(f => f.Name == id))
+                return NotFound();
+
+            Faction faction = await _db.Factions.FirstAsync(f => f.Name == id);
+            List<string> factionCasters = await _db.Casters.Where(c => c.FactionId == faction.Id).Select(c => c.Name).ToListAsync();
+            return Json(factionCasters);
+        }
+
         public async Task<IActionResult> Casters()
         {
             List<Caster> casters = await _db.Casters.ToListAsync();
