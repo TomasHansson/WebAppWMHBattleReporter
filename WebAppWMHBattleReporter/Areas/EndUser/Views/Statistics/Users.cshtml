@@ -9,7 +9,7 @@
     <h2 class="text-info">User Results</h2>
     <br />
     <div class="row">
-        <div class="col-4-col-lg-3">
+        <div class="col-12 col-md-6 col-lg-4">
             <label asp-for="@Model.Region">Select Region: </label>
             <select id="selectRegion" asp-for="@Model.Region" asp-items="StaticDetails.AllAndRegions.Select(x => new SelectListItem() { Value = x, Text = x }).ToList()" class="form-control"></select>
             <a id="loadRegion" class="btn btn-primary form-control mt-1" href="/EndUser/Statistics/Users">Load Results</a>
