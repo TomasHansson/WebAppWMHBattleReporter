@@ -142,17 +142,158 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
 
         public async Task<IActionResult> UnconfirmedBattleReports(string id)
         {
-            if (id != User.Identity.Name)
-                return Unauthorized();
-
             if (string.IsNullOrWhiteSpace(id))
                 return NotFound();
 
-            List<BattleReport> usersUnconfirmedBattleReports = await _db.BattleReports.Where(br => br.OpponentsUsername == id && br.ConfirmedByOpponent == false).ToListAsync();
-            if (usersUnconfirmedBattleReports == null)
+            if (id != User.Identity.Name)
+                return Unauthorized();
+
+            List<BattleReport> usersBattleReports = await _db.BattleReports.Where(br => br.PostersUsername == id && br.ConfirmedByOpponent == false).ToListAsync();
+            List<BattleReport> opponentsBattleReports = await _db.BattleReports.Where(br => br.OpponentsUsername == id && br.ConfirmedByOpponent == false).ToListAsync();
+            if (usersBattleReports == null || opponentsBattleReports == null)
                 return NotFound();
 
-            return View(usersUnconfirmedBattleReports);
+            UnconfirmedBattleReportsViewModel viewModel = new UnconfirmedBattleReportsViewModel()
+            {
+                UsersBattleReports = usersBattleReports,
+                OpponentsBattleReports = opponentsBattleReports
+            };
+            return View(viewModel);
+        }
+
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            BattleReport battleReport = await _db.BattleReports.FindAsync(id);
+            if (battleReport == null)
+                return NotFound();
+
+            if (battleReport.PostersUsername != User.Identity.Name)
+                return Unauthorized();
+
+            EditBattleReportViewModel viewModel = new EditBattleReportViewModel()
+            {
+                Factions = await _db.Factions.ToListAsync(),
+                BattleReport = battleReport,
+                StatusMessage = string.Empty
+            };
+
+            viewModel.PosterWon = viewModel.BattleReport.WinnersUsername == User.Identity.Name;
+
+            int postersFactionId = viewModel.Factions.First(f => f.Name == battleReport.PostersFaction).Id;
+            viewModel.PostersFactionThemes = await _db.Themes.Where(t => t.FactionId == postersFactionId).ToListAsync();
+            viewModel.PostersFactionCasters = await _db.Casters.Where(c => c.FactionId == postersFactionId).ToListAsync();
+
+            int opponentsFactionId = viewModel.Factions.First(f => f.Name == battleReport.OpponentsFaction).Id;
+            viewModel.OpponentsFactionThemes = await _db.Themes.Where(t => t.FactionId == opponentsFactionId).ToListAsync();
+            viewModel.OpponentsFactionCasters = await _db.Casters.Where(c => c.FactionId == opponentsFactionId).ToListAsync();
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(EditBattleReportViewModel viewModel)
+        {
+            viewModel.StatusMessage = string.Empty;
+            if (!ModelState.IsValid)
+            {
+                viewModel.Factions = await _db.Factions.ToListAsync();
+                viewModel.PosterWon = viewModel.BattleReport.WinnersUsername == User.Identity.Name;
+                int postersFactionId = viewModel.Factions.First(f => f.Name == viewModel.BattleReport.PostersFaction).Id;
+                viewModel.PostersFactionThemes = await _db.Themes.Where(t => t.FactionId == postersFactionId).ToListAsync();
+                viewModel.PostersFactionCasters = await _db.Casters.Where(c => c.FactionId == postersFactionId).ToListAsync();
+                int opponentsFactionId = viewModel.Factions.First(f => f.Name == viewModel.BattleReport.OpponentsFaction).Id;
+                viewModel.OpponentsFactionThemes = await _db.Themes.Where(t => t.FactionId == opponentsFactionId).ToListAsync();
+                viewModel.OpponentsFactionCasters = await _db.Casters.Where(c => c.FactionId == opponentsFactionId).ToListAsync();
+                return View(viewModel);
+            }
+
+            BattleReport battleReport = await _db.BattleReports.FindAsync(viewModel.BattleReport.Id);
+
+            Faction postersFaction = await _db.Factions.FindAsync(int.Parse(viewModel.BattleReport.PostersFaction));
+            battleReport.PostersFaction = postersFaction.Name;
+            battleReport.PostersTheme = viewModel.BattleReport.PostersTheme;
+            battleReport.PostersCaster = viewModel.BattleReport.PostersCaster;
+            battleReport.PostersArmyList = viewModel.BattleReport.PostersArmyList;
+            battleReport.PostersArmyPoints = viewModel.BattleReport.PostersArmyPoints;
+            battleReport.PostersControlPoints = viewModel.BattleReport.PostersControlPoints;
+
+            Faction opponentsFaction = await _db.Factions.FindAsync(int.Parse(viewModel.BattleReport.OpponentsFaction));
+            battleReport.OpponentsFaction = opponentsFaction.Name;
+            battleReport.OpponentsTheme = viewModel.BattleReport.OpponentsTheme;
+            battleReport.OpponentsCaster = viewModel.BattleReport.OpponentsCaster;
+            battleReport.OpponentsArmyList = viewModel.BattleReport.OpponentsArmyList;
+            battleReport.OpponentsArmyPoints = viewModel.BattleReport.OpponentsArmyPoints;
+            battleReport.OpponentsControlPoints = viewModel.BattleReport.OpponentsControlPoints;
+
+            battleReport.DatePlayed = viewModel.BattleReport.DatePlayed;
+            battleReport.EndCondition = viewModel.BattleReport.EndCondition;
+            battleReport.GameSize = viewModel.BattleReport.GameSize;
+            battleReport.Scenario = viewModel.BattleReport.Scenario;
+
+            battleReport.LosersUsername = viewModel.PosterWon ? viewModel.BattleReport.OpponentsUsername : viewModel.BattleReport.PostersUsername;
+            battleReport.LosingFaction = viewModel.PosterWon ? viewModel.BattleReport.OpponentsFaction : viewModel.BattleReport.PostersFaction;
+            battleReport.LosingTheme = viewModel.PosterWon ? viewModel.BattleReport.OpponentsTheme : viewModel.BattleReport.PostersTheme;
+            battleReport.LosingCaster = viewModel.PosterWon ? viewModel.BattleReport.OpponentsCaster : viewModel.BattleReport.PostersCaster;
+
+            battleReport.WinnersUsername = viewModel.PosterWon ? viewModel.BattleReport.PostersUsername : viewModel.BattleReport.OpponentsUsername;
+            battleReport.WinningFaction = viewModel.PosterWon ? viewModel.BattleReport.PostersFaction : viewModel.BattleReport.OpponentsFaction;
+            battleReport.WinningTheme = viewModel.PosterWon ? viewModel.BattleReport.PostersTheme : viewModel.BattleReport.OpponentsTheme;
+            battleReport.WinningCaster = viewModel.PosterWon ? viewModel.BattleReport.PostersCaster : viewModel.BattleReport.OpponentsCaster;
+
+            await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(UnconfirmedBattleReports), new { id = User.Identity.Name });
+        }
+
+        public async Task<IActionResult> UserReportDetails(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            BattleReport battleReport = await _db.BattleReports.FindAsync(id);
+            if (battleReport == null)
+                return NotFound();
+
+            if (battleReport.PostersUsername != User.Identity.Name)
+                return Unauthorized();
+
+            return View(battleReport);
+        }
+
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            BattleReport battleReport = await _db.BattleReports.FindAsync(id);
+            if (battleReport == null)
+                return NotFound();
+
+            if (battleReport.PostersUsername != User.Identity.Name)
+                return Unauthorized();
+
+            return View(battleReport);
+        }
+
+        public async Task<IActionResult> DeleteConfirm(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+            BattleReport battleReport = await _db.BattleReports.FindAsync(id);
+            if (battleReport == null)
+                return NotFound();
+
+            if (battleReport.PostersUsername != User.Identity.Name)
+                return Unauthorized();
+
+            _db.BattleReports.Remove(battleReport);
+            await _db.SaveChangesAsync();
+
+            return RedirectToAction(nameof(UnconfirmedBattleReports), new { id = User.Identity.Name });
         }
 
         public async Task<IActionResult> AcceptUnconfirmedView(int? id)
@@ -163,6 +304,9 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             BattleReport battleReport = await _db.BattleReports.FindAsync(id);
             if (battleReport == null)
                 return NotFound();
+
+            if (battleReport.OpponentsUsername != User.Identity.Name)
+                return Unauthorized();
 
             return View(battleReport);
         }
@@ -175,6 +319,9 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             BattleReport battleReport = await _db.BattleReports.FindAsync(id);
             if (battleReport == null)
                 return NotFound();
+
+            if (battleReport.OpponentsUsername != User.Identity.Name)
+                return Unauthorized();
 
             battleReport.ConfirmedByOpponent = true;
 
@@ -237,6 +384,9 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             if (battleReport == null)
                 return NotFound();
 
+            if (battleReport.OpponentsUsername != User.Identity.Name)
+                return Unauthorized();
+
             return View(battleReport);
         }
 
@@ -248,6 +398,9 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             BattleReport battleReport = await _db.BattleReports.FindAsync(id);
             if (battleReport == null)
                 return NotFound();
+
+            if (battleReport.OpponentsUsername != User.Identity.Name)
+                return Unauthorized();
 
             string username = battleReport.OpponentsUsername;
             _db.BattleReports.Remove(battleReport);
@@ -263,6 +416,9 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             BattleReport battleReport = await _db.BattleReports.FindAsync(id);
             if (battleReport == null)
                 return NotFound();
+
+            if (battleReport.OpponentsUsername != User.Identity.Name)
+                return Unauthorized();
 
             return View(battleReport);
         }

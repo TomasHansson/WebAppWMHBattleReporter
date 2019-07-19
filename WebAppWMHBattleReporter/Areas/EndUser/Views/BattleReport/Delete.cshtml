@@ -1,0 +1,19 @@
+﻿@model BattleReport
+@{
+    ViewData["Title"] = "Delete";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="border applicationFormGroup">
+    <h2 class="text-info">Delete Battle Report</h2>
+    <br />
+    <partial name="_ReadOnlyBattleReportDetails" model="@Model" />
+    <div class="form-group row">
+        <div class="col-12 col-md-6">
+            <a asp-action="DeleteConfirm" asp-route-id="@Model.Id" class="btn btn-danger form-control mb-1">Delete</a>
+        </div>
+        <div class="col-12 col-md-6">
+            <a asp-action="UnconfirmedBattleReports" asp-route-id="@User.Identity.Name" class="btn btn-success form-control">Back to List</a>
+        </div>
+    </div>
+</div>
