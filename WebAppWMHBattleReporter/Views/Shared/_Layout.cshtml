@@ -54,6 +54,7 @@
                                 @if (User.Identity.IsAuthenticated)
                                 {
                                     <a asp-area="EndUser" asp-controller="BattleReport" asp-action="UnconfirmedBattleReports" asp-route-Id="@User.Identity.Name" class="nav-link text-dark">Unconfirmed Reports</a>
+                                    <a asp-area="EndUser" asp-controller="BattleReport" asp-action="ConfirmedBattleReports" asp-route-Id="@User.Identity.Name" class="nav-link text-dark">Confirmed Reports</a>
                                     <a asp-area="EndUser" asp-controller="BattleReport" asp-action="Create" class="nav-link text-dark">Add Report</a>
                                 }
                             </div>

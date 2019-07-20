@@ -1,4 +1,4 @@
-﻿@model  BattleReport
+﻿@model BattleReport
 @{
     ViewData["Title"] = "AcceptUnconfirmedView";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -7,7 +7,7 @@
 <div class="border applicationFormGroup">
     <h2 class="text-info">Accept Unconfirmed Battle Report</h2>
     <h5 class="text-info">Report Details</h5>
-    <partial name="_UnconfirmedBattleReportDetails" model="@Model" />
+    <partial name="_BattleReportDetails" model="@Model" />
     <div class="form-group row">
         <div class="col-12 col-md-4">
             <a asp-action="AcceptUnconfirmed" asp-route-id="@Model.Id" class="btn btn-info form-control mb-1">Confirm Battle Report</a>

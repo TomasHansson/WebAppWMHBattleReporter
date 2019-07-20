@@ -1,0 +1,31 @@
+﻿@model ConfirmedBattleReportsViewModel
+@{
+    ViewData["Title"] = "ConfirmedBattleReports";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="border applicationFormGroup">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="text-info">Confirmed Battle Reports</h2>
+        </div>
+    </div>
+    <br />
+    <div>
+        <hr />
+        @if (Model.BattleReports.Count() != 0)
+        {
+
+            @foreach (BattleReport battleReport in Model.BattleReports)
+            {
+                <partial name="_BattleReportDetails" model="battleReport" />
+                <hr />
+            }
+        }
+        else
+        {
+            <p>You currently have no approved battle reports.</p>
+        }
+    </div>
+</div>
+

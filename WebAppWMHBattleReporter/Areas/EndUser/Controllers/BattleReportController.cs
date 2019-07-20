@@ -155,6 +155,26 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             return View(viewModel);
         }
 
+        public async Task<IActionResult> ConfirmedBattleReports(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                return NotFound();
+
+            if (id != User.Identity.Name)
+                return Unauthorized();
+
+            List<BattleReport> battleReports = await _db.BattleReports.Where(br => (br.PostersUsername == id || br.OpponentsUsername == id) && br.ConfirmedByOpponent).ToListAsync();
+            if (battleReports == null)
+                return NotFound();
+
+            ConfirmedBattleReportsViewModel viewModel = new ConfirmedBattleReportsViewModel()
+            {
+                BattleReports = battleReports
+            };
+
+            return View(viewModel);
+        }
+
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
