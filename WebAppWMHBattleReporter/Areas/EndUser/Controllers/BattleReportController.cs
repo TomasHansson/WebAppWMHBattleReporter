@@ -49,29 +49,29 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             return View(viewModel);
         }
 
-        [AllowAnonymous]
-        public async Task<IActionResult> GetFactionThemeNames(int? id)
+        public async Task<IActionResult> GetFactionThemeNames(string id)
         {
             if (id == null)
                 return NotFound();
 
-            if (!await _db.Factions.AnyAsync(f => f.Id == id))
+            if (!await _db.Factions.AnyAsync(f => f.Name == id))
                 return NotFound();
 
-            List<string> factionThemes = await _db.Themes.Where(t => t.FactionId == id).Select(t => t.Name).ToListAsync();
+            Faction faction = await _db.Factions.FirstAsync(f => f.Name == id);
+            List<string> factionThemes = await _db.Themes.Where(t => t.FactionId == faction.Id).Select(t => t.Name).ToListAsync();
             return Json(factionThemes);
         }
 
-        [AllowAnonymous]
-        public async Task<IActionResult> GetFactionCasterNames(int? id)
+        public async Task<IActionResult> GetFactionCasterNames(string id)
         {
             if (id == null)
                 return NotFound();
 
-            if (!await _db.Factions.AnyAsync(f => f.Id == id))
+            if (!await _db.Factions.AnyAsync(f => f.Name == id))
                 return NotFound();
 
-            List<string> factionCasters = await _db.Casters.Where(c => c.FactionId == id).Select(f => f.Name).ToListAsync();
+            Faction faction = await _db.Factions.FirstAsync(f => f.Name == id);
+            List<string> factionCasters = await _db.Casters.Where(c => c.FactionId == faction.Id).Select(c => c.Name).ToListAsync();
             return Json(factionCasters);
         }
 
@@ -101,12 +101,6 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
 
             viewModel.BattleReport.ConfirmationKey = (new Random().Next(10000));
             viewModel.BattleReport.ConfirmedByOpponent = false;
-
-            Faction postersFaction = await _db.Factions.FindAsync(int.Parse(viewModel.BattleReport.PostersFaction));
-            viewModel.BattleReport.PostersFaction = postersFaction.Name;
-
-            Faction opponentsFaction = await _db.Factions.FindAsync(int.Parse(viewModel.BattleReport.OpponentsFaction));
-            viewModel.BattleReport.OpponentsFaction = opponentsFaction.Name;
 
             viewModel.BattleReport.LosersUsername = viewModel.PosterWon ? viewModel.BattleReport.OpponentsUsername : viewModel.BattleReport.PostersUsername;
             viewModel.BattleReport.LosingFaction = viewModel.PosterWon ? viewModel.BattleReport.OpponentsFaction : viewModel.BattleReport.PostersFaction;
@@ -213,16 +207,14 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
 
             BattleReport battleReport = await _db.BattleReports.FindAsync(viewModel.BattleReport.Id);
 
-            Faction postersFaction = await _db.Factions.FindAsync(int.Parse(viewModel.BattleReport.PostersFaction));
-            battleReport.PostersFaction = postersFaction.Name;
+            battleReport.PostersFaction = viewModel.BattleReport.PostersFaction;
             battleReport.PostersTheme = viewModel.BattleReport.PostersTheme;
             battleReport.PostersCaster = viewModel.BattleReport.PostersCaster;
             battleReport.PostersArmyList = viewModel.BattleReport.PostersArmyList;
             battleReport.PostersArmyPoints = viewModel.BattleReport.PostersArmyPoints;
             battleReport.PostersControlPoints = viewModel.BattleReport.PostersControlPoints;
 
-            Faction opponentsFaction = await _db.Factions.FindAsync(int.Parse(viewModel.BattleReport.OpponentsFaction));
-            battleReport.OpponentsFaction = opponentsFaction.Name;
+            battleReport.OpponentsFaction = viewModel.BattleReport.OpponentsFaction;
             battleReport.OpponentsTheme = viewModel.BattleReport.OpponentsTheme;
             battleReport.OpponentsCaster = viewModel.BattleReport.OpponentsCaster;
             battleReport.OpponentsArmyList = viewModel.BattleReport.OpponentsArmyList;

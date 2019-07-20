@@ -35,7 +35,7 @@
                         <label asp-for="@Model.BattleReport.PostersFaction" class="col-form-label">Faction</label>
                     </div>
                     <div class="col-12">
-                        <select asp-for="@Model.BattleReport.PostersFaction" asp-items="@Model.Factions.Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList()" class="form-control" id="PostersFactionList"></select>
+                        <select asp-for="@Model.BattleReport.PostersFaction" asp-items="@Model.Factions.Select(x => new SelectListItem() { Value = x.Name, Text = x.Name }).ToList()" class="form-control" id="PostersFactionList"></select>
                     </div>
                     <span asp-validation-for="@Model.BattleReport.PostersFaction" class="text-danger"></span>
                 </div>
@@ -101,7 +101,7 @@
                         <label asp-for="@Model.BattleReport.OpponentsFaction" class="col-form-label">Faction</label>
                     </div>
                     <div class="col-12">
-                        <select asp-for="@Model.BattleReport.OpponentsFaction" asp-items="@Model.Factions.Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList()" class="form-control" id="OpponentsFactionList"></select>
+                        <select asp-for="@Model.BattleReport.OpponentsFaction" asp-items="@Model.Factions.Select(x => new SelectListItem() { Value = x.Name, Text = x.Name }).ToList()" class="form-control" id="OpponentsFactionList"></select>
                     </div>
                     <span asp-validation-for="@Model.BattleReport.OpponentsFaction" class="text-danger"></span>
                 </div>
@@ -252,7 +252,7 @@
         }
 
         $("#PostersFactionList").on("change", function () {
-            var factionSelected = document.getElementById("PostersFactionList").value;
+            var factionSelected = $("#PostersFactionList option:selected").text();
             var themeList = document.getElementById("PostersThemeList");
             var casterList = document.getElementById("PostersCasterList");
             updateThemeList(factionSelected, themeList);
@@ -260,7 +260,7 @@
         });
 
         $("#OpponentsFactionList").on("change", function () {
-            var factionSelected = document.getElementById("OpponentsFactionList").value;
+            var factionSelected = $("#OpponentsFactionList option:selected").text();
             var themeList = document.getElementById("OpponentsThemeList");
             var casterList = document.getElementById("OpponentsCasterList");
             updateThemeList(factionSelected, themeList);

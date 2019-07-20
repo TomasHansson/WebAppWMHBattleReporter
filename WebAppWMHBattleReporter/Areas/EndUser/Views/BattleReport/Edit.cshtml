@@ -35,7 +35,7 @@
                         <label asp-for="@Model.BattleReport.PostersFaction" class="col-form-label">Faction</label>
                     </div>
                     <div class="col-12">
-                        <select asp-for="@Model.BattleReport.PostersFaction" asp-items="@Model.Factions.Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList()" class="form-control" id="PostersFactionList"></select>
+                        <select asp-for="@Model.BattleReport.PostersFaction" asp-items="@Model.Factions.Select(x => new SelectListItem() { Value = x.Name, Text = x.Name, Selected = x.Name == Model.BattleReport.PostersFaction }).ToList()" class="form-control" id="PostersFactionList"></select>
                     </div>
                     <span asp-validation-for="@Model.BattleReport.PostersFaction" class="text-danger"></span>
                 </div>
@@ -44,7 +44,7 @@
                         <label asp-for="@Model.BattleReport.PostersTheme" class="col-form-label">Theme</label>
                     </div>
                     <div class="col-12">
-                        <select asp-for="@Model.BattleReport.PostersTheme" asp-items="@Model.PostersFactionThemes.Select(t => t.Name).Select(x => new SelectListItem() { Value = x, Text = x }).ToList()" class="form-control" id="PostersThemeList"></select>
+                        <select asp-for="@Model.BattleReport.PostersTheme" asp-items="@Model.PostersFactionThemes.Select(t => t.Name).Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.BattleReport.PostersTheme }).ToList()" class="form-control" id="PostersThemeList"></select>
                     </div>
                     <span asp-validation-for="@Model.BattleReport.PostersTheme" class="text-danger"></span>
                 </div>
@@ -53,7 +53,7 @@
                         <label asp-for="@Model.BattleReport.PostersCaster" class="col-form-label">Caster</label>
                     </div>
                     <div class="col-12">
-                        <select asp-for="@Model.BattleReport.PostersCaster" asp-items="@Model.PostersFactionCasters.Select(c => c.Name).Select(x => new SelectListItem() { Value = x, Text = x }).ToList()" class="form-control" id="PostersCasterList"></select>
+                        <select asp-for="@Model.BattleReport.PostersCaster" asp-items="@Model.PostersFactionCasters.Select(c => c.Name).Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.BattleReport.PostersCaster }).ToList()" class="form-control" id="PostersCasterList"></select>
                     </div>
                     <span asp-validation-for="@Model.BattleReport.PostersCaster" class="text-danger"></span>
                 </div>
@@ -101,7 +101,7 @@
                         <label asp-for="@Model.BattleReport.OpponentsFaction" class="col-form-label">Faction</label>
                     </div>
                     <div class="col-12">
-                        <select asp-for="@Model.BattleReport.OpponentsFaction" asp-items="@Model.Factions.Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Name }).ToList()" class="form-control" id="OpponentsFactionList"></select>
+                        <select asp-for="@Model.BattleReport.OpponentsFaction" asp-items="@Model.Factions.Select(x => new SelectListItem() { Value = x.Name, Text = x.Name, Selected = x.Name == Model.BattleReport.OpponentsFaction }).ToList()" class="form-control" id="OpponentsFactionList"></select>
                     </div>
                     <span asp-validation-for="@Model.BattleReport.OpponentsFaction" class="text-danger"></span>
                 </div>
@@ -110,7 +110,7 @@
                         <label asp-for="@Model.BattleReport.OpponentsTheme" class="col-form-label">Theme</label>
                     </div>
                     <div class="col-12">
-                        <select asp-for="@Model.BattleReport.OpponentsTheme" asp-items="@Model.OpponentsFactionThemes.Select(t => t.Name).Select(x => new SelectListItem() { Value = x, Text = x }).ToList()" class="form-control" id="OpponentsThemeList"></select>
+                        <select asp-for="@Model.BattleReport.OpponentsTheme" asp-items="@Model.OpponentsFactionThemes.Select(t => t.Name).Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.BattleReport.OpponentsTheme }).ToList()" class="form-control" id="OpponentsThemeList"></select>
                     </div>
                     <span asp-validation-for="@Model.BattleReport.OpponentsTheme" class="text-danger"></span>
                 </div>
@@ -119,7 +119,7 @@
                         <label asp-for="@Model.BattleReport.OpponentsCaster" class="col-form-label">Caster</label>
                     </div>
                     <div class="col-12">
-                        <select asp-for="@Model.BattleReport.OpponentsCaster" asp-items="@Model.OpponentsFactionCasters.Select(c => c.Name).Select(x => new SelectListItem() { Value = x, Text = x }).ToList()" class="form-control" id="OpponentsCasterList"></select>
+                        <select asp-for="@Model.BattleReport.OpponentsCaster" asp-items="@Model.OpponentsFactionCasters.Select(c => c.Name).Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.BattleReport.OpponentsCaster }).ToList()" class="form-control" id="OpponentsCasterList"></select>
                     </div>
                     <span asp-validation-for="@Model.BattleReport.OpponentsCaster" class="text-danger"></span>
                 </div>
@@ -250,7 +250,7 @@
         }
 
         $("#PostersFactionList").on("change", function () {
-            var factionSelected = document.getElementById("PostersFactionList").value;
+            var factionSelected = $("#PostersFactionList option:selected").text();
             var themeList = document.getElementById("PostersThemeList");
             var casterList = document.getElementById("PostersCasterList");
             updateThemeList(factionSelected, themeList);
@@ -258,7 +258,7 @@
         });
 
         $("#OpponentsFactionList").on("change", function () {
-            var factionSelected = document.getElementById("OpponentsFactionList").value;
+            var factionSelected = $("#OpponentsFactionList option:selected").text();
             var themeList = document.getElementById("OpponentsThemeList");
             var casterList = document.getElementById("OpponentsCasterList");
             updateThemeList(factionSelected, themeList);
