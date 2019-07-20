@@ -11,6 +11,7 @@ using WebAppWMHBattleReporter.Controllers;
 using WebAppWMHBattleReporter.Data;
 using WebAppWMHBattleReporter.Models;
 using WebAppWMHBattleReporter.Models.ViewModels;
+using WebAppWMHBattleReporter.Utility;
 
 namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
 {
@@ -167,10 +168,77 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             if (battleReports == null)
                 return NotFound();
 
+            List<string> factionOptions = new List<string>() { StaticDetails.AllFactions };
+            List<string> themeOptions = new List<string>() { StaticDetails.AllThemes };
+            List<string> casterOptions = new List<string>() { StaticDetails.AllCasters };
+            List<Faction> factions = await _db.Factions.ToListAsync();
+            foreach (Faction faction in factions)
+                factionOptions.Add(faction.Name);
+
             ConfirmedBattleReportsViewModel viewModel = new ConfirmedBattleReportsViewModel()
             {
-                BattleReports = battleReports
+                BattleReports = battleReports,
+                UserName = User.Identity.Name,
+                TimePeriod = StaticDetails.AllTime,
+                TimePeriodOptions = StaticDetails.TimePeriodOptions,
+                Faction = StaticDetails.AllFactions,
+                FactionOptions = factionOptions,
+                Theme = StaticDetails.AllThemes,
+                ThemeOptions = themeOptions,
+                Caster = StaticDetails.AllCasters,
+                CasterOptions = casterOptions
             };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ConfirmedBattleReports(ConfirmedBattleReportsViewModel viewModel)
+        {
+            if (viewModel.UserName != User.Identity.Name)
+                return Unauthorized();
+
+            var filteredBattleReports = _db.BattleReports.Where(br => (br.PostersUsername == viewModel.UserName || br.OpponentsUsername == viewModel.UserName) && br.ConfirmedByOpponent);
+            viewModel.TimePeriodOptions = StaticDetails.TimePeriodOptions;
+            List<Faction> factions = await _db.Factions.ToListAsync();
+            List<Theme> themes = await _db.Themes.ToListAsync();
+            List<Caster> casters = await _db.Casters.ToListAsync();
+            viewModel.FactionOptions = new List<string>() { StaticDetails.AllFactions };
+            foreach (Faction faction in factions)
+                viewModel.FactionOptions.Add(faction.Name);
+            viewModel.ThemeOptions = new List<string>() { StaticDetails.AllThemes };
+            viewModel.CasterOptions = new List<string>() { StaticDetails.AllCasters };
+
+            if (viewModel.TimePeriod == StaticDetails.LastYear)
+                filteredBattleReports = filteredBattleReports.Where(br => br.DatePlayed > DateTime.Today.AddYears(-1));
+            else if (viewModel.TimePeriod == StaticDetails.Last6Months)
+                filteredBattleReports = filteredBattleReports.Where(br => br.DatePlayed > DateTime.Today.AddMonths(-6));
+            else if (viewModel.TimePeriod == StaticDetails.LastMonth)
+                filteredBattleReports = filteredBattleReports.Where(br => br.DatePlayed > DateTime.Today.AddMonths(-1));
+
+            if (viewModel.Faction != StaticDetails.AllFactions)
+            {
+                Faction faction = factions.First(f => f.Name == viewModel.Faction);
+
+                List<Theme> factionThemes = themes.Where(t => t.FactionId == faction.Id).ToList();
+                foreach (Theme theme in factionThemes)
+                    viewModel.ThemeOptions.Add(theme.Name);
+
+                List<Caster> factionCasters = casters.Where(c => c.FactionId == faction.Id).ToList();
+                foreach (Caster caster in factionCasters)
+                    viewModel.CasterOptions.Add(caster.Name);
+
+                filteredBattleReports = filteredBattleReports.Where(br => (br.PostersUsername == viewModel.UserName && br.PostersFaction == viewModel.Faction) || (br.OpponentsUsername == viewModel.UserName && br.OpponentsFaction == viewModel.Faction));
+            }
+
+            if (viewModel.Theme != StaticDetails.AllThemes)
+                filteredBattleReports = filteredBattleReports.Where(br => (br.PostersUsername == viewModel.UserName && br.PostersTheme == viewModel.Theme) || (br.OpponentsUsername == viewModel.UserName && br.OpponentsTheme == viewModel.Theme));
+
+            if (viewModel.Caster != StaticDetails.AllCasters)
+                filteredBattleReports = filteredBattleReports.Where(br => (br.PostersUsername == viewModel.UserName && br.PostersCaster == viewModel.Caster) || (br.OpponentsUsername == viewModel.UserName && br.OpponentsCaster == viewModel.Caster));
+
+            viewModel.BattleReports = await filteredBattleReports.ToListAsync();
 
             return View(viewModel);
         }

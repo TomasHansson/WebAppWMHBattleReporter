@@ -44,5 +44,13 @@ namespace WebAppWMHBattleReporter.Utility
         public const string VersusThemeType = "Enemy Theme";
         public const string VersusCasterType = "Enemy Caster";
         public const string NoRecords = "No records";
+        public const string AllTime = "All Time";
+        public const string LastYear = "Last Year";
+        public const string Last6Months = "Last 6 Months";
+        public const string LastMonth = "Last Month";
+        public static readonly List<string> TimePeriodOptions = new List<string>() { AllTime, LastYear, Last6Months, LastMonth };
+        public const string AllFactions = "All Factions";
+        public const string AllThemes = "All Themes";
+        public const string AllCasters = "All Casters";
     }
 }

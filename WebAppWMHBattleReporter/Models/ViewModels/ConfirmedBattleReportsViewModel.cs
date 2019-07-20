@@ -8,6 +8,7 @@ namespace WebAppWMHBattleReporter.Models.ViewModels
     public class ConfirmedBattleReportsViewModel
     {
         public List<BattleReport> BattleReports { get; set; }
+        public string UserName { get; set; }
         public List<string> TimePeriodOptions { get; set; }
         public string TimePeriod { get; set; }
         public List<string> FactionOptions { get; set; }

@@ -1,4 +1,5 @@
 ﻿@model ConfirmedBattleReportsViewModel
+@using WebAppWMHBattleReporter.Utility
 @{
     ViewData["Title"] = "ConfirmedBattleReports";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -10,22 +11,91 @@
             <h2 class="text-info">Confirmed Battle Reports</h2>
         </div>
     </div>
-    <br />
-    <div>
-        <hr />
-        @if (Model.BattleReports.Count() != 0)
-        {
-
-            @foreach (BattleReport battleReport in Model.BattleReports)
+    <div class="row">
+        <div class="col-12 col-md-6 col-lg-4">
+            <form method="post" asp-action="ConfirmedBattleReports">
+                <h5 class="text-info">You May Apply Filters</h5>
+                <input type="hidden" asp-for="UserName" />
+                <label asp-for="TimePeriod" class="col-form-label">Select Time-Period:</label>
+                <select asp-for="TimePeriod" asp-items="@Model.TimePeriodOptions.Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.TimePeriod }).ToList()" class="form-control"></select>
+                <label asp-for="Faction" class="col-form-label">Select Faction:</label>
+                <select asp-for="Faction" asp-items="@Model.FactionOptions.Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.Faction}).ToList()" class="form-control" id="factionList"></select>
+                <label asp-for="Theme" class="col-form-label">Select Theme:</label>
+                <select asp-for="Theme" asp-items="@Model.ThemeOptions.Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.Theme }).ToList()" class="form-control" id="themeList"></select>
+                <label asp-for="Caster" class="col-form-label">Select Caster:</label>
+                <select asp-for="Caster" asp-items="@Model.CasterOptions.Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.Caster}).ToList()" class="form-control mb-1" id="casterList"></select>
+                <input type="submit" class="btn btn-info form-control" value="Apply Filters" />
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <br />
+            <h5 class="text-info">Your Results</h5>
+            <hr />
+            @if (Model.BattleReports.Count() != 0)
             {
-                <partial name="_BattleReportDetails" model="battleReport" />
-                <hr />
+
+                @foreach (BattleReport battleReport in Model.BattleReports)
+                {
+                    <partial name="_BattleReportDetails" model="battleReport" />
+                    <hr />
+                }
             }
-        }
-        else
-        {
-            <p>You currently have no approved battle reports.</p>
-        }
+            else
+            {
+                <p>You currently have no approved battle reports.</p>
+            }
+        </div>
     </div>
 </div>
 
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
+    <script>
+        function updateThemeList(factionSelected, themeList) {
+            $.ajax({
+                url: '/EndUser/BattleReport/GetFactionThemeNames/' + factionSelected,
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    for (var i = 0; i < data.length; i++) {
+                        themeList.options[themeList.options.length] = new Option(data[i], data[i]);
+                    }
+                }
+            });
+        }
+
+        function updateCasterList(factionSelected, casterList) {
+            $.ajax({
+                url: '/EndUser/BattleReport/GetFactionCasterNames/' + factionSelected,
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    for (var i = 0; i < data.length; i++) {
+                        casterList.options[casterList.options.length] = new Option(data[i], data[i]);
+                    }
+                }
+            });
+        }
+
+        $("#factionList").on("change", function () {
+            var factionSelected = $("#factionList option:selected").text();
+            var themeList = document.getElementById("themeList");
+            var casterList = document.getElementById("casterList");
+
+            themeList.options.length = 0;
+            themeList.options[0] = new Option("@StaticDetails.AllThemes", "@StaticDetails.AllThemes");
+
+            casterList.options.length = 0;
+            casterList.options[0] = new Option("@StaticDetails.AllCasters", "@StaticDetails.AllCasters");
+
+            if (factionSelected != "@StaticDetails.AllFactions")
+            {
+                updateThemeList(factionSelected, themeList);
+                updateCasterList(factionSelected, casterList);
+            }
+        });
+    </script>
+}
