@@ -84,6 +84,9 @@
                     if (themeList.options.length > 0) {
                         $("#loadTheme").attr('href', '/EndUser/Statistics/Theme/' + themeList.options[0].value);
                     }
+                    else {
+                        $("#loadTheme").attr('href', '/EndUser/Statistics/Theme/');
+                    }
                 }
             });
         }

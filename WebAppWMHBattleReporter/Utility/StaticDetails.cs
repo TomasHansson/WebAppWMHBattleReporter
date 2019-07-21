@@ -52,5 +52,19 @@ namespace WebAppWMHBattleReporter.Utility
         public const string AllFactions = "All Factions";
         public const string AllThemes = "All Themes";
         public const string AllCasters = "All Casters";
+        public const string AllGameSizes = "All Game Sizes";
+        public const string GameSize35Points = "35";
+        public const string GameSize50Points = "50";
+        public const string GameSize75Points = "75";
+        public const string GameSize100Points = "100";
+        public static readonly List<string> GameSizeFilterOptions = new List<string>() { AllGameSizes, GameSize35Points, GameSize50Points, GameSize75Points, GameSize100Points };
+        public const string AllEndConditions = "All End Conditions";
+        public static readonly List<string> EndconditionFilterOptions = new List<string>() { AllEndConditions, Scenario, Assassination, Clock };
+        public const string AllScenarios = "All Scenarios";
+        public static readonly List<string> ScenarioFilterOptions = new List<string>() { AllScenarios, ThePitII, Standoff, SpreadTheNet, Invasion, Mirage, ReconII };
+        public const string AllOutcomes = "All Outcomes";
+        public const string YouWon = "You Won";
+        public const string YouLost = "You Lost";
+        public static readonly List<string> OutComeOptions = new List<string>() { AllOutcomes, YouWon, YouLost };
     }
 }

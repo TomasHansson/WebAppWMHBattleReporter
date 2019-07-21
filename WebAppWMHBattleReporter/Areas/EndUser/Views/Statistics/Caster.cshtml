@@ -84,6 +84,9 @@
                     if (casterList.options.length > 0) {
                         $("#loadCaster").attr('href', '/EndUser/Statistics/Caster/' + casterList.options[0].value);
                     }
+                    else {
+                        $("#loadCaster").attr('href', '/EndUser/Statistics/Caster/');
+                    }
                 }
             });
         }

@@ -11,23 +11,43 @@
             <h2 class="text-info">Confirmed Battle Reports</h2>
         </div>
     </div>
-    <div class="row">
-        <div class="col-12 col-md-6 col-lg-4">
-            <form method="post" asp-action="ConfirmedBattleReports">
+    <form method="post" asp-action="ConfirmedBattleReports">
+        <div class="form-group row">
+            <div class="col-12">
                 <h5 class="text-info">You May Apply Filters</h5>
-                <input type="hidden" asp-for="UserName" />
-                <label asp-for="TimePeriod" class="col-form-label">Select Time-Period:</label>
+            </div>
+            <input type="hidden" asp-for="UserName" />
+            <div class="col-12 col-md-6 col-xl-4">
+                <label asp-for="TimePeriod" class="col-form-label">Time Period:</label>
                 <select asp-for="TimePeriod" asp-items="@Model.TimePeriodOptions.Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.TimePeriod }).ToList()" class="form-control"></select>
-                <label asp-for="Faction" class="col-form-label">Select Faction:</label>
+                <label asp-for="Faction" class="col-form-label">Faction:</label>
                 <select asp-for="Faction" asp-items="@Model.FactionOptions.Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.Faction}).ToList()" class="form-control" id="factionList"></select>
-                <label asp-for="Theme" class="col-form-label">Select Theme:</label>
+                <label asp-for="Theme" class="col-form-label">Theme:</label>
                 <select asp-for="Theme" asp-items="@Model.ThemeOptions.Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.Theme }).ToList()" class="form-control" id="themeList"></select>
-                <label asp-for="Caster" class="col-form-label">Select Caster:</label>
-                <select asp-for="Caster" asp-items="@Model.CasterOptions.Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.Caster}).ToList()" class="form-control mb-1" id="casterList"></select>
+                <label asp-for="Caster" class="col-form-label">Caster:</label>
+                <select asp-for="Caster" asp-items="@Model.CasterOptions.Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.Caster}).ToList()" class="form-control" id="casterList"></select>
+            </div>
+            <div class="col-12 col-md-6 col-xl-4">
+                <label asp-for="GameSize" class="col-form-label">Game Size:</label>
+                <select asp-for="GameSize" asp-items="@Model.GameSizeOptions.Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.GameSize }).ToList()" class="form-control"></select>
+                <label asp-for="EnemyFaction" class="col-form-label">Enemy Faction:</label>
+                <select asp-for="EnemyFaction" asp-items="@Model.FactionOptions.Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.EnemyFaction}).ToList()" class="form-control" id="enemyFactionList"></select>
+                <label asp-for="EnemyTheme" class="col-form-label">Select Theme:</label>
+                <select asp-for="EnemyTheme" asp-items="@Model.EnemyThemeOptions.Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.EnemyTheme }).ToList()" class="form-control" id="enemyThemeList"></select>
+                <label asp-for="EnemyCaster" class="col-form-label">Select Caster:</label>
+                <select asp-for="EnemyCaster" asp-items="@Model.EnemyCasterOptions.Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.EnemyCaster}).ToList()" class="form-control" id="enemyCasterList"></select>
+            </div>
+            <div class="col-12 col-md-6 col-xl-4">
+                <label asp-for="EndCondition" class="col-form-label">Game Size:</label>
+                <select asp-for="EndCondition" asp-items="@Model.EndConditionOptions.Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.EndCondition }).ToList()" class="form-control"></select>
+                <label asp-for="Scenario" class="col-form-label">Enemy Faction:</label>
+                <select asp-for="Scenario" asp-items="@Model.ScenarioOptions.Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.Scenario}).ToList()" class="form-control"></select>
+                <label asp-for="OutCome" class="col-form-label">Select Theme:</label>
+                <select asp-for="OutCome" asp-items="@Model.OutComeOptions.Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.OutCome }).ToList()" class="form-control mb-3"></select>
                 <input type="submit" class="btn btn-info form-control" value="Apply Filters" />
-            </form>
+            </div>
         </div>
-    </div>
+    </form>
     <div class="row">
         <div class="col-12">
             <br />
