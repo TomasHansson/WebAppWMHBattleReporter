@@ -32,17 +32,17 @@
                 <select asp-for="GameSize" asp-items="@Model.GameSizeOptions.Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.GameSize }).ToList()" class="form-control"></select>
                 <label asp-for="EnemyFaction" class="col-form-label">Enemy Faction:</label>
                 <select asp-for="EnemyFaction" asp-items="@Model.FactionOptions.Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.EnemyFaction}).ToList()" class="form-control" id="enemyFactionList"></select>
-                <label asp-for="EnemyTheme" class="col-form-label">Select Theme:</label>
+                <label asp-for="EnemyTheme" class="col-form-label">Enemy Theme:</label>
                 <select asp-for="EnemyTheme" asp-items="@Model.EnemyThemeOptions.Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.EnemyTheme }).ToList()" class="form-control" id="enemyThemeList"></select>
-                <label asp-for="EnemyCaster" class="col-form-label">Select Caster:</label>
+                <label asp-for="EnemyCaster" class="col-form-label">Enemy Caster:</label>
                 <select asp-for="EnemyCaster" asp-items="@Model.EnemyCasterOptions.Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.EnemyCaster}).ToList()" class="form-control" id="enemyCasterList"></select>
             </div>
             <div class="col-12 col-md-6 col-xl-4">
-                <label asp-for="EndCondition" class="col-form-label">Game Size:</label>
+                <label asp-for="EndCondition" class="col-form-label">End Condition:</label>
                 <select asp-for="EndCondition" asp-items="@Model.EndConditionOptions.Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.EndCondition }).ToList()" class="form-control"></select>
-                <label asp-for="Scenario" class="col-form-label">Enemy Faction:</label>
+                <label asp-for="Scenario" class="col-form-label">Scenario:</label>
                 <select asp-for="Scenario" asp-items="@Model.ScenarioOptions.Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.Scenario}).ToList()" class="form-control"></select>
-                <label asp-for="OutCome" class="col-form-label">Select Theme:</label>
+                <label asp-for="OutCome" class="col-form-label">Outcome:</label>
                 <select asp-for="OutCome" asp-items="@Model.OutComeOptions.Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.OutCome }).ToList()" class="form-control mb-3"></select>
                 <input type="submit" class="btn btn-info form-control" value="Apply Filters" />
             </div>
@@ -104,6 +104,24 @@
             var factionSelected = $("#factionList option:selected").text();
             var themeList = document.getElementById("themeList");
             var casterList = document.getElementById("casterList");
+
+            themeList.options.length = 0;
+            themeList.options[0] = new Option("@StaticDetails.AllThemes", "@StaticDetails.AllThemes");
+
+            casterList.options.length = 0;
+            casterList.options[0] = new Option("@StaticDetails.AllCasters", "@StaticDetails.AllCasters");
+
+            if (factionSelected != "@StaticDetails.AllFactions")
+            {
+                updateThemeList(factionSelected, themeList);
+                updateCasterList(factionSelected, casterList);
+            }
+        });
+
+        $("#enemyFactionList").on("change", function () {
+            var factionSelected = $("#enemyFactionList option:selected").text();
+            var themeList = document.getElementById("enemyThemeList");
+            var casterList = document.getElementById("enemyCasterList");
 
             themeList.options.length = 0;
             themeList.options[0] = new Option("@StaticDetails.AllThemes", "@StaticDetails.AllThemes");
