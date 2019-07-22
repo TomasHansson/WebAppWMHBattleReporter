@@ -200,7 +200,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
                 Scenario = StaticDetails.AllScenarios,
                 OutComeOptions = StaticDetails.OutComeOptions,
                 OutCome = StaticDetails.AllOutcomes,
-                HideFilters = false
+                HideFilters = true
             };
 
             return View(viewModel);
@@ -229,7 +229,6 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             viewModel.EndConditionOptions = StaticDetails.EndconditionFilterOptions;
             viewModel.ScenarioOptions = StaticDetails.ScenarioFilterOptions;
             viewModel.OutComeOptions = StaticDetails.OutComeOptions;
-            viewModel.HideFilters = false;
 
             if (viewModel.TimePeriod == StaticDetails.LastYear)
                 filteredBattleReports = filteredBattleReports.Where(br => br.DatePlayed > DateTime.Today.AddYears(-1));
