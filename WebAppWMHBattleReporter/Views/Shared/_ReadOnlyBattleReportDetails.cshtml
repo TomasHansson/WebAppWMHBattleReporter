@@ -1,170 +1,170 @@
 ﻿@model BattleReport
 
-<div class="form-group row">
+<div class="row">
     <div class="col-12 col-md-6">
         <h5 class="text-info">Posters Information</h5>
-        <div class="form-group row">
+        <div class="row">
             <div class="col-12">
-                <label asp-for="@Model.PostersUsername" class="col-form-label">Username</label>
+                <strong>Username</strong>
             </div>
-            <div class="col-12">
-                <input asp-for="@Model.PostersUsername" readonly class="form-control" />
-            </div>
-        </div>
-        <div class="form-group row">
-            <div class="col-12">
-                <label asp-for="@Model.PostersFaction" class="col-form-label">Faction</label>
-            </div>
-            <div class="col-12">
-                <input asp-for="@Model.PostersFaction" readonly class="form-control" />
+            <div class="col-12 mb-1">
+                @Model.PostersUsername
             </div>
         </div>
-        <div class="form-group row">
+        <div class="row">
             <div class="col-12">
-                <label asp-for="@Model.PostersTheme" class="col-form-label">Theme</label>
+                <strong>Faction</strong>
             </div>
-            <div class="col-12">
-                <input asp-for="@Model.PostersTheme" readonly class="form-control" />
-            </div>
-        </div>
-        <div class="form-group row">
-            <div class="col-12">
-                <label asp-for="@Model.PostersCaster" class="col-form-label">Caster</label>
-            </div>
-            <div class="col-12">
-                <input asp-for="@Model.PostersCaster" readonly class="form-control" />
+            <div class="col-12 mb-1">
+                @Model.PostersFaction
             </div>
         </div>
-        <div class="form-group row">
+        <div class="row">
             <div class="col-12">
-                <label asp-for="@Model.PostersControlPoints" class="col-form-label">Control Points</label>
+                <strong>Theme</strong>
             </div>
-            <div class="col-12">
-                <input asp-for="@Model.PostersControlPoints" readonly class="form-control" />
-            </div>
-        </div>
-        <div class="form-group row">
-            <div class="col-12">
-                <label asp-for="@Model.PostersArmyPoints" class="col-form-label">Army Points</label>
-            </div>
-            <div class="col-12">
-                <input asp-for="@Model.PostersArmyPoints" readonly class="form-control" />
+            <div class="col-12 mb-1">
+                @Model.PostersTheme
             </div>
         </div>
-        <div class="form-group row">
+        <div class="row">
             <div class="col-12">
-                <label asp-for="@Model.PostersArmyList" class="col-form-label">Army List</label>
+                <strong>Caster</strong>
             </div>
+            <div class="col-12 mb-1">
+                @Model.PostersCaster
+            </div>
+        </div>
+        <div class="row">
             <div class="col-12">
-                <textarea asp-for="@Model.PostersArmyList" readonly rows="15" class="form-control"></textarea>
+                <strong>Control Points</strong>
+            </div>
+            <div class="col-12 mb-1">
+                @Model.PostersControlPoints
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <strong>Army Points</strong>
+            </div>
+            <div class="col-12 mb-1">
+                @Model.PostersArmyPoints
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <strong>Army List</strong>
+            </div>
+            <div class="col-12 mb-1">
+                <textarea asp-for="@Model.PostersArmyList" rows="3" readonly class="form-control-plaintext"></textarea>
             </div>
         </div>
     </div>
     <div class="col-12 col-md-6">
         <h5 class="text-info">Opponents Information</h5>
-        <div class="form-group row">
+        <div class="row">
             <div class="col-12">
-                <label asp-for="@Model.OpponentsUsername" class="col-form-label">Username</label>
+                <strong>Username</strong>
             </div>
-            <div class="col-12">
-                <input asp-for="@Model.OpponentsUsername" readonly class="form-control" />
-            </div>
-        </div>
-        <div class="form-group row">
-            <div class="col-12">
-                <label asp-for="@Model.OpponentsFaction" class="col-form-label">Faction</label>
-            </div>
-            <div class="col-12">
-                <input asp-for="@Model.OpponentsFaction" readonly class="form-control" />
+            <div class="col-12 mb-1">
+                @Model.OpponentsUsername
             </div>
         </div>
-        <div class="form-group row">
+        <div class="row">
             <div class="col-12">
-                <label asp-for="@Model.OpponentsTheme" class="col-form-label">Theme</label>
+                <strong>Faction</strong>
             </div>
-            <div class="col-12">
-                <input asp-for="@Model.OpponentsTheme" readonly class="form-control" />
-            </div>
-        </div>
-        <div class="form-group row">
-            <div class="col-12">
-                <label asp-for="@Model.OpponentsCaster" class="col-form-label">Caster</label>
-            </div>
-            <div class="col-12">
-                <input asp-for="@Model.OpponentsCaster" readonly class="form-control" />
+            <div class="col-12 mb-1">
+                @Model.OpponentsFaction
             </div>
         </div>
-        <div class="form-group row">
+        <div class="row">
             <div class="col-12">
-                <label asp-for="@Model.OpponentsControlPoints" class="col-form-label">Control Points</label>
+                <strong>Theme</strong>
             </div>
-            <div class="col-12">
-                <input asp-for="@Model.OpponentsControlPoints" readonly class="form-control" />
-            </div>
-        </div>
-        <div class="form-group row">
-            <div class="col-12">
-                <label asp-for="@Model.OpponentsArmyPoints" class="col-form-label">Army Points</label>
-            </div>
-            <div class="col-12">
-                <input asp-for="@Model.OpponentsArmyPoints" readonly class="form-control" />
+            <div class="col-12 mb-1">
+                @Model.OpponentsTheme
             </div>
         </div>
-        <div class="form-group row">
+        <div class="row">
             <div class="col-12">
-                <label asp-for="@Model.OpponentsArmyList" class="col-form-label">Army List</label>
+                <strong>Caster</strong>
             </div>
+            <div class="col-12 mb-1">
+                @Model.OpponentsCaster
+            </div>
+        </div>
+        <div class="row">
             <div class="col-12">
-                <textarea asp-for="@Model.OpponentsArmyList" readonly rows="15" class="form-control"></textarea>
+                <strong>Control Points</strong>
+            </div>
+            <div class="col-12 mb-1">
+                @Model.OpponentsControlPoints
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <strong>Army Points</strong>
+            </div>
+            <div class="col-12 mb-1">
+                @Model.OpponentsArmyPoints
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <strong>Army List</strong>
+            </div>
+            <div class="col-12 mb-1">
+                <textarea asp-for="@Model.OpponentsArmyList" readonly class="form-control-plaintext"></textarea>
             </div>
         </div>
     </div>
 </div>
-<div class="form-group row">
+<div class="row">
     <div class="col-12">
         <h5 class="text-info">Game Information</h5>
     </div>
     <div class="col-12 col-md-6">
-        <div class="form-group row">
+        <div class="row">
             <div class="col-12">
-                <label asp-for="@Model.GameSize" class="col-form-label">Game Size</label>
+                <strong>Game Size</strong>
             </div>
-            <div class="col-12">
-                <input asp-for="@Model.GameSize" readonly class="form-control" />
-            </div>
-        </div>
-        <div class="form-group row">
-            <div class="col-12">
-                <label asp-for="@Model.Scenario" class="col-form-label">Scenario</label>
-            </div>
-            <div class="col-12">
-                <input asp-for="@Model.Scenario" readonly class="form-control" />
+            <div class="col-12 mb-1">
+                @Model.GameSize
             </div>
         </div>
-        <div class="form-group row">
+        <div class="row">
             <div class="col-12">
-                <label asp-for="@Model.EndCondition" class="col-form-label">End Condition</label>
+                <strong>Scenario</strong>
             </div>
+            <div class="col-12 mb-1">
+                @Model.Scenario
+            </div>
+        </div>
+        <div class="row">
             <div class="col-12">
-                <input asp-for="@Model.EndCondition" readonly class="form-control" />
+                <strong>End Condition</strong>
+            </div>
+            <div class="col-12 mb-1">
+                @Model.EndCondition
             </div>
         </div>
     </div>
     <div class="col-12 col-md-6">
-        <div class="form-group row">
+        <div class="row">
             <div class="col-12">
-                <label class="col-form-label">Winner</label>
+                <strong>Winner</strong>
             </div>
-            <div class="col-12">
-                <input asp-for="@Model.WinnersUsername" readonly class="form-control" />
+            <div class="col-12 mb-1">
+                @Model.WinnersUsername
             </div>
         </div>
-        <div class="form-group row">
+        <div class="row">
             <div class="col-12">
-                <label asp-for="@Model.DatePlayed" class="col-form-label">Date Played</label>
+                <strong>Date Played</strong>
             </div>
-            <div class="col-12">
-                <input class="form-control" readonly value="@Model.DatePlayed.ToString("yyyy-MM-dd")" />
+            <div class="col-12 mb-1">
+                @Model.DatePlayed.ToString("yyyy-MM-dd")
             </div>
         </div>
     </div>
