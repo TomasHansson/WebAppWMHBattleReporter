@@ -2,39 +2,40 @@
 
 @if (Model.NumberOfGamesPlayed == 0)
 {
-    <div class="row text-center">
+    <div class="row">
         <div class="col-12">
-            <strong>@Model.Username</strong>
-        </div>
-        <div class="col-12">
-            This user doesn't have any recorded games.
+            <div class="col-12">
+                <strong>@Model.Username</strong>
+            </div>
+            <div class="col-12">
+                This user doesn't have any recorded games.
+            </div>
         </div>
     </div>
 }
 else
 {
-    <div class="row text-center">
-        @if (Model.ListPosition != 0)
-        {
-            <div class="col-12 col-md-6">
-                # @Model.ListPosition - <strong>@Model.Username</strong>
+    <div class="row">
+        <div class="col-12 col-md-6">
+            <div class="col-12">
+                @if (Model.ListPosition != 0)
+                {
+                    <strong># @Model.ListPosition - @Model.Username</strong>
+                }
+                else
+                {
+                    <strong>@Model.Username</strong>
+                }
             </div>
-            <div class="col-12 col-md-6">
+        </div>
+        <div class="col-12 col-md-6">
+            <div class="col-12">
                 <strong>Winrate:</strong> @Model.Winrate.ToString("P1")
             </div>
-        }
-        else
-        {
-            <div class="col-12 col-md-6">
-                <strong>@Model.Username</strong>
-            </div>
-            <div class="col-12 col-md-6">
-                <strong>Winrate:</strong> @Model.Winrate.ToString("P1")
-            </div>
-        }
+        </div>
     </div>
     <div class="row">
-        <div class="col-12 col-md-6 text-center">
+        <div class="col-12 col-md-6">
             <div class="col-12">
                 <strong>Games Played:</strong> @Model.NumberOfGamesPlayed
             </div>
@@ -57,7 +58,7 @@ else
                 @Model.BestPerformingFaction (@Model.WinrateBestPerformingFaction.ToString("P1"))
             </div>
         </div>
-        <div class="col-12 col-md-6 text-center">
+        <div class="col-12 col-md-6">
             <div class="col-12">
                 <strong>Most Played Caster:</strong>
             </div>

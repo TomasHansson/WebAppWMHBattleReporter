@@ -11,10 +11,11 @@
             <h2 class="text-info">Confirmed Battle Reports</h2>
         </div>
     </div>
+    <br />
     <form method="post" asp-action="ConfirmedBattleReports">
         <div class="form-group row">
             <div class="col-12">
-                <h5 class="text-info">You May Apply Filters</h5>
+                <h5 class="text-info">Filters</h5>
             </div>
             <input type="hidden" asp-for="UserName" />
             @if (Model.HideFilters == false)

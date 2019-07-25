@@ -2,7 +2,7 @@
 
 @if (Model.NumberOfGamesPlayed == 0)
 {
-    <div class="row text-center">
+    <div class="row">
         <div class="col-12">
             <strong>@Model.Name</strong>
         </div>
@@ -13,28 +13,27 @@
 }
 else
 {
-    <div class="row text-center">
-        @if (Model.ListPosition != 0)
-        {
-            <div class="col-12 col-md-6">
-                # @Model.ListPosition - <strong>@Model.Name</strong>
+    <div class="row">
+        <div class="col-12 col-md-6">
+            <div class="col-12">
+                @if (Model.ListPosition != 0)
+                {
+                    <strong># @Model.ListPosition - @Model.Name</strong>
+                }
+                else
+                {
+                    <strong>@Model.Name</strong>
+                }
             </div>
+        </div>
+        <div class="col-12 col-md-6">
             <div class="col-12 col-md-6">
                 <strong>Winrate:</strong> @Model.Winrate.ToString("P1")
             </div>
-        }
-        else
-        {
-            <div class="col-12 col-md-6">
-                <strong>@Model.Name</strong>
-            </div>
-            <div class="col-12 col-md-6">
-                <strong>Winrate:</strong> @Model.Winrate.ToString("P1")
-            </div>
-        }
+        </div>
     </div>
     <div class="row">
-        <div class="col-12 col-md-6 text-center">
+        <div class="col-12 col-md-6">
             <div class="col-12">
                 <strong>Games Played:</strong> @Model.NumberOfGamesPlayed
             </div>
@@ -60,7 +59,7 @@ else
                 @Model.BestPerformingTheme (@Model.WinrateBestPerformingTheme.ToString("P1"))
             </div>
         </div>
-        <div class="col-12 col-md-6 text-center">
+        <div class="col-12 col-md-6">
             <div class="col-12">
                 <strong>Most Played Scenario:</strong>
             </div>

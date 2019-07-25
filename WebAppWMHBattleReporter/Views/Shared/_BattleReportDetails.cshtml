@@ -1,107 +1,156 @@
 ﻿@model BattleReport
 
 <div class="row">
-    <div class="col-12 col-md-6 text-center">
-        <div class="col-12">
-            <strong>Date played:</strong>
+    <div class="col-12 col-md-6">
+        <h5>Posters Information</h5>
+        <div class="row">
+            <div class="col-12">
+                <strong>Username</strong>
+            </div>
+            <div class="col-12 mb-1">
+                @Model.PostersUsername
+            </div>
         </div>
-        <div class="col-12">
-            @Model.DatePlayed.ToShortDateString()
+        <div class="row">
+            <div class="col-12">
+                <strong>Faction</strong>
+            </div>
+            <div class="col-12 mb-1">
+                @Model.PostersFaction
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <strong>Theme</strong>
+            </div>
+            <div class="col-12 mb-1">
+                @Model.PostersTheme
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <strong>Caster</strong>
+            </div>
+            <div class="col-12 mb-1">
+                @Model.PostersCaster
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 mb-1">
+                <strong>Control Points: </strong>@Model.PostersControlPoints
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 mb-1">
+                <strong>Army Points: </strong>@Model.PostersArmyPoints
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <strong>Army List</strong>
+            </div>
+            <div class="col-12 mb-2">
+                <textarea asp-for="@Model.PostersArmyList" rows="5" readonly class="form-control-plaintext border"></textarea>
+            </div>
         </div>
     </div>
-    <div class="col-12 col-md-6 text-center">
-        <div class="col-12">
-            <strong>Winner:</strong>
+    <div class="col-12 col-md-6">
+        <h5>Opponents Information</h5>
+        <div class="row">
+            <div class="col-12">
+                <strong>Username</strong>
+            </div>
+            <div class="col-12 mb-1">
+                @Model.OpponentsUsername
+            </div>
         </div>
-        <div class="col-12">
-            @Model.WinnersUsername
+        <div class="row">
+            <div class="col-12">
+                <strong>Faction</strong>
+            </div>
+            <div class="col-12 mb-1">
+                @Model.OpponentsFaction
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <strong>Theme</strong>
+            </div>
+            <div class="col-12 mb-1">
+                @Model.OpponentsTheme
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <strong>Caster</strong>
+            </div>
+            <div class="col-12 mb-1">
+                @Model.OpponentsCaster
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 mb-1">
+                <strong>Control Points: </strong>@Model.OpponentsControlPoints
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 mb-1">
+                <strong>Army Points: </strong>@Model.OpponentsArmyPoints
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <strong>Army List</strong>
+            </div>
+            <div class="col-12 mb-2">
+                <textarea asp-for="@Model.OpponentsArmyList" rows="5" readonly  class="form-control-plaintext border"></textarea>
+            </div>
         </div>
     </div>
 </div>
-<br />
 <div class="row">
-    <div class="col-12 col-md-6 text-center">
-        <div class="col-12">
-            <strong>Player 1:</strong>
+    <div class="col-12">
+        <h5>Game Information</h5>
+    </div>
+    <div class="col-12 col-md-6">
+        <div class="row">
+            <div class="col-12 mb-1">
+                <strong>Game Size: </strong>@Model.GameSize
+            </div>
         </div>
-        <div class="col-12">
-            @Model.PostersUsername
+        <div class="row">
+            <div class="col-12">
+                <strong>Scenario</strong>
+            </div>
+            <div class="col-12 mb-1">
+                @Model.Scenario
+            </div>
         </div>
-        <div class="col-12">
-            <strong>Faction:</strong>
-        </div>
-        <div class="col-12">
-            @Model.PostersFaction
-        </div>
-        <div class="col-12">
-            <strong>Theme:</strong>
-        </div>
-        <div class="col-12">
-            @Model.PostersTheme
-        </div>
-        <div class="col-12">
-            <strong>Caster:</strong>
-        </div>
-        <div class="col-12">
-            @Model.PostersCaster
-        </div>
-        <div class="col-12">
-            <strong>Control Points:</strong> @Model.PostersControlPoints
-        </div>
-        <div class="col-12">
-            <strong>Army Points:</strong> @Model.PostersArmyPoints
+        <div class="row">
+            <div class="col-12">
+                <strong>End Condition</strong>
+            </div>
+            <div class="col-12 mb-1">
+                @Model.EndCondition
+            </div>
         </div>
     </div>
-    <div class="col-12 col-md-6 text-center">
-        <div class="col-12">
-            <strong>Player 2:</strong>
+    <div class="col-12 col-md-6">
+        <div class="row">
+            <div class="col-12">
+                <strong>Winner</strong>
+            </div>
+            <div class="col-12 mb-1">
+                @Model.WinnersUsername
+            </div>
         </div>
-        <div class="col-12">
-            @Model.OpponentsUsername
-        </div>
-        <div class="col-12">
-            <strong>Faction:</strong>
-        </div>
-        <div class="col-12">
-            @Model.OpponentsFaction
-        </div>
-        <div class="col-12">
-            <strong>Theme:</strong>
-        </div>
-        <div class="col-12">
-            @Model.OpponentsTheme
-        </div>
-        <div class="col-12">
-            <strong>Caster:</strong>
-        </div>
-        <div class="col-12">
-            @Model.OpponentsCaster
-        </div>
-        <div class="col-12">
-            <strong>Control Points:</strong> @Model.OpponentsControlPoints
-        </div>
-        <div class="col-12">
-            <strong>Army Points:</strong> @Model.OpponentsArmyPoints
+        <div class="row">
+            <div class="col-12">
+                <strong>Date Played</strong>
+            </div>
+            <div class="col-12 mb-2">
+                @Model.DatePlayed.ToString("yyyy-MM-dd")
+            </div>
         </div>
     </div>
 </div>
-<br />
-<div class="row">
-    <div class="col-12 col-md-6 text-center">
-        <div class="col-12">
-            <strong>Game Size:</strong> @Model.GameSize
-        </div>
-        <div class="col-12">
-            <strong>Scenario:</strong> @Model.Scenario
-        </div>
-    </div>
-    <div class="col-12 col-md-6 text-center">
-        <div class="col-12">
-            <strong>End Condition:</strong>
-        </div>
-        <div class="col-12">
-            @Model.EndCondition
-        </div>
-    </div>
-</div>
-<br />
