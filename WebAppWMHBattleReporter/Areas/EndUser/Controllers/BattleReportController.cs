@@ -31,8 +31,127 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-            List<BattleReport> battleReports = await _db.BattleReports.Where(br => br.ConfirmedByOpponent).ToListAsync();
-            return View(battleReports);
+            List<string> factionOptions = new List<string>() { StaticDetails.AllFactions };
+            List<string> themeOptions = new List<string>() { StaticDetails.AllThemes };
+            List<string> casterOptions = new List<string>() { StaticDetails.AllCasters };
+            List<Faction> factions = await _db.Factions.ToListAsync();
+            foreach (Faction faction in factions)
+                factionOptions.Add(faction.Name);
+
+            BattleReportsListViewModel viewModel = new BattleReportsListViewModel()
+            {
+                BattleReports = await _db.BattleReports.ToListAsync(),
+                TimePeriod = StaticDetails.AllTime,
+                TimePeriodOptions = StaticDetails.TimePeriodOptions,
+                P1Faction = StaticDetails.AllFactions,
+                FactionOptions = factionOptions,
+                P1Theme = StaticDetails.AllThemes,
+                P1ThemeOptions = themeOptions,
+                P1Caster = StaticDetails.AllCasters,
+                P1CasterOptions = casterOptions,
+                P2Faction = StaticDetails.AllFactions,
+                P2Theme = StaticDetails.AllThemes,
+                P2ThemeOptions = themeOptions,
+                P2Caster = StaticDetails.AllCasters,
+                P2CasterOptions = casterOptions,
+                GameSizeOptions = StaticDetails.GameSizeFilterOptions,
+                GameSize = StaticDetails.AllGameSizes,
+                EndConditionOptions = StaticDetails.EndconditionFilterOptions,
+                EndCondition = StaticDetails.AllEndConditions,
+                ScenarioOptions = StaticDetails.ScenarioFilterOptions,
+                Scenario = StaticDetails.AllScenarios,
+                HideFilters = true
+            };
+            return View(viewModel);
+        }
+
+        [AllowAnonymous]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Index(BattleReportsListViewModel viewModel)
+        {
+            var filteredBattleReports = _db.BattleReports.AsQueryable();
+            viewModel.TimePeriodOptions = StaticDetails.TimePeriodOptions;
+            List<Faction> factions = await _db.Factions.ToListAsync();
+            List<Theme> themes = await _db.Themes.ToListAsync();
+            List<Caster> casters = await _db.Casters.ToListAsync();
+            viewModel.FactionOptions = new List<string>() { StaticDetails.AllFactions };
+            foreach (Faction faction in factions)
+                viewModel.FactionOptions.Add(faction.Name);
+            viewModel.P1ThemeOptions = new List<string>() { StaticDetails.AllThemes };
+            viewModel.P1CasterOptions = new List<string>() { StaticDetails.AllCasters };
+            viewModel.P2ThemeOptions = new List<string>() { StaticDetails.AllThemes };
+            viewModel.P2CasterOptions = new List<string>() { StaticDetails.AllCasters };
+            viewModel.GameSizeOptions = StaticDetails.GameSizeFilterOptions;
+            viewModel.EndConditionOptions = StaticDetails.EndconditionFilterOptions;
+            viewModel.ScenarioOptions = StaticDetails.ScenarioFilterOptions;
+
+            if (viewModel.TimePeriod == StaticDetails.LastYear)
+                filteredBattleReports = filteredBattleReports.Where(br => br.DatePlayed > DateTime.Today.AddYears(-1));
+            else if (viewModel.TimePeriod == StaticDetails.Last6Months)
+                filteredBattleReports = filteredBattleReports.Where(br => br.DatePlayed > DateTime.Today.AddMonths(-6));
+            else if (viewModel.TimePeriod == StaticDetails.LastMonth)
+                filteredBattleReports = filteredBattleReports.Where(br => br.DatePlayed > DateTime.Today.AddMonths(-1));
+
+            if (viewModel.P1Faction != StaticDetails.AllFactions)
+            {
+                Faction faction = factions.First(f => f.Name == viewModel.P1Faction);
+
+                List<Theme> factionThemes = themes.Where(t => t.FactionId == faction.Id).ToList();
+                foreach (Theme theme in factionThemes)
+                    viewModel.P1ThemeOptions.Add(theme.Name);
+
+                List<Caster> factionCasters = casters.Where(c => c.FactionId == faction.Id).ToList();
+                foreach (Caster caster in factionCasters)
+                    viewModel.P2CasterOptions.Add(caster.Name);
+            }
+
+            if (viewModel.P2Faction != StaticDetails.AllFactions)
+            {
+                Faction faction = factions.First(f => f.Name == viewModel.P1Faction);
+
+                List<Theme> factionThemes = themes.Where(t => t.FactionId == faction.Id).ToList();
+                foreach (Theme theme in factionThemes)
+                    viewModel.P2ThemeOptions.Add(theme.Name);
+
+                List<Caster> enemyCasters = casters.Where(c => c.FactionId == faction.Id).ToList();
+                foreach (Caster caster in enemyCasters)
+                    viewModel.P2CasterOptions.Add(caster.Name);
+            }
+
+            if (viewModel.P1Faction != StaticDetails.AllFactions && viewModel.P2Faction != StaticDetails.AllFactions)
+                filteredBattleReports = filteredBattleReports.Where(br => (br.PostersFaction == viewModel.P1Faction && br.OpponentsFaction == viewModel.P2Faction) || (br.PostersFaction == viewModel.P2Faction && br.OpponentsFaction == viewModel.P1Faction));
+            else if (viewModel.P1Faction != StaticDetails.AllFactions && viewModel.P2Faction == StaticDetails.AllFactions)
+                filteredBattleReports = filteredBattleReports.Where(br => br.PostersFaction == viewModel.P1Faction || br.OpponentsFaction == viewModel.P1Faction);
+            else if (viewModel.P2Faction != StaticDetails.AllFactions && viewModel.P1Faction == StaticDetails.AllFactions)
+                filteredBattleReports = filteredBattleReports.Where(br => br.PostersFaction == viewModel.P2Faction || br.OpponentsFaction == viewModel.P2Faction);
+
+            if (viewModel.P1Theme != StaticDetails.AllThemes && viewModel.P2Theme != StaticDetails.AllThemes)
+                filteredBattleReports = filteredBattleReports.Where(br => (br.PostersTheme == viewModel.P1Theme && br.OpponentsTheme == viewModel.P2Theme) || (br.PostersTheme == viewModel.P2Theme && br.OpponentsTheme == viewModel.P1Theme));
+            else if (viewModel.P1Theme != StaticDetails.AllThemes && viewModel.P2Theme == StaticDetails.AllThemes)
+                filteredBattleReports = filteredBattleReports.Where(br => br.PostersTheme == viewModel.P1Theme || br.OpponentsTheme == viewModel.P1Theme);
+            else if (viewModel.P2Theme != StaticDetails.AllThemes && viewModel.P1Theme == StaticDetails.AllThemes)
+                filteredBattleReports = filteredBattleReports.Where(br => br.PostersTheme == viewModel.P2Theme || br.OpponentsTheme == viewModel.P2Theme);
+
+            if (viewModel.P1Caster != StaticDetails.AllCasters && viewModel.P2Caster != StaticDetails.AllCasters)
+                filteredBattleReports = filteredBattleReports.Where(br => (br.PostersCaster == viewModel.P1Caster && br.OpponentsCaster == viewModel.P2Caster) || (br.PostersCaster == viewModel.P2Caster && br.OpponentsCaster == viewModel.P1Caster));
+            else if (viewModel.P1Caster != StaticDetails.AllCasters && viewModel.P2Caster == StaticDetails.AllCasters)
+                filteredBattleReports = filteredBattleReports.Where(br => br.PostersCaster == viewModel.P1Caster || br.OpponentsCaster == viewModel.P1Caster);
+            else if (viewModel.P2Caster != StaticDetails.AllCasters && viewModel.P1Caster == StaticDetails.AllCasters)
+                filteredBattleReports = filteredBattleReports.Where(br => br.PostersCaster == viewModel.P2Caster || br.OpponentsCaster == viewModel.P2Caster);
+
+            if (viewModel.GameSize != StaticDetails.AllGameSizes)
+                filteredBattleReports = filteredBattleReports.Where(br => br.GameSize.ToString() == viewModel.GameSize);
+
+            if (viewModel.EndCondition != StaticDetails.AllEndConditions)
+                filteredBattleReports = filteredBattleReports.Where(br => br.EndCondition == viewModel.EndCondition);
+
+            if (viewModel.Scenario != StaticDetails.AllScenarios)
+                filteredBattleReports = filteredBattleReports.Where(br => br.Scenario == viewModel.Scenario);
+
+            viewModel.BattleReports = await filteredBattleReports.ToListAsync();
+
+            return View(viewModel);
         }
 
         public async Task<IActionResult> Create()
@@ -50,6 +169,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             return View(viewModel);
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> GetFactionThemeNames(string id)
         {
             if (id == null)
@@ -63,6 +183,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             return Json(factionThemes);
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> GetFactionCasterNames(string id)
         {
             if (id == null)

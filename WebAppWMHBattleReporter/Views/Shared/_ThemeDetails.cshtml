@@ -17,7 +17,7 @@ else
 {
     <div class="row">
         <div class="col-12 col-md-6">
-            <div class="col-12">
+            <div class="col-12 mb-1">
                 @if (Model.ListPosition != 0)
                 {
                     <strong># @Model.ListPosition - @Model.Name</strong>
@@ -29,23 +29,23 @@ else
             </div>
         </div>
         <div class="col-12 col-md-6">
-            <div class="col-12">
+            <div class="col-12 mb-1">
                 <strong>Winrate:</strong> @Model.Winrate.ToString("P1")
             </div>
         </div>
     </div>
     <div class="row">
         <div class="col-12 col-md-6">
-            <div class="col-12">
+            <div class="col-12 mb-1">
                 <strong>Games Played:</strong> @Model.NumberOfGamesPlayed
             </div>
-            <div class="col-12">
+            <div class="col-12 mb-1">
                 <strong>Games Won:</strong> @Model.NumberOfGamesWon
             </div>
-            <div class="col-12">
+            <div class="col-12 mb-1">
                 <strong>Games Lost:</strong> @Model.NumberOfGamesLost
             </div>
-            <div class="col-12">
+            <div class="col-12 mb-1">
                 <strong>Mirror Matches:</strong> @Model.NumberOfMirrorMatches
             </div>
         </div>
@@ -53,10 +53,10 @@ else
             <div class="col-12">
                 <strong>Most Played Caster:</strong>
             </div>
-            <div class="col-12">
+            <div class="col-12 mb-1">
                 @Model.MostPlayedCaster (@Model.GamesWithMostPlayedCaster)
             </div>
-            <div class="col-12">
+            <div class="col-12 mb-1">
                 <strong>Best Caster: </strong>
             </div>
             <div class="col-12">

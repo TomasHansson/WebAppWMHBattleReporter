@@ -1,4 +1,5 @@
-﻿@model List<BattleReport>
+﻿@model BattleReportsListViewModel
+@using WebAppWMHBattleReporter.Utility
 @{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -23,8 +24,75 @@
         }
     </div>
     <br />
+    <form method="post" asp-action="Index">
+        <div class="form-group row">
+            <div class="col-12">
+                <h5 class="text-info">Filters</h5>
+            </div>
+            @if (Model.HideFilters == false)
+            {
+                <div class="col-12 col-md-6">
+                    <label asp-for="TimePeriod" class="col-form-label">Time Period:</label>
+                    <select asp-for="TimePeriod" asp-items="@Model.TimePeriodOptions.Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.TimePeriod }).ToList()" class="form-control"></select>
+                    <label asp-for="GameSize" class="col-form-label">Game Size:</label>
+                    <select asp-for="GameSize" asp-items="@Model.GameSizeOptions.Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.GameSize }).ToList()" class="form-control"></select>
+                </div>
+                <div class="col-12 col-md-6">
+                    <label asp-for="EndCondition" class="col-form-label">End Condition:</label>
+                    <select asp-for="EndCondition" asp-items="@Model.EndConditionOptions.Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.EndCondition }).ToList()" class="form-control"></select>
+                    <label asp-for="Scenario" class="col-form-label">Scenario:</label>
+                    <select asp-for="Scenario" asp-items="@Model.ScenarioOptions.Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.Scenario}).ToList()" class="form-control"></select>
+                </div>
+                <div class="col-12 col-md-6">
+                    <label asp-for="P1Faction" class="col-form-label">P1 Faction:</label>
+                    <select asp-for="P1Faction" asp-items="@Model.FactionOptions.Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.P1Faction}).ToList()" class="form-control" id="p1FactionList"></select>
+                    <label asp-for="P1Theme" class="col-form-label">P1 Theme:</label>
+                    <select asp-for="P1Theme" asp-items="@Model.P1ThemeOptions.Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.P1Theme }).ToList()" class="form-control" id="p1ThemeList"></select>
+                    <label asp-for="P1Caster" class="col-form-label">P1 Caster:</label>
+                    <select asp-for="P1Caster" asp-items="@Model.P1CasterOptions.Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.P1Caster}).ToList()" class="form-control mb-1" id="p1CasterList"></select>
+                </div>
+                <div class="col-12 col-md-6">
+                    <label asp-for="P2Faction" class="col-form-label">P2 Faction:</label>
+                    <select asp-for="P2Faction" asp-items="@Model.FactionOptions.Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.P2Faction}).ToList()" class="form-control" id="p2FactionList"></select>
+                    <label asp-for="P2Theme" class="col-form-label">P2 Theme:</label>
+                    <select asp-for="P2Theme" asp-items="@Model.P2ThemeOptions.Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.P2Theme }).ToList()" class="form-control" id="p2ThemeList"></select>
+                    <label asp-for="P2Caster" class="col-form-label">P2 Caster:</label>
+                    <select asp-for="P2Caster" asp-items="@Model.P2CasterOptions.Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.P2Caster}).ToList()" class="form-control mb-1" id="p2CasterList"></select>
+                </div>
+                <div class="col-12 col-md-6">
+                    <input type="hidden" asp-for="HideFilters" />
+                    <input type="submit" class="btn btn-info form-control mb-1" value="Apply Filters" />
+                    <a asp-action="Index" class="btn btn-primary form-control">Disable Filters</a>
+                </div>
+            }
+            else if (Model.HideFilters)
+            {
+                <input type="hidden" asp-for="TimePeriod" />
+                <input type="hidden" asp-for="P1Faction" />
+                <input type="hidden" asp-for="P1Theme" />
+                <input type="hidden" asp-for="P1Caster" />
+                <input type="hidden" asp-for="GameSize" />
+                <input type="hidden" asp-for="P2Faction" />
+                <input type="hidden" asp-for="P2Theme" />
+                <input type="hidden" asp-for="P2Caster" />
+                <input type="hidden" asp-for="EndCondition" />
+                <input type="hidden" asp-for="Scenario" />
+                <input type="hidden" asp-for="HideFilters" value="false" />
+                <div class="col-12 col-md-6 col-xl-4">
+                    <input type="submit" class="btn btn-primary form-control" value="Enable Filters" />
+                </div>
+            }
+        </div>
+    </form>
     <div>
-        @if (Model.Count() != 0)
+        <div class="row">
+            <div class="col-12">
+                <h5 class="text-info">
+                    Battle Reports
+                </h5>
+            </div>
+        </div>
+        @if (Model.BattleReports.Count() != 0)
         {
             <div class="table-responsive">
                 <table class="table table-striped border">
@@ -36,7 +104,7 @@
                         <th>End Condition</th>
                         <th>Details</th>
                     </tr>
-                    @foreach (BattleReport battleReport in Model)
+                    @foreach (BattleReport battleReport in Model.BattleReports)
                     {
                         <tr>
                             <td>@battleReport.DatePlayed.ToShortDateString()</td>
@@ -64,3 +132,71 @@
         }
     </div>
 </div>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
+    <script>
+        function updateThemeList(factionSelected, themeList) {
+            $.ajax({
+                url: '/EndUser/BattleReport/GetFactionThemeNames/' + factionSelected,
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    for (var i = 0; i < data.length; i++) {
+                        themeList.options[themeList.options.length] = new Option(data[i], data[i]);
+                    }
+                }
+            });
+        }
+
+        function updateCasterList(factionSelected, casterList) {
+            $.ajax({
+                url: '/EndUser/BattleReport/GetFactionCasterNames/' + factionSelected,
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    for (var i = 0; i < data.length; i++) {
+                        casterList.options[casterList.options.length] = new Option(data[i], data[i]);
+                    }
+                }
+            });
+        }
+
+        $("#p1FactionList").on("change", function () {
+            var factionSelected = $("#p1FactionList option:selected").text();
+            var themeList = document.getElementById("p1ThemeList");
+            var casterList = document.getElementById("p1CasterList");
+
+            themeList.options.length = 0;
+            themeList.options[0] = new Option("@StaticDetails.AllThemes", "@StaticDetails.AllThemes");
+
+            casterList.options.length = 0;
+            casterList.options[0] = new Option("@StaticDetails.AllCasters", "@StaticDetails.AllCasters");
+
+            if (factionSelected != "@StaticDetails.AllFactions")
+            {
+                updateThemeList(factionSelected, themeList);
+                updateCasterList(factionSelected, casterList);
+            }
+        });
+
+        $("#p2FactionList").on("change", function () {
+            var factionSelected = $("#p2FactionList option:selected").text();
+            var themeList = document.getElementById("p2ThemeList");
+            var casterList = document.getElementById("p2CasterList");
+
+            themeList.options.length = 0;
+            themeList.options[0] = new Option("@StaticDetails.AllThemes", "@StaticDetails.AllThemes");
+
+            casterList.options.length = 0;
+            casterList.options[0] = new Option("@StaticDetails.AllCasters", "@StaticDetails.AllCasters");
+
+            if (factionSelected != "@StaticDetails.AllFactions")
+            {
+                updateThemeList(factionSelected, themeList);
+                updateCasterList(factionSelected, casterList);
+            }
+        });
+    </script>
+}

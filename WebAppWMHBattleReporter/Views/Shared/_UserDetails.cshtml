@@ -17,7 +17,7 @@ else
 {
     <div class="row">
         <div class="col-12 col-md-6">
-            <div class="col-12">
+            <div class="col-12 mb-1">
                 @if (Model.ListPosition != 0)
                 {
                     <strong># @Model.ListPosition - @Model.Username</strong>
@@ -29,32 +29,32 @@ else
             </div>
         </div>
         <div class="col-12 col-md-6">
-            <div class="col-12">
+            <div class="col-12 mb-1">
                 <strong>Winrate:</strong> @Model.Winrate.ToString("P1")
             </div>
         </div>
     </div>
     <div class="row">
         <div class="col-12 col-md-6">
-            <div class="col-12">
+            <div class="col-12 mb-1">
                 <strong>Games Played:</strong> @Model.NumberOfGamesPlayed
             </div>
-            <div class="col-12">
+            <div class="col-12 mb-1">
                 <strong>Games Won:</strong> @Model.NumberOfGamesWon
             </div>
-            <div class="col-12">
+            <div class="col-12 mb-1">
                 <strong>Games Lost:</strong> @Model.NumberOfGamesLost
             </div>
             <div class="col-12">
                 <strong>Most Played Faction:</strong>
             </div>
-            <div class="col-12">
+            <div class="col-12 mb-1">
                 @Model.MostPlayedFaction (@Model.GamesWithMostPlayedFaction)
             </div>
             <div class="col-12">
                 <strong>Best Faction:</strong>
             </div>
-            <div class="col-12">
+            <div class="col-12 mb-1">
                 @Model.BestPerformingFaction (@Model.WinrateBestPerformingFaction.ToString("P1"))
             </div>
         </div>
@@ -62,25 +62,25 @@ else
             <div class="col-12">
                 <strong>Most Played Caster:</strong>
             </div>
-            <div class="col-12">
+            <div class="col-12 mb-1">
                 @Model.MostPlayedCaster (@Model.GamesWithMostPlayedCaster)
             </div>
             <div class="col-12">
                 <strong>Best Caster: </strong>
             </div>
-            <div class="col-12">
+            <div class="col-12 mb-1">
                 @Model.BestPerformingCaster (@Model.WinrateBestPerformingCaster.ToString("P1"))
             </div>
             <div class="col-12">
                 <strong>Most Played Theme:</strong>
             </div>
-            <div class="col-12">
+            <div class="col-12 mb-1">
                 @Model.MostPlayedTheme (@Model.GamesWithMostPlayedTheme)
             </div>
             <div class="col-12">
                 <strong>Best Theme:</strong>
             </div>
-            <div class="col-12">
+            <div class="col-12 mb-1">
                 @Model.BestPerformingTheme (@Model.WinrateBestPerformingTheme.ToString("P1"))
             </div>
         </div>
