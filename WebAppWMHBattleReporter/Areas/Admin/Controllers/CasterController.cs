@@ -29,7 +29,7 @@ namespace WebAppWMHBattleReporter.Areas.Admin.Controllers
             CasterViewModel viewModel = new CasterViewModel()
             {
                 Casters = await _db.Casters.ToListAsync(),
-                Factions = await _db.Factions.ToListAsync()
+                Factions = await _db.Factions.OrderBy(f => f.Name).ToListAsync()
             };
             return View(viewModel);
         }
@@ -38,7 +38,7 @@ namespace WebAppWMHBattleReporter.Areas.Admin.Controllers
         {
             CasterViewModel viewModel = new CasterViewModel()
             {
-                Factions = await _db.Factions.ToListAsync(),
+                Factions = await _db.Factions.OrderBy(f => f.Name).ToListAsync(),
                 Casters = await _db.Casters.ToListAsync(),
                 Caster = new Caster(),
                 StatusMessage = string.Empty
@@ -54,7 +54,7 @@ namespace WebAppWMHBattleReporter.Areas.Admin.Controllers
             if (!await _db.Factions.AnyAsync(f => f.Id == id))
                 return NotFound();
 
-            List<Caster> factionCasters = await _db.Casters.Where(c => c.FactionId == id).ToListAsync();
+            List<Caster> factionCasters = await _db.Casters.Where(c => c.FactionId == id).OrderBy(c => c.Name).ToListAsync();
             return Json(new SelectList(factionCasters, "Id", "Name"));
         }
 
@@ -68,7 +68,7 @@ namespace WebAppWMHBattleReporter.Areas.Admin.Controllers
 
             if (await _db.Casters.Where(c => c.FactionId == viewModel.Caster.FactionId).AnyAsync(c => c.Name == viewModel.Caster.Name))
             {
-                viewModel.Factions = await _db.Factions.ToListAsync();
+                viewModel.Factions = await _db.Factions.OrderBy(f => f.Name).ToListAsync();
                 viewModel.Casters = await _db.Casters.ToListAsync();
                 viewModel.StatusMessage = "Error: A caster with that name for the given faction already exists in the database.";
                 return View(viewModel);
@@ -101,7 +101,7 @@ namespace WebAppWMHBattleReporter.Areas.Admin.Controllers
 
             CasterViewModel viewModel = new CasterViewModel()
             {
-                Factions = await _db.Factions.ToListAsync(),
+                Factions = await _db.Factions.OrderBy(f => f.Name).ToListAsync(),
                 Casters = await _db.Casters.ToListAsync(),
                 Caster = await _db.Casters.Include(c => c.Faction).FirstAsync(c => c.Id == id),
                 StatusMessage = string.Empty
@@ -119,7 +119,7 @@ namespace WebAppWMHBattleReporter.Areas.Admin.Controllers
 
             if (await _db.Casters.Where(c => c.FactionId == viewModel.Caster.FactionId).AnyAsync(c => c.Name == viewModel.Caster.Name))
             {
-                viewModel.Factions = await _db.Factions.ToListAsync();
+                viewModel.Factions = await _db.Factions.OrderBy(f => f.Name).ToListAsync();
                 viewModel.Casters = await _db.Casters.ToListAsync();
                 viewModel.StatusMessage = "Error: A caster with that name for the given faction already exists in the database.";
                 return View(viewModel);
@@ -132,7 +132,7 @@ namespace WebAppWMHBattleReporter.Areas.Admin.Controllers
             List<BattleReport> battleReports = await _db.BattleReports.Where(br => br.PostersCaster == casterFromDB.Name || br.OpponentsCaster == casterFromDB.Name).ToListAsync();
             if (battleReports.Count > 0 && casterFromDB.FactionId != viewModel.Caster.FactionId)
             {
-                viewModel.Factions = await _db.Factions.ToListAsync();
+                viewModel.Factions = await _db.Factions.OrderBy(f => f.Name).ToListAsync();
                 viewModel.Casters = await _db.Casters.ToListAsync();
                 viewModel.StatusMessage = "Error: You cannot change the Faction for a Caster for which there are already posted Battle Reports.";
                 return View(viewModel);

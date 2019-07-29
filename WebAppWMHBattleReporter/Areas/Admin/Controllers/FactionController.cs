@@ -25,7 +25,7 @@ namespace WebAppWMHBattleReporter.Areas.Admin.Controllers
 
         public async Task<IActionResult> Index()
         {
-            List<Faction> factionsFromDB = await _db.Factions.ToListAsync();
+            List<Faction> factionsFromDB = await _db.Factions.OrderBy(f => f.Name).ToListAsync();
             return View(factionsFromDB);
         }
 

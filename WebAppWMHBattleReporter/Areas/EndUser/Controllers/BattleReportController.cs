@@ -34,13 +34,13 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             List<string> factionOptions = new List<string>() { StaticDetails.AllFactions };
             List<string> themeOptions = new List<string>() { StaticDetails.AllThemes };
             List<string> casterOptions = new List<string>() { StaticDetails.AllCasters };
-            List<Faction> factions = await _db.Factions.ToListAsync();
+            List<Faction> factions = await _db.Factions.OrderBy(f => f.Name).ToListAsync();
             foreach (Faction faction in factions)
                 factionOptions.Add(faction.Name);
 
             BattleReportsListViewModel viewModel = new BattleReportsListViewModel()
             {
-                BattleReports = await _db.BattleReports.ToListAsync(),
+                BattleReports = await _db.BattleReports.OrderByDescending(br => br.DatePlayed).ToListAsync(),
                 TimePeriod = StaticDetails.AllTime,
                 TimePeriodOptions = StaticDetails.TimePeriodOptions,
                 P1Faction = StaticDetails.AllFactions,
@@ -72,7 +72,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
         {
             var filteredBattleReports = _db.BattleReports.AsQueryable();
             viewModel.TimePeriodOptions = StaticDetails.TimePeriodOptions;
-            List<Faction> factions = await _db.Factions.ToListAsync();
+            List<Faction> factions = await _db.Factions.OrderBy(f => f.Name).ToListAsync();
             List<Theme> themes = await _db.Themes.ToListAsync();
             List<Caster> casters = await _db.Casters.ToListAsync();
             viewModel.FactionOptions = new List<string>() { StaticDetails.AllFactions };
@@ -97,11 +97,11 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             {
                 Faction faction = factions.First(f => f.Name == viewModel.P1Faction);
 
-                List<Theme> factionThemes = themes.Where(t => t.FactionId == faction.Id).ToList();
+                List<Theme> factionThemes = themes.Where(t => t.FactionId == faction.Id).OrderBy(t => t.Name).ToList();
                 foreach (Theme theme in factionThemes)
                     viewModel.P1ThemeOptions.Add(theme.Name);
 
-                List<Caster> factionCasters = casters.Where(c => c.FactionId == faction.Id).ToList();
+                List<Caster> factionCasters = casters.Where(c => c.FactionId == faction.Id).OrderBy(c => c.Name).ToList();
                 foreach (Caster caster in factionCasters)
                     viewModel.P2CasterOptions.Add(caster.Name);
             }
@@ -110,11 +110,11 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             {
                 Faction faction = factions.First(f => f.Name == viewModel.P1Faction);
 
-                List<Theme> factionThemes = themes.Where(t => t.FactionId == faction.Id).ToList();
+                List<Theme> factionThemes = themes.Where(t => t.FactionId == faction.Id).OrderBy(t => t.Name).ToList();
                 foreach (Theme theme in factionThemes)
                     viewModel.P2ThemeOptions.Add(theme.Name);
 
-                List<Caster> enemyCasters = casters.Where(c => c.FactionId == faction.Id).ToList();
+                List<Caster> enemyCasters = casters.Where(c => c.FactionId == faction.Id).OrderBy(c => c.Name).ToList();
                 foreach (Caster caster in enemyCasters)
                     viewModel.P2CasterOptions.Add(caster.Name);
             }
@@ -158,13 +158,13 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
         {
             BattleReportViewModel viewModel = new BattleReportViewModel()
             {
-                Factions = await _db.Factions.ToListAsync(),
+                Factions = await _db.Factions.OrderBy(f => f.Name).ToListAsync(),
                 BattleReport = new BattleReport(),
                 StatusMessage = string.Empty
             };
             int firstFactionId = viewModel.Factions.FirstOrDefault().Id;
-            viewModel.FirstFactionThemes = await _db.Themes.Where(t => t.FactionId == firstFactionId).ToListAsync();
-            viewModel.FirstFactionCasters = await _db.Casters.Where(c => c.FactionId == firstFactionId).ToListAsync();
+            viewModel.FirstFactionThemes = await _db.Themes.Where(t => t.FactionId == firstFactionId).OrderBy(t => t.Name).ToListAsync();
+            viewModel.FirstFactionCasters = await _db.Casters.Where(c => c.FactionId == firstFactionId).OrderBy(c => c.Name).ToListAsync();
             viewModel.BattleReport.PostersUsername = User.Identity.Name;
             return View(viewModel);
         }
@@ -179,7 +179,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
                 return NotFound();
 
             Faction faction = await _db.Factions.FirstAsync(f => f.Name == id);
-            List<string> factionThemes = await _db.Themes.Where(t => t.FactionId == faction.Id).Select(t => t.Name).ToListAsync();
+            List<string> factionThemes = await _db.Themes.Where(t => t.FactionId == faction.Id).Select(t => t.Name).OrderBy(t => t).ToListAsync();
             return Json(factionThemes);
         }
 
@@ -193,7 +193,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
                 return NotFound();
 
             Faction faction = await _db.Factions.FirstAsync(f => f.Name == id);
-            List<string> factionCasters = await _db.Casters.Where(c => c.FactionId == faction.Id).Select(c => c.Name).ToListAsync();
+            List<string> factionCasters = await _db.Casters.Where(c => c.FactionId == faction.Id).Select(c => c.Name).OrderBy(c => c).ToListAsync();
             return Json(factionCasters);
         }
 
@@ -204,24 +204,24 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             viewModel.StatusMessage = string.Empty;
             if (!ModelState.IsValid)
             {
-                viewModel.Factions = await _db.Factions.ToListAsync();
+                viewModel.Factions = await _db.Factions.OrderBy(f => f.Name).ToListAsync();
                 int firstFactionId = viewModel.Factions.FirstOrDefault().Id;
-                viewModel.FirstFactionThemes = await _db.Themes.Where(t => t.FactionId == firstFactionId).ToListAsync();
-                viewModel.FirstFactionCasters = await _db.Casters.Where(c => c.FactionId == firstFactionId).ToListAsync();
+                viewModel.FirstFactionThemes = await _db.Themes.Where(t => t.FactionId == firstFactionId).OrderBy(t => t.Name).ToListAsync();
+                viewModel.FirstFactionCasters = await _db.Casters.Where(c => c.FactionId == firstFactionId).OrderBy(c => c.Name).ToListAsync();
                 return View(viewModel);
             }
 
             if (!await _db.ApplicationUsers.AnyAsync(au => au.UserName == viewModel.BattleReport.OpponentsUsername))
             {
-                viewModel.Factions = await _db.Factions.ToListAsync();
+                viewModel.Factions = await _db.Factions.OrderBy(f => f.Name).ToListAsync();
                 int firstFactionId = viewModel.Factions.FirstOrDefault().Id;
-                viewModel.FirstFactionThemes = await _db.Themes.Where(t => t.FactionId == firstFactionId).ToListAsync();
-                viewModel.FirstFactionCasters = await _db.Casters.Where(c => c.FactionId == firstFactionId).ToListAsync();
+                viewModel.FirstFactionThemes = await _db.Themes.Where(t => t.FactionId == firstFactionId).OrderBy(t => t.Name).ToListAsync();
+                viewModel.FirstFactionCasters = await _db.Casters.Where(c => c.FactionId == firstFactionId).OrderBy(c => c.Name).ToListAsync();
                 viewModel.StatusMessage = "Error: There are no users in the database with the username specified for your opponent.";
                 return View(viewModel);
             }
 
-            viewModel.BattleReport.ConfirmationKey = (new Random().Next(10000));
+            viewModel.BattleReport.ConfirmationKey = (new Random().Next(1000, 10000));
             viewModel.BattleReport.ConfirmedByOpponent = false;
 
             viewModel.BattleReport.LosersUsername = viewModel.PosterWon ? viewModel.BattleReport.OpponentsUsername : viewModel.BattleReport.PostersUsername;
@@ -264,8 +264,8 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             if (id != User.Identity.Name)
                 return Unauthorized();
 
-            List<BattleReport> usersBattleReports = await _db.BattleReports.Where(br => br.PostersUsername == id && br.ConfirmedByOpponent == false).ToListAsync();
-            List<BattleReport> opponentsBattleReports = await _db.BattleReports.Where(br => br.OpponentsUsername == id && br.ConfirmedByOpponent == false).ToListAsync();
+            List<BattleReport> usersBattleReports = await _db.BattleReports.Where(br => br.PostersUsername == id && br.ConfirmedByOpponent == false).OrderByDescending(br => br.DatePlayed).ToListAsync();
+            List<BattleReport> opponentsBattleReports = await _db.BattleReports.Where(br => br.OpponentsUsername == id && br.ConfirmedByOpponent == false).OrderByDescending(br => br.DatePlayed).ToListAsync();
             if (usersBattleReports == null || opponentsBattleReports == null)
                 return NotFound();
 
@@ -285,14 +285,14 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             if (id != User.Identity.Name)
                 return Unauthorized();
 
-            List<BattleReport> battleReports = await _db.BattleReports.Where(br => (br.PostersUsername == id || br.OpponentsUsername == id) && br.ConfirmedByOpponent).ToListAsync();
+            List<BattleReport> battleReports = await _db.BattleReports.Where(br => (br.PostersUsername == id || br.OpponentsUsername == id) && br.ConfirmedByOpponent).OrderByDescending(br => br.DatePlayed).ToListAsync();
             if (battleReports == null)
                 return NotFound();
 
             List<string> factionOptions = new List<string>() { StaticDetails.AllFactions };
             List<string> themeOptions = new List<string>() { StaticDetails.AllThemes };
             List<string> casterOptions = new List<string>() { StaticDetails.AllCasters };
-            List<Faction> factions = await _db.Factions.ToListAsync();
+            List<Faction> factions = await _db.Factions.OrderBy(f => f.Name).ToListAsync();
             foreach (Faction faction in factions)
                 factionOptions.Add(faction.Name);
 
@@ -336,7 +336,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
 
             var filteredBattleReports = _db.BattleReports.Where(br => (br.PostersUsername == viewModel.UserName || br.OpponentsUsername == viewModel.UserName) && br.ConfirmedByOpponent);
             viewModel.TimePeriodOptions = StaticDetails.TimePeriodOptions;
-            List<Faction> factions = await _db.Factions.ToListAsync();
+            List<Faction> factions = await _db.Factions.OrderBy(f => f.Name).ToListAsync();
             List<Theme> themes = await _db.Themes.ToListAsync();
             List<Caster> casters = await _db.Casters.ToListAsync();
             viewModel.FactionOptions = new List<string>() { StaticDetails.AllFactions };
@@ -362,11 +362,11 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             {
                 Faction faction = factions.First(f => f.Name == viewModel.Faction);
 
-                List<Theme> factionThemes = themes.Where(t => t.FactionId == faction.Id).ToList();
+                List<Theme> factionThemes = themes.Where(t => t.FactionId == faction.Id).OrderBy(t => t.Name).ToList();
                 foreach (Theme theme in factionThemes)
                     viewModel.ThemeOptions.Add(theme.Name);
 
-                List<Caster> factionCasters = casters.Where(c => c.FactionId == faction.Id).ToList();
+                List<Caster> factionCasters = casters.Where(c => c.FactionId == faction.Id).OrderBy(c => c.Name).ToList();
                 foreach (Caster caster in factionCasters)
                     viewModel.CasterOptions.Add(caster.Name);
 
@@ -383,11 +383,11 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             {
                 Faction enemyFaction = factions.First(f => f.Name == viewModel.EnemyFaction);
 
-                List<Theme> enemyThemes = themes.Where(t => t.FactionId == enemyFaction.Id).ToList();
+                List<Theme> enemyThemes = themes.Where(t => t.FactionId == enemyFaction.Id).OrderBy(t => t.Name).ToList();
                 foreach (Theme theme in enemyThemes)
                     viewModel.EnemyThemeOptions.Add(theme.Name);
 
-                List<Caster> enemyCasters = casters.Where(c => c.FactionId == enemyFaction.Id).ToList();
+                List<Caster> enemyCasters = casters.Where(c => c.FactionId == enemyFaction.Id).OrderBy(c => c.Name).ToList();
                 foreach (Caster caster in enemyCasters)
                     viewModel.EnemyCasterOptions.Add(caster.Name);
 
@@ -417,7 +417,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
                     filteredBattleReports = filteredBattleReports.Where(br => br.LosersUsername == viewModel.UserName);
             }
                 
-            viewModel.BattleReports = await filteredBattleReports.ToListAsync();
+            viewModel.BattleReports = await filteredBattleReports.OrderByDescending(br => br.DatePlayed).ToListAsync();
 
             return View(viewModel);
         }
@@ -436,7 +436,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
 
             EditBattleReportViewModel viewModel = new EditBattleReportViewModel()
             {
-                Factions = await _db.Factions.ToListAsync(),
+                Factions = await _db.Factions.OrderBy(f => f.Name).ToListAsync(),
                 BattleReport = battleReport,
                 StatusMessage = string.Empty
             };
@@ -444,12 +444,12 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             viewModel.PosterWon = viewModel.BattleReport.WinnersUsername == User.Identity.Name;
 
             int postersFactionId = viewModel.Factions.First(f => f.Name == battleReport.PostersFaction).Id;
-            viewModel.PostersFactionThemes = await _db.Themes.Where(t => t.FactionId == postersFactionId).ToListAsync();
-            viewModel.PostersFactionCasters = await _db.Casters.Where(c => c.FactionId == postersFactionId).ToListAsync();
+            viewModel.PostersFactionThemes = await _db.Themes.Where(t => t.FactionId == postersFactionId).OrderBy(t => t.Name).ToListAsync();
+            viewModel.PostersFactionCasters = await _db.Casters.Where(c => c.FactionId == postersFactionId).OrderBy(c => c.Name).ToListAsync();
 
             int opponentsFactionId = viewModel.Factions.First(f => f.Name == battleReport.OpponentsFaction).Id;
-            viewModel.OpponentsFactionThemes = await _db.Themes.Where(t => t.FactionId == opponentsFactionId).ToListAsync();
-            viewModel.OpponentsFactionCasters = await _db.Casters.Where(c => c.FactionId == opponentsFactionId).ToListAsync();
+            viewModel.OpponentsFactionThemes = await _db.Themes.Where(t => t.FactionId == opponentsFactionId).OrderBy(t => t.Name).ToListAsync();
+            viewModel.OpponentsFactionCasters = await _db.Casters.Where(c => c.FactionId == opponentsFactionId).OrderBy(c => c.Name).ToListAsync();
 
             return View(viewModel);
         }
@@ -461,14 +461,14 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             viewModel.StatusMessage = string.Empty;
             if (!ModelState.IsValid)
             {
-                viewModel.Factions = await _db.Factions.ToListAsync();
+                viewModel.Factions = await _db.Factions.OrderBy(f => f.Name).ToListAsync();
                 viewModel.PosterWon = viewModel.BattleReport.WinnersUsername == User.Identity.Name;
                 int postersFactionId = viewModel.Factions.First(f => f.Name == viewModel.BattleReport.PostersFaction).Id;
-                viewModel.PostersFactionThemes = await _db.Themes.Where(t => t.FactionId == postersFactionId).ToListAsync();
-                viewModel.PostersFactionCasters = await _db.Casters.Where(c => c.FactionId == postersFactionId).ToListAsync();
+                viewModel.PostersFactionThemes = await _db.Themes.Where(t => t.FactionId == postersFactionId).OrderBy(t => t.Name).ToListAsync();
+                viewModel.PostersFactionCasters = await _db.Casters.Where(c => c.FactionId == postersFactionId).OrderBy(c => c.Name).ToListAsync();
                 int opponentsFactionId = viewModel.Factions.First(f => f.Name == viewModel.BattleReport.OpponentsFaction).Id;
-                viewModel.OpponentsFactionThemes = await _db.Themes.Where(t => t.FactionId == opponentsFactionId).ToListAsync();
-                viewModel.OpponentsFactionCasters = await _db.Casters.Where(c => c.FactionId == opponentsFactionId).ToListAsync();
+                viewModel.OpponentsFactionThemes = await _db.Themes.Where(t => t.FactionId == opponentsFactionId).OrderBy(t => t.Name).ToListAsync();
+                viewModel.OpponentsFactionCasters = await _db.Casters.Where(c => c.FactionId == opponentsFactionId).OrderBy(c => c.Name).ToListAsync();
                 return View(viewModel);
             }
 

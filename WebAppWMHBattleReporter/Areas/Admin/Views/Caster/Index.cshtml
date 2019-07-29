@@ -30,7 +30,7 @@
         {
             @foreach (Faction faction in Model.Factions)
             {
-                List<Caster> factionCasters = Model.Casters.Where(c => c.Faction.Name == faction.Name).ToList();
+                List<Caster> factionCasters = Model.Casters.Where(c => c.Faction.Name == faction.Name).OrderBy(c => c.Name).ToList();
                 <div class="table-responsive">
                     <table class="table table-striped border">
                         <tr class="table-secondary">

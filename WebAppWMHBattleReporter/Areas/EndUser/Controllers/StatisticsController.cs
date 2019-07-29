@@ -25,10 +25,10 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
         {
             DashBoardViewModel viewModel = new DashBoardViewModel()
             {
-                Top10Factions = await _db.Factions.OrderByDescending(f => f.Winrate).Take(10).ToListAsync(),
-                Top10Themes = await _db.Themes.OrderByDescending(t => t.Winrate).Take(10).ToListAsync(),
-                Top10Casters = await _db.Casters.OrderByDescending(c => c.Winrate).Take(10).ToListAsync(),
-                Top10Users = await _db.ApplicationUsers.OrderByDescending(au => au.Winrate).Take(10).ToListAsync()
+                Top10Factions = await _db.Factions.Where(f => f.NumberOfGamesPlayed > 0).OrderByDescending(f => f.Winrate).ThenBy(f => f.Name).Take(10).ToListAsync(),
+                Top10Themes = await _db.Themes.Where(t => t.NumberOfGamesPlayed > 0).OrderByDescending(t => t.Winrate).ThenBy(t => t.Name).Take(10).ToListAsync(),
+                Top10Casters = await _db.Casters.Where(c => c.NumberOfGamesPlayed > 0).OrderByDescending(c => c.Winrate).ThenBy(c => c.Name).Take(10).ToListAsync(),
+                Top10Users = await _db.ApplicationUsers.Where(au => au.NumberOfGamesPlayed > 0).OrderByDescending(au => au.Winrate).ThenBy(au => au.UserName).Take(10).ToListAsync()
             };
             return View(viewModel);
         }
@@ -58,7 +58,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             }
 
             ApplicationUser user = await _db.ApplicationUsers.FirstAsync(au => au.UserName == id);
-            List<BattleReport> battleReports = await _db.BattleReports.Where(br => br.ConfirmedByOpponent && (br.PostersUsername == user.UserName || br.OpponentsUsername == user.UserName)).ToListAsync();
+            List<BattleReport> battleReports = await _db.BattleReports.Where(br => br.ConfirmedByOpponent && (br.PostersUsername == user.UserName || br.OpponentsUsername == user.UserName)).OrderByDescending(br => br.DatePlayed).ToListAsync();
             UserResultViewModel viewModel = new UserResultViewModel()
             {
                 Username = user.UserName,
@@ -79,10 +79,10 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
 
         public async Task<IActionResult> Factions()
         {
-            List<Faction> factions = await _db.Factions.ToListAsync();
+            List<Faction> factions = await _db.Factions.OrderBy(f => f.Name).ToListAsync();
             List<Theme> themes = await _db.Themes.ToListAsync();
             List<Caster> casters = await _db.Casters.ToListAsync();
-            List<BattleReport> battleReports = await _db.BattleReports.Where(br => br.ConfirmedByOpponent).ToListAsync();
+            List<BattleReport> battleReports = await _db.BattleReports.Where(br => br.ConfirmedByOpponent).OrderByDescending(br => br.DatePlayed).ToListAsync();
             List<FactionResult> factionResults = CreateFactionResults(factions, themes, casters, battleReports);
             return View(factionResults);
         }
@@ -91,7 +91,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
         {
             FactionResultViewModel viewModel = new FactionResultViewModel
             {
-                Factions = await _db.Factions.ToListAsync()
+                Factions = await _db.Factions.OrderBy(f => f.Name).ToListAsync()
             };
             if (!await _db.Factions.AnyAsync(f => f.Name == id))
             {
@@ -101,9 +101,9 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             }
 
             Faction faction = await _db.Factions.FirstAsync(f => f.Name == id);
-            List<Theme> factionThemes = await _db.Themes.Where(t => t.FactionId == faction.Id).ToListAsync();
-            List<Caster> factionCasters = await _db.Casters.Where(c => c.FactionId == faction.Id).ToListAsync();
-            List<BattleReport> factionBattleReports = await _db.BattleReports.Where(br => br.ConfirmedByOpponent && (br.WinningFaction == faction.Name || br.LosingFaction == faction.Name)).ToListAsync();
+            List<Theme> factionThemes = await _db.Themes.Where(t => t.FactionId == faction.Id).OrderBy(t => t.Name).ToListAsync();
+            List<Caster> factionCasters = await _db.Casters.Where(c => c.FactionId == faction.Id).OrderBy(c => c.Name).ToListAsync();
+            List<BattleReport> factionBattleReports = await _db.BattleReports.Where(br => br.ConfirmedByOpponent && (br.WinningFaction == faction.Name || br.LosingFaction == faction.Name)).OrderByDescending(br => br.DatePlayed).ToListAsync();
             FactionResult factionResult = CreateFactionResult(faction, factionThemes, factionCasters, factionBattleReports);
 
             viewModel.Faction = faction.Name;
@@ -122,8 +122,8 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
 
         public async Task<IActionResult> Themes()
         {
-            List<Theme> themes = await _db.Themes.ToListAsync();
-            List<BattleReport> battleReports = await _db.BattleReports.Where(br => br.ConfirmedByOpponent).ToListAsync();
+            List<Theme> themes = await _db.Themes.OrderBy(t => t.Name).ToListAsync();
+            List<BattleReport> battleReports = await _db.BattleReports.Where(br => br.ConfirmedByOpponent).OrderByDescending(br => br.DatePlayed).ToListAsync();
             List<ThemeResult> themeResults = CreateThemeResults(themes, battleReports);
             return View(themeResults);
         }
@@ -132,8 +132,8 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
         {
             ThemeResultViewModel viewModel = new ThemeResultViewModel
             {
-                Factions = await _db.Factions.ToListAsync(),
-                Themes = await _db.Themes.ToListAsync()
+                Factions = await _db.Factions.OrderBy(f => f.Name).ToListAsync(),
+                Themes = await _db.Themes.OrderBy(t => t.Name).ToListAsync()
             };
             if (!viewModel.Themes.Any(t => t.Name == id))
             {
@@ -147,7 +147,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
 
             Theme theme = viewModel.Themes.First(t => t.Name == id);
             Faction themesFaction = viewModel.Factions.First(f => f.Id == theme.FactionId);
-            List<BattleReport> themeBattleReports = await _db.BattleReports.Where(br => br.ConfirmedByOpponent && (br.WinningTheme == theme.Name || br.LosingTheme == theme.Name)).ToListAsync();
+            List<BattleReport> themeBattleReports = await _db.BattleReports.Where(br => br.ConfirmedByOpponent && (br.WinningTheme == theme.Name || br.LosingTheme == theme.Name)).OrderByDescending(br => br.DatePlayed).ToListAsync();
             ThemeResult themeResult = CreateThemeResult(theme, themeBattleReports);
 
             viewModel.Faction = themesFaction.Name;
@@ -175,7 +175,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
                 return NotFound();
 
             Faction faction = await _db.Factions.FirstAsync(f => f.Name == id);
-            List<string> factionThemes = await _db.Themes.Where(t => t.FactionId == faction.Id).Select(t => t.Name).ToListAsync();
+            List<string> factionThemes = await _db.Themes.Where(t => t.FactionId == faction.Id).Select(t => t.Name).OrderBy(t => t).ToListAsync();
             return Json(factionThemes);
         }
 
@@ -188,14 +188,14 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
                 return NotFound();
 
             Faction faction = await _db.Factions.FirstAsync(f => f.Name == id);
-            List<string> factionCasters = await _db.Casters.Where(c => c.FactionId == faction.Id).Select(c => c.Name).ToListAsync();
+            List<string> factionCasters = await _db.Casters.Where(c => c.FactionId == faction.Id).Select(c => c.Name).OrderBy(c => c).ToListAsync();
             return Json(factionCasters);
         }
 
         public async Task<IActionResult> Casters()
         {
-            List<Caster> casters = await _db.Casters.ToListAsync();
-            List<BattleReport> battleReports = await _db.BattleReports.Where(br => br.ConfirmedByOpponent).ToListAsync();
+            List<Caster> casters = await _db.Casters.OrderBy(c => c.Name).ToListAsync();
+            List<BattleReport> battleReports = await _db.BattleReports.Where(br => br.ConfirmedByOpponent).OrderByDescending(br => br.DatePlayed).ToListAsync();
             List<CasterResult> casterResults = CreateCasterResults(casters, battleReports);
             return View(casterResults);
         }
@@ -204,8 +204,8 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
         {
             CasterResultViewModel viewModel = new CasterResultViewModel
             {
-                Factions = await _db.Factions.ToListAsync(),
-                Casters = await _db.Casters.ToListAsync()
+                Factions = await _db.Factions.OrderBy(f => f.Name).ToListAsync(),
+                Casters = await _db.Casters.OrderBy(c => c.Name).ToListAsync()
             };
             if (!viewModel.Casters.Any(c => c.Name == id))
             {
@@ -219,7 +219,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
 
             Caster caster = viewModel.Casters.First(c => c.Name == id);
             Faction castersFaction = viewModel.Factions.First(f => f.Id == caster.FactionId);
-            List<BattleReport> casterBattleReports = await _db.BattleReports.Where(br => br.ConfirmedByOpponent && (br.WinningCaster == caster.Name || br.LosingCaster == caster.Name)).ToListAsync();
+            List<BattleReport> casterBattleReports = await _db.BattleReports.Where(br => br.ConfirmedByOpponent && (br.WinningCaster == caster.Name || br.LosingCaster == caster.Name)).OrderByDescending(br => br.DatePlayed).ToListAsync();
             CasterResult casterResult = CreateCasterResult(caster, casterBattleReports);
 
             viewModel.Faction = castersFaction.Name;
@@ -240,7 +240,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
 
         private CasterResult CreateCasterResult(Caster caster, List<BattleReport> battleReports)
         {
-            List<BattleReport> casterBattleReports = battleReports.Where(br => br.WinningCaster == caster.Name || br.LosingCaster == caster.Name).ToList();
+            List<BattleReport> casterBattleReports = battleReports.Where(br => br.WinningCaster == caster.Name || br.LosingCaster == caster.Name).OrderByDescending(br => br.DatePlayed).ToList();
             CasterResult casterResult = new CasterResult()
             {
                 Name = caster.Name,
@@ -248,8 +248,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
                 NumberOfGamesLost = caster.NumberOfGamesLost,
                 NumberOfGamesWon = caster.NumberOfGamesWon,
                 Winrate = caster.Winrate,
-                NumberOfMirrorMatches = casterBattleReports.Where(br => br.WinningCaster == br.LosingCaster).Count(),
-
+                NumberOfMirrorMatches = casterBattleReports.Where(br => br.WinningCaster == br.LosingCaster).Count()
             };
             if (casterBattleReports.Count == 0)
             {
@@ -291,7 +290,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
 
         private ThemeResult CreateThemeResult(Theme theme, List<BattleReport> battleReports)
         {
-            List<BattleReport> themeBattleReports = battleReports.Where(br => br.WinningTheme == theme.Name || br.LosingTheme == theme.Name).ToList();
+            List<BattleReport> themeBattleReports = battleReports.Where(br => br.WinningTheme == theme.Name || br.LosingTheme == theme.Name).OrderByDescending(br => br.DatePlayed).ToList();
             ThemeResult themeResult = new ThemeResult()
             {
                 Name = theme.Name,
@@ -368,9 +367,9 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
             List<FactionResult> factionResults = new List<FactionResult>();
             foreach (Faction faction in factions)
             {
-                List<Theme> factionThemes = themes.Where(t => t.FactionId == faction.Id).ToList();
-                List<Caster> factionCasters = casters.Where(c => c.FactionId == faction.Id).ToList();
-                List<BattleReport> factionBattleReports = battleReports.Where(br => br.ConfirmedByOpponent && (br.WinningFaction == faction.Name || br.LosingFaction == faction.Name)).ToList();
+                List<Theme> factionThemes = themes.Where(t => t.FactionId == faction.Id).OrderBy(t => t.Name).ToList();
+                List<Caster> factionCasters = casters.Where(c => c.FactionId == faction.Id).OrderBy(c => c.Name).ToList();
+                List<BattleReport> factionBattleReports = battleReports.Where(br => br.ConfirmedByOpponent && (br.WinningFaction == faction.Name || br.LosingFaction == faction.Name)).OrderByDescending(br => br.DatePlayed).ToList();
                 factionResults.Add(CreateFactionResult(faction, factionThemes, factionCasters, factionBattleReports));
             }
             return factionResults.OrderByDescending(fr => fr.Winrate).ToList();
@@ -603,11 +602,11 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
         {
             List<UserResult> userResults = new List<UserResult>();
             List<ApplicationUser> users = region == StaticDetails.AllRegions ?
-                await _db.ApplicationUsers.Where(au => au.NumberOfGamesPlayed > 0).OrderByDescending(au => au.Winrate).ToListAsync() :
-                await _db.ApplicationUsers.Where(au => au.NumberOfGamesPlayed > 0 && au.Region == region).OrderByDescending(au => au.Winrate).ToListAsync();
+                await _db.ApplicationUsers.Where(au => au.NumberOfGamesPlayed > 0).OrderByDescending(au => au.Winrate).ThenBy(au => au.UserName).ToListAsync() :
+                await _db.ApplicationUsers.Where(au => au.NumberOfGamesPlayed > 0 && au.Region == region).OrderByDescending(au => au.Winrate).ThenBy(au => au.UserName).ToListAsync();
             foreach (ApplicationUser user in users)
             {
-                List<BattleReport> usersBattleReports = await _db.BattleReports.Where(br => br.PostersUsername == user.UserName || br.OpponentsUsername == user.UserName).ToListAsync();
+                List<BattleReport> usersBattleReports = await _db.BattleReports.Where(br => br.PostersUsername == user.UserName || br.OpponentsUsername == user.UserName).OrderByDescending(br => br.DatePlayed).ToListAsync();
                 userResults.Add(CreateUserResult(user, usersBattleReports));
             }
             return userResults;

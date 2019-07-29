@@ -29,7 +29,7 @@ namespace WebAppWMHBattleReporter.Areas.Admin.Controllers
             ThemeViewModel viewModel = new ThemeViewModel()
             {
                 Themes = await _db.Themes.ToListAsync(),
-                Factions = await _db.Factions.ToListAsync()
+                Factions = await _db.Factions.OrderBy(f => f.Name).ToListAsync()
             };
             return View(viewModel);
         }
@@ -38,7 +38,7 @@ namespace WebAppWMHBattleReporter.Areas.Admin.Controllers
         {
             ThemeViewModel viewModel = new ThemeViewModel()
             {
-                Factions = await _db.Factions.ToListAsync(),
+                Factions = await _db.Factions.OrderBy(f => f.Name).ToListAsync(),
                 Themes = await _db.Themes.ToListAsync(),
                 Theme = new Theme(),
                 StatusMessage = string.Empty
@@ -54,7 +54,7 @@ namespace WebAppWMHBattleReporter.Areas.Admin.Controllers
             if (!await _db.Factions.AnyAsync(f => f.Id == id))
                 return NotFound();
 
-            List<Theme> factionThemes = await _db.Themes.Where(t => t.FactionId == id).ToListAsync();
+            List<Theme> factionThemes = await _db.Themes.Where(t => t.FactionId == id).OrderBy(t => t.Name).ToListAsync();
             return Json(new SelectList(factionThemes, "Id", "Name"));
         }
 
@@ -68,7 +68,7 @@ namespace WebAppWMHBattleReporter.Areas.Admin.Controllers
 
             if (await _db.Themes.Where(t => t.FactionId == viewModel.Theme.FactionId).AnyAsync(t => t.Name == viewModel.Theme.Name))
             {
-                viewModel.Factions = await _db.Factions.ToListAsync();
+                viewModel.Factions = await _db.Factions.OrderBy(f => f.Name).ToListAsync();
                 viewModel.Themes = await _db.Themes.ToListAsync();
                 viewModel.StatusMessage = "Error: A theme with that name for the given faction already exists in the database.";
                 return View(viewModel);
@@ -101,7 +101,7 @@ namespace WebAppWMHBattleReporter.Areas.Admin.Controllers
 
             ThemeViewModel viewModel = new ThemeViewModel()
             {
-                Factions = await _db.Factions.ToListAsync(),
+                Factions = await _db.Factions.OrderBy(f => f.Name).ToListAsync(),
                 Themes = await _db.Themes.ToListAsync(),
                 Theme = await _db.Themes.Include(t => t.Faction).FirstAsync(t => t.Id == id),
                 StatusMessage = string.Empty
@@ -119,7 +119,7 @@ namespace WebAppWMHBattleReporter.Areas.Admin.Controllers
 
             if (await _db.Themes.Where(t => t.FactionId == viewModel.Theme.FactionId).AnyAsync(t => t.Name == viewModel.Theme.Name))
             {
-                viewModel.Factions = await _db.Factions.ToListAsync();
+                viewModel.Factions = await _db.Factions.OrderBy(f => f.Name).ToListAsync();
                 viewModel.Themes = await _db.Themes.ToListAsync();
                 viewModel.StatusMessage = "Error: A theme with that name for the given faction already exists in the database.";
                 return View(viewModel);
@@ -132,7 +132,7 @@ namespace WebAppWMHBattleReporter.Areas.Admin.Controllers
             List<BattleReport> battleReports = await _db.BattleReports.Where(br => br.PostersTheme == themeFromDB.Name || br.OpponentsTheme == themeFromDB.Name).ToListAsync();
             if (battleReports.Count > 0 && themeFromDB.FactionId != viewModel.Theme.FactionId)
             {
-                viewModel.Factions = await _db.Factions.ToListAsync();
+                viewModel.Factions = await _db.Factions.OrderBy(f => f.Name).ToListAsync();
                 viewModel.Themes = await _db.Themes.ToListAsync();
                 viewModel.StatusMessage = "Error: You cannot change the Faction for a Theme for which there are already posted Battle Reports.";
                 return View(viewModel);

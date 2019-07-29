@@ -30,7 +30,7 @@
         {
             @foreach (Faction faction in Model.Factions)
             {
-                List<Theme> factionThemes = Model.Themes.Where(t => t.Faction.Name == faction.Name).ToList();
+                List<Theme> factionThemes = Model.Themes.Where(t => t.Faction.Name == faction.Name).OrderBy(t => t.Name).ToList();
                 <div class="table-responsive">
                     <table class="table table-striped border">
                         <tr class="table-secondary">
