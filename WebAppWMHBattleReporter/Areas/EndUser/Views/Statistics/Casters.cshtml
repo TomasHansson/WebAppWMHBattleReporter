@@ -1,4 +1,4 @@
-﻿@model List<CasterResult>
+﻿@model CasterResultsViewModel
 @{
     ViewData["Title"] = "Casters";
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -7,7 +7,15 @@
 <div class="border applicationFormGroup">
     <h2 class="text-info">Caster Results</h2>
     <br />
-    @if (Model.Count() == 0)
+    <div class="row">
+        <div class="col-12 col-md-6 col-lg-4">
+            <label asp-for="@Model.Faction">Select Faction: </label>
+            <select id="selectFaction" asp-for="@Model.Faction" asp-items="Model.FactionOptions.Select(x => new SelectListItem() { Value = x, Text = x, Selected = x == Model.Faction }).ToList()" class="form-control"></select>
+            <a id="loadCasters" class="btn btn-primary form-control mt-1" href="@string.Concat("/EndUser/Statistics/Casters/", Model.Faction)">Load Results</a>
+        </div>
+    </div>
+    <br />
+    @if (Model.CasterResults.Count() == 0)
     {
         <p>There are no casters in the database.</p>
     }
@@ -15,7 +23,7 @@
     {
         <hr />
         int counter = 1;
-        @foreach (CasterResult casterResult in Model)
+        @foreach (CasterResult casterResult in Model.CasterResults)
         {
             casterResult.ListPosition = counter;
             <partial name="_CasterDetails" model="@casterResult" />
@@ -24,3 +32,11 @@
         }
     }
 </div>
+
+@section Scripts {
+    <script>
+        $("#selectFaction").change(function () {
+            $("#loadCasters").attr('href', '/EndUser/Statistics/Casters/' + this.value);
+        });
+    </script>
+}
