@@ -128,7 +128,14 @@
         }
         else
         {
-            <p>There are no battle reports in the database.</p>
+            if (Model.HideFilters)
+            {
+                <p>There are no battle reports in the database.</p>
+            }
+            else
+            {
+                <p>There are no battle reports in the database matching the selected filter(s).</p>
+            }
         }
     </div>
 </div>
