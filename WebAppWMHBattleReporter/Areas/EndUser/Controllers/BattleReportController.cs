@@ -135,7 +135,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
                                                                               (br.OpponentsFaction == viewModel.P1Faction));
             }
 
-            if (viewModel.P2Faction != StaticDetails.AllFactions && viewModel.P1Faction == StaticDetails.AllFactions)
+            if (viewModel.P2Faction != StaticDetails.AllFactions)
             {
                 if (viewModel.P2Theme != StaticDetails.AllThemes && viewModel.P2Caster != StaticDetails.AllCasters)
                     filteredBattleReports = filteredBattleReports.Where(br => (br.PostersFaction == viewModel.P2Faction && br.PostersTheme == viewModel.P2Theme && br.PostersCaster == viewModel.P2Caster) ||
