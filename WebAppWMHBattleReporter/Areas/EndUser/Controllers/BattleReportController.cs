@@ -103,12 +103,12 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
 
                 List<Caster> factionCasters = casters.Where(c => c.FactionId == faction.Id).OrderBy(c => c.Name).ToList();
                 foreach (Caster caster in factionCasters)
-                    viewModel.P2CasterOptions.Add(caster.Name);
+                    viewModel.P1CasterOptions.Add(caster.Name);
             }
 
             if (viewModel.P2Faction != StaticDetails.AllFactions)
             {
-                Faction faction = factions.First(f => f.Name == viewModel.P1Faction);
+                Faction faction = factions.First(f => f.Name == viewModel.P2Faction);
 
                 List<Theme> factionThemes = themes.Where(t => t.FactionId == faction.Id).OrderBy(t => t.Name).ToList();
                 foreach (Theme theme in factionThemes)
@@ -119,26 +119,46 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
                     viewModel.P2CasterOptions.Add(caster.Name);
             }
 
-            if (viewModel.P1Faction != StaticDetails.AllFactions && viewModel.P2Faction != StaticDetails.AllFactions)
-                filteredBattleReports = filteredBattleReports.Where(br => (br.PostersFaction == viewModel.P1Faction && br.OpponentsFaction == viewModel.P2Faction) || (br.PostersFaction == viewModel.P2Faction && br.OpponentsFaction == viewModel.P1Faction));
-            else if (viewModel.P1Faction != StaticDetails.AllFactions && viewModel.P2Faction == StaticDetails.AllFactions)
-                filteredBattleReports = filteredBattleReports.Where(br => br.PostersFaction == viewModel.P1Faction || br.OpponentsFaction == viewModel.P1Faction);
-            else if (viewModel.P2Faction != StaticDetails.AllFactions && viewModel.P1Faction == StaticDetails.AllFactions)
-                filteredBattleReports = filteredBattleReports.Where(br => br.PostersFaction == viewModel.P2Faction || br.OpponentsFaction == viewModel.P2Faction);
+            if (viewModel.P1Faction != StaticDetails.AllFactions)
+            {
+                if (viewModel.P1Theme != StaticDetails.AllThemes && viewModel.P1Caster != StaticDetails.AllCasters)
+                    filteredBattleReports = filteredBattleReports.Where(br => (br.PostersFaction == viewModel.P1Faction && br.PostersTheme == viewModel.P1Theme && br.PostersCaster == viewModel.P1Caster) ||
+                                                                              (br.OpponentsFaction == viewModel.P1Faction && br.OpponentsTheme == viewModel.P1Theme && br.OpponentsCaster == viewModel.P1Caster));
+                else if (viewModel.P1Theme != StaticDetails.AllThemes && viewModel.P1Caster == StaticDetails.AllCasters)
+                    filteredBattleReports = filteredBattleReports.Where(br => (br.PostersFaction == viewModel.P1Faction && br.PostersTheme == viewModel.P1Theme) ||
+                                                                              (br.OpponentsFaction == viewModel.P1Faction && br.OpponentsTheme == viewModel.P1Theme));
+                else if (viewModel.P1Theme == StaticDetails.AllThemes && viewModel.P1Caster != StaticDetails.AllCasters)
+                    filteredBattleReports = filteredBattleReports.Where(br => (br.PostersFaction == viewModel.P1Faction && br.PostersCaster == viewModel.P1Caster) ||
+                                                                              (br.OpponentsFaction == viewModel.P1Faction && br.OpponentsCaster == viewModel.P1Caster));
+                else if (viewModel.P1Theme == StaticDetails.AllThemes && viewModel.P1Caster == StaticDetails.AllCasters)
+                    filteredBattleReports = filteredBattleReports.Where(br => (br.PostersFaction == viewModel.P1Faction) ||
+                                                                              (br.OpponentsFaction == viewModel.P1Faction));
+            }
 
-            if (viewModel.P1Theme != StaticDetails.AllThemes && viewModel.P2Theme != StaticDetails.AllThemes)
-                filteredBattleReports = filteredBattleReports.Where(br => (br.PostersTheme == viewModel.P1Theme && br.OpponentsTheme == viewModel.P2Theme) || (br.PostersTheme == viewModel.P2Theme && br.OpponentsTheme == viewModel.P1Theme));
-            else if (viewModel.P1Theme != StaticDetails.AllThemes && viewModel.P2Theme == StaticDetails.AllThemes)
-                filteredBattleReports = filteredBattleReports.Where(br => br.PostersTheme == viewModel.P1Theme || br.OpponentsTheme == viewModel.P1Theme);
-            else if (viewModel.P2Theme != StaticDetails.AllThemes && viewModel.P1Theme == StaticDetails.AllThemes)
-                filteredBattleReports = filteredBattleReports.Where(br => br.PostersTheme == viewModel.P2Theme || br.OpponentsTheme == viewModel.P2Theme);
+            if (viewModel.P2Faction != StaticDetails.AllFactions && viewModel.P1Faction == StaticDetails.AllFactions)
+            {
+                if (viewModel.P2Theme != StaticDetails.AllThemes && viewModel.P2Caster != StaticDetails.AllCasters)
+                    filteredBattleReports = filteredBattleReports.Where(br => (br.PostersFaction == viewModel.P2Faction && br.PostersTheme == viewModel.P2Theme && br.PostersCaster == viewModel.P2Caster) ||
+                                                              (br.OpponentsFaction == viewModel.P2Faction && br.OpponentsTheme == viewModel.P2Theme && br.OpponentsCaster == viewModel.P2Caster));
+                else if (viewModel.P2Theme != StaticDetails.AllThemes && viewModel.P2Caster == StaticDetails.AllCasters)
+                    filteredBattleReports = filteredBattleReports.Where(br => (br.PostersFaction == viewModel.P2Faction && br.PostersTheme == viewModel.P2Theme) ||
+                                              (br.OpponentsFaction == viewModel.P2Faction && br.OpponentsTheme == viewModel.P2Theme));
+                else if (viewModel.P2Theme == StaticDetails.AllThemes && viewModel.P2Caster != StaticDetails.AllCasters)
+                    filteredBattleReports = filteredBattleReports.Where(br => (br.PostersFaction == viewModel.P2Faction && br.PostersCaster == viewModel.P2Caster) ||
+                                              (br.OpponentsFaction == viewModel.P2Faction && br.OpponentsCaster == viewModel.P2Caster));
+                else if (viewModel.P2Theme == StaticDetails.AllThemes && viewModel.P2Caster == StaticDetails.AllCasters)
+                    filteredBattleReports = filteredBattleReports.Where(br => (br.PostersFaction == viewModel.P2Faction) ||
+                                              (br.OpponentsFaction == viewModel.P2Faction));
+            }
 
-            if (viewModel.P1Caster != StaticDetails.AllCasters && viewModel.P2Caster != StaticDetails.AllCasters)
-                filteredBattleReports = filteredBattleReports.Where(br => (br.PostersCaster == viewModel.P1Caster && br.OpponentsCaster == viewModel.P2Caster) || (br.PostersCaster == viewModel.P2Caster && br.OpponentsCaster == viewModel.P1Caster));
-            else if (viewModel.P1Caster != StaticDetails.AllCasters && viewModel.P2Caster == StaticDetails.AllCasters)
-                filteredBattleReports = filteredBattleReports.Where(br => br.PostersCaster == viewModel.P1Caster || br.OpponentsCaster == viewModel.P1Caster);
-            else if (viewModel.P2Caster != StaticDetails.AllCasters && viewModel.P1Caster == StaticDetails.AllCasters)
-                filteredBattleReports = filteredBattleReports.Where(br => br.PostersCaster == viewModel.P2Caster || br.OpponentsCaster == viewModel.P2Caster);
+            if (viewModel.P1Faction != StaticDetails.AllFactions && viewModel.P1Faction == viewModel.P2Faction)
+                filteredBattleReports = filteredBattleReports.Where(br => br.PostersFaction == br.OpponentsFaction);
+
+            if (viewModel.P1Theme != StaticDetails.AllThemes && viewModel.P1Theme == viewModel.P2Theme)
+                filteredBattleReports = filteredBattleReports.Where(br => br.PostersTheme == br.OpponentsTheme);
+
+            if (viewModel.P1Caster != StaticDetails.AllCasters && viewModel.P1Caster == viewModel.P2Caster)
+                filteredBattleReports = filteredBattleReports.Where(br => br.PostersCaster == br.OpponentsCaster);
 
             if (viewModel.GameSize != StaticDetails.AllGameSizes)
                 filteredBattleReports = filteredBattleReports.Where(br => br.GameSize.ToString() == viewModel.GameSize);
