@@ -13,14 +13,14 @@
     }
     else
     {
-        <hr />
+        <hr class="results-divider" />
         int counter = 1;
         @foreach (FactionResult factionResult in Model)
         {
             factionResult.ListPosition = counter;
             <partial name="_FactionDetails" model="@factionResult" />
             counter = counter + 1;
-            <hr />
+            <hr class="results-divider" />
         }
     }
 </div>

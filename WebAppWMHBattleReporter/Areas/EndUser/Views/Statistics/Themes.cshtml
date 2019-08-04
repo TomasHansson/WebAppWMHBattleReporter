@@ -21,14 +21,14 @@
     }
     else
     {
-        <hr />
+        <hr class="results-divider" />
         int counter = 1;
         @foreach (ThemeResult themeResult in Model.ThemeResults)
         {
             themeResult.ListPosition = counter;
             <partial name="_ThemeDetails" model="@themeResult" />
             counter = counter + 1;
-            <hr />
+            <hr class="results-divider" />
         }
     }
 </div>

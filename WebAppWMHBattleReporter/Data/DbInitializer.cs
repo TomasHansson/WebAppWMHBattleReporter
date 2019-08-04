@@ -92,26 +92,26 @@ namespace WebAppWMHBattleReporter.Data
 
             await _db.SaveChangesAsync();
 
-            if (_db.Roles.Any(r => r.Name == StaticDetails.Administrator))
-                return;
+            if (!_db.Roles.Any(r => r.Name == StaticDetails.Administrator))
+                _roleManager.CreateAsync(new IdentityRole(StaticDetails.Administrator)).GetAwaiter().GetResult();
 
-            _roleManager.CreateAsync(new IdentityRole(StaticDetails.Administrator)).GetAwaiter().GetResult();
-            _roleManager.CreateAsync(new IdentityRole(StaticDetails.EndUser)).GetAwaiter().GetResult();
+            if (!_db.Roles.Any(r => r.Name == StaticDetails.EndUser))
+                _roleManager.CreateAsync(new IdentityRole(StaticDetails.EndUser)).GetAwaiter().GetResult();
 
-            if (_db.ApplicationUsers.Any(au => au.UserName == "Admin"))
-                return;
-
-            _userManager.CreateAsync(new ApplicationUser
+            if (!_db.ApplicationUsers.Any(au => au.UserName == "Admin"))
             {
-                UserName = "Admin",
-                Email = "admin@admin.com",
-                EmailConfirmed = true,
-                Region = StaticDetails.Europe
-            }, "Admin123!").GetAwaiter().GetResult();
+                _userManager.CreateAsync(new ApplicationUser
+                {
+                    UserName = "Admin",
+                    Email = "admin@admin.com",
+                    EmailConfirmed = true,
+                    Region = StaticDetails.Europe
+                }, "Admin123!").GetAwaiter().GetResult();
 
-            IdentityUser user = await _db.Users.FirstOrDefaultAsync(u => u.Email == "admin@admin.com");
+                IdentityUser user = await _db.Users.FirstOrDefaultAsync(u => u.Email == "admin@admin.com");
 
-            await _userManager.AddToRoleAsync(user, StaticDetails.Administrator);
+                await _userManager.AddToRoleAsync(user, StaticDetails.Administrator);
+            }
         }
     }
 }

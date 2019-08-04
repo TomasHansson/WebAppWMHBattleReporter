@@ -11,7 +11,7 @@
     <div>
         @if (Model.Top10Factions.Count() == 0)
         {
-            <p>There are no factions in the database.</p>
+            <p>There are no factions with any recorded games in the database.</p>
         }
         else
         {
@@ -46,6 +46,14 @@
                     }
                 </table>
             </div>
+            if (Model.Top10Factions.Count() == 1)
+            {
+                <p>There's only one faction with any recorded games in the database.</p>
+            }
+            else if (Model.Top10Factions.Count() < 10)
+            {
+                <p>There's only @Model.Top10Factions.Count factions with any recorded games in the database.</p>
+            }
         }
     </div>
     <br />
@@ -53,7 +61,7 @@
     <div>
         @if (Model.Top10Themes.Count() == 0)
         {
-            <p>There are no themes in the database.</p>
+            <p>There are no themes with any recorded games in the database.</p>
         }
         else
         {
@@ -88,6 +96,14 @@
                     }
                 </table>
             </div>
+            if (Model.Top10Themes.Count() == 1)
+            {
+                <p>There's only one theme with any recorded games in the database.</p>
+            }
+            else if (Model.Top10Themes.Count() < 10)
+            {
+                <p>There's only @Model.Top10Themes.Count themes with any recorded games in the database.</p>
+            }
         }
     </div>
     <br />
@@ -95,7 +111,7 @@
     <div>
         @if (Model.Top10Casters.Count() == 0)
         {
-            <p>There are no casters in the database.</p>
+            <p>There are no casters with any recorded games in the database.</p>
         }
         else
         {
@@ -130,6 +146,14 @@
                     }
                 </table>
             </div>
+            if (Model.Top10Casters.Count() == 1)
+            {
+                <p>There's only one theme with any recorded games in the database.</p>
+            }
+            else if (Model.Top10Casters.Count() < 10)
+            {
+                <p>There's only @Model.Top10Casters.Count themes with any recorded games in the database.</p>
+            }
         }
     </div>
     <br />
@@ -137,7 +161,7 @@
     <div>
         @if (Model.Top10Users.Count() == 0)
         {
-            <p>There are no users in the database.</p>
+            <p>There are no users with any recorded games in the database.</p>
         }
         else
         {
@@ -172,6 +196,14 @@
                     }
                 </table>
             </div>
+            if (Model.Top10Users.Count() == 1)
+            {
+                <p>There's only one user with any recorded games in the database.</p>
+            }
+            else if (Model.Top10Users.Count() < 10)
+            {
+                <p>There's only @Model.Top10Users.Count users with any recorded games in the database.</p>
+            }
         }
     </div>
 </div>

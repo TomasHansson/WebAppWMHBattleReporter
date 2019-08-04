@@ -77,19 +77,18 @@
         <div class="col-12">
             <br />
             <h5 class="text-info">Your Results</h5>
-            <hr />
             @if (Model.BattleReports.Count() != 0)
             {
-
+                <hr class="results-divider" />
                 @foreach (BattleReport battleReport in Model.BattleReports)
                 {
                     <partial name="_BattleReportDetails" model="battleReport" />
-                    <hr />
+                    <hr class="results-divider" />
                 }
             }
             else
             {
-                if(Model.HideFilters)
+                if (Model.HideFilters)
                 {
                     <p>You have no approved battle reports.</p>
                 }

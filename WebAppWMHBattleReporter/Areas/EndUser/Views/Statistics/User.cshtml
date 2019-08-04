@@ -31,7 +31,7 @@
     {
         @if (Model.Factions.Results.Count() == 0)
         {
-            <p>The user hasn't played any games.</p>
+            <p>The user @Model.Username doesn't have any recorded games.</p>
         }
         else
         {

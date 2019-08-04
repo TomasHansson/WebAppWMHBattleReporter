@@ -40,7 +40,7 @@ namespace WebAppWMHBattleReporter.Areas.EndUser.Controllers
 
             BattleReportsListViewModel viewModel = new BattleReportsListViewModel()
             {
-                BattleReports = await _db.BattleReports.OrderByDescending(br => br.DatePlayed).ToListAsync(),
+                BattleReports = await _db.BattleReports.Where(br => br.ConfirmedByOpponent).OrderByDescending(br => br.DatePlayed).ToListAsync(),
                 TimePeriod = StaticDetails.AllTime,
                 TimePeriodOptions = StaticDetails.TimePeriodOptions,
                 P1Faction = StaticDetails.AllFactions,

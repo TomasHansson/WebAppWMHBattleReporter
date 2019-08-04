@@ -21,14 +21,14 @@
     }
     else
     {
-        <hr />
+        <hr class="results-divider" />
         int counter = 1;
         @foreach (CasterResult casterResult in Model.CasterResults)
         {
             casterResult.ListPosition = counter;
             <partial name="_CasterDetails" model="@casterResult" />
             counter = counter + 1;
-            <hr />
+            <hr class="results-divider" />
         }
     }
 </div>

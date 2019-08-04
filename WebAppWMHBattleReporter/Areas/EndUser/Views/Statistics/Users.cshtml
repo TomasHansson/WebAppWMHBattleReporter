@@ -20,23 +20,23 @@
     {
         @if (Model.Region == StaticDetails.AllRegions)
         {
-            <p>There are no users in the databse.</p>
+            <p>There are no users with any recorded games in the database.</p>
         }
         else
         {
-            <p>There are no users in the database from @Model.Region.</p>
+            <p>There are no users with any recorded games in the database from @Model.Region.</p>
         }
     }
     else
     {
-        <hr />
+        <hr class="results-divider" />
         int counter = 1;
         @foreach (UserResult userResult in Model.UserResults)
         {
             userResult.ListPosition = counter;
             <partial name="_UserDetails" model="@userResult" />
             counter = counter + 1;
-            <hr />
+            <hr class="results-divider" />
         }
     }
 </div>
